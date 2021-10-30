@@ -809,10 +809,10 @@ atob@^2.1.2:
   resolved "https://registry.nlark.com/atob/download/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha1-bZUX654DDSQ2ZmZR6GvZ9vE1M8k=
 
-axios@^0.21.1:
-  version "0.21.4"
-  resolved "https://registry.npmmirror.com/axios/download/axios-0.21.4.tgz?cache=0&sync_timestamp=1634053131158&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Faxios%2Fdownload%2Faxios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
-  integrity sha1-xnuQ3AVo5cHPKwuFjEO6KOLtpXU=
+axios@^0.21.2:
+  version "0.21.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.2.tgz#21297d5084b2aeeb422f5d38e7be4fbb82239017"
+  integrity sha512-87otirqUw3e8CzHTMO+/9kh/FSgXt/eVDvipijwDtEuwbkySWZ9SBm6VEubmJ/kLKEoLQV/POhxXFb66bfekfg==
   dependencies:
     follow-redirects "^1.14.0"
 
@@ -1032,9 +1032,9 @@ change-case@^4.1.2:
     fsevents "~2.3.2"
 
 cl-admin-crud-vue3@^0.9.6:
-  version "0.9.4"
-  resolved "https://registry.npmmirror.com/cl-admin-crud-vue3/download/cl-admin-crud-vue3-0.9.4.tgz#c27f09d1bdc945350384aca41ec762eb6a0bfc8c"
-  integrity sha1-wn8J0b3JRTUDhKykHsdi62oL/Iw=
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/cl-admin-crud-vue3/-/cl-admin-crud-vue3-0.9.6.tgz#735034dd8ec2d38022a77aac695f9553483863d2"
+  integrity sha512-3t2Q0h9BK9jqsboJy3aFYGhwNZREy6HQzCpuIUeVGnxHYT+1TOiTyDmQx8svIS1mL5VrJXNmwO8mzVZFQcOXjQ==
   dependencies:
     array.prototype.flat "^1.2.4"
     core-js "^3.6.5"
