@@ -65,14 +65,14 @@ var pluginMgr = &pluginManager{
 type pluginManager struct {
 	sync.Mutex
 	plugins        map[string]*Plug
-	installPlugins map[string]struct{}        // 已经通过安装配置的插件
+	installPlugins map[string]struct{}          // 已经通过安装配置的插件
 	scannedPlugins map[string]*cmdPlugin.Config // 已经扫描到的插件(已安装 + 未安装)
 	path           string
 	fileGlob       string
 	remoteDomain   string
 }
 
-//IterFn 迭代函数
+// IterFn 迭代函数
 type IterFn func(string, PluginIntf) error
 
 func (p *pluginManager) Iter(fn IterFn) error {
@@ -129,7 +129,7 @@ func (p *pluginManager) Reload() {
 	jsonPath := filepath.Join(p.path, "plugins.json")
 	conf, _ := json.Marshal(&pluginNames)
 
-	_ = ioutil.WriteFile(jsonPath, conf, os.ModePerm)
+	_ = os.WriteFile(jsonPath, conf, os.ModePerm)
 }
 
 func (p *pluginManager) Install(filename string) (PluginIntf, error) {

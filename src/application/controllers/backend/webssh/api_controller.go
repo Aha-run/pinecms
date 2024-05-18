@@ -156,7 +156,7 @@ func (c *ApiController) GetTerm() {
 			return
 		}
 		sftp_clients.Client.Lock()
-		sftp_clients.Client.C[auth.Sid] = &sftp_clients.MyClient{uint(serInfo.BindUser), ssConn.SftpClient}
+		sftp_clients.Client.C[auth.Sid] = &sftp_clients.MyClient{Uid: uint(serInfo.BindUser), Sftp: ssConn.SftpClient}
 		sftp_clients.Client.Unlock()
 		defer func() {
 			sftp_clients.Client.Lock()

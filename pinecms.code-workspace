@@ -11,6 +11,7 @@
             "pinecms",
             "vmap",
             "xorm"
-        ]
+        ],
+        "search.useIgnoreFiles": false
     }
 }

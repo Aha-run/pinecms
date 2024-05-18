@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/xiusin/pinecms/src/common/helper"
-	"github.com/xiusin/reload/util"
 
 	"github.com/spf13/cobra"
 )
@@ -40,7 +39,7 @@ var buildPluginCmd = &cobra.Command{
 		buildCmd.Stdout = os.Stdout
 		buildCmd.Stderr = os.Stdout
 		buildCmd.Env = os.Environ()
-		buildCmd.Dir = util.AppPath()
+		buildCmd.Dir = helper.AppPath()
 
 		helper.PanicErr(buildCmd.Run())
 

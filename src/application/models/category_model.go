@@ -3,11 +3,12 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/xiusin/pinecms/src/common/helper"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
@@ -42,7 +43,6 @@ func init() {
 func NewCategoryModel() *CategoryModel {
 	return di.MustGet(&CategoryModel{}).(*CategoryModel)
 }
-
 
 func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 	category := tables.Category{Catid: id}
@@ -138,6 +138,15 @@ func (c *CategoryModel) GetAll(withCache bool) []tables.Category {
 	return categories
 }
 
+func (c *CategoryModel) GetCategoryMap(cache bool) map[int64]tables.Category {
+	categories := c.GetAll(cache)
+	m := map[int64]tables.Category{}
+	for _, v := range categories {
+		m[v.Catid] = v
+	}
+	return m
+}
+
 func (c *CategoryModel) GetNextCategory(parentid int64) []tables.Category {
 	var categories []tables.Category
 	c.orm.Where("parentid=?", parentid).Asc("listorder").Desc("id").Find(&categories)
@@ -180,7 +189,7 @@ func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
 	return maps
 }
 
-//取得内容管理右部分类tree结构
+// 取得内容管理右部分类tree结构
 func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
 	maps := []map[string]interface{}{}
 	if len(categorys) > 0 {
@@ -295,7 +304,7 @@ func (c *CategoryModel) UpdateCategory(category *tables.Category) bool {
 	return true
 }
 
-//判断是否是子分类
+// 判断是否是子分类
 func (c *CategoryModel) IsSonCategory(id, parentid int64) bool {
 	cat := []tables.Category{}
 	c.orm.Where("parentid=?", id).Find(&cat)

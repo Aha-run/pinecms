@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/di"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/di"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
@@ -320,9 +321,9 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 					listColumn.Component = field.Component
 				}
 			} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
-					vv := map[string]interface{}{}
-					json.Unmarshal([]byte(fieldDefineMap[field.FieldType].ListComp), &vv)
-					listColumn.Component = vv
+				vv := map[string]interface{}{}
+				json.Unmarshal([]byte(fieldDefineMap[field.FieldType].ListComp), &vv)
+				listColumn.Component = vv
 			}
 
 			if field.ListVisible {

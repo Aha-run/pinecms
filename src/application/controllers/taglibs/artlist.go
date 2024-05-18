@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/cast"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"xorm.io/builder"
@@ -127,12 +128,8 @@ func ArcList(args jet.Arguments) reflect.Value {
 			panic(fmt.Errorf("模型ID%d不存在", modelID))
 		}
 
-		categoryTable := controllers.GetTableName("category")
-
 		modelTable := controllers.GetTableName(model.Table)
-		sess := getOrmSess(model.Table).
-			Join("LEFT", categoryTable, categoryTable+".id = "+modelTable+".catid").
-			Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
+		sess := getOrmSess(model.Table)
 		defer sess.Close()
 		if isRand {
 			sess.OrderBy(orderBy)
@@ -142,6 +139,8 @@ func ArcList(args jet.Arguments) reflect.Value {
 		if ids[0] != "0" {
 			sess.In(modelTable+".catid", ids)
 		}
+
+		sess.Where(modelTable + ".deleted_time IS NULL").Where(modelTable + ".status = 1")
 
 		if subday > 0 {
 			sess.Where(modelTable+".pubtime > ?", time.Now().AddDate(0, 0, -subday).In(helper.GetLocation()).Format("2006-01-02"))
@@ -186,8 +185,6 @@ func ArcList(args jet.Arguments) reflect.Value {
 			sess.Limit(int(limit), int(offset))
 		}
 
-		sess.Select(fmt.Sprintf("%s.*, %s.catname as typename", modelTable, categoryTable))
-
 		var err error
 		list, err = sess.QueryString()
 		if err != nil {
@@ -196,7 +193,17 @@ func ArcList(args jet.Arguments) reflect.Value {
 		}
 		// 重写URL
 		helper.HandleArtListInfo(list, int(titlelen))
-		pine.Logger().Debug("arclist 标签渲染耗时", time.Now().Sub(startTime))
+
+		cats := models.NewCategoryModel().GetCategoryMap(true)
+
+		for i, v := range list {
+			v["typename"] = cats[cast.ToInt64(v["catid"])].Catname
+			list[i] = v
+		}
+
+		_sql, args := sess.LastSQL()
+
+		pine.Logger().Debug("arclist 标签渲染耗时", time.Now().Sub(startTime), "SQL: ", _sql, args)
 		return &list, err
 	})
 

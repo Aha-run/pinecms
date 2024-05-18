@@ -37,6 +37,11 @@ func GetLocation() *time.Location {
 	return location
 }
 
+func AppPath() string {
+	curPath, _ := os.Getwd()
+	return curPath
+}
+
 // GetRootPath 获取项目根目录 (即 main.go的所在位置)
 func GetRootPath(relPath ...string) string {
 	pwd, _ := os.Getwd()
@@ -82,9 +87,10 @@ func Ajax(msg interface{}, errcode int64, this *pine.Context) {
 	// 添加操作日志
 	data := pine.H{"code": errcode}
 	if errcode != 1000 {
-		switch msg.(type) {
+		switch err := msg.(type) {
 		case error:
-			data["message"] = msg.(error).Error()
+			pine.Logger().Error(err)
+			data["message"] = err.Error()
 		default:
 			data["message"] = msg
 		}

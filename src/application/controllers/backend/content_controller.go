@@ -1,10 +1,12 @@
 package backend
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/spf13/cast"
 	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/xiusin/pine"
@@ -20,8 +22,9 @@ type ContentController struct {
 func (c *ContentController) Construct() {
 	c.Group = "内容管理"
 	c.KeywordsSearch = []SearchFieldDsl{
-		{Field: "value", Op: "LIKE", DataExp: "%$?%"},
-		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "title", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "keyword", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "description", Op: "LIKE", DataExp: "%$?%"},
 	}
 	c.SearchFields = []SearchFieldDsl{
 		{Op: "=", Field: "status"},
@@ -66,14 +69,14 @@ func (c *ContentController) PostList() {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(&contents)
 		}
 		if err != nil {
-			helper.Ajax("limit: " + err.Error(), 1, c.Ctx())
+			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
 		for i, content := range contents {
 			for field, value := range content {
-				switch value.(type) {
+				switch value := value.(type) {
 				case []byte:
-					content[field] = interface{}(helper.Bytes2String(value.([]byte)))
+					content[field] = any(helper.Bytes2String(value))
 				}
 			}
 			contents[i] = content
@@ -89,6 +92,43 @@ func (c *ContentController) PostList() {
 				"total": count,
 			},
 		}, 0, c.Ctx())
+	}
+}
+
+func (c *ContentController) PostAdd() {
+	mid, _ := c.Input().GetInt("mid")
+	catid, _ := c.Input().GetInt("catid")
+	if mid < 1 || catid < 1 {
+		helper.Ajax("缺少关键参数", 1, c.Ctx())
+		return
+	}
+
+	var document tables.DocumentModel
+	c.Orm.Where("id = ?", mid).Get(&document)
+	if document.Id == 0 {
+		helper.Ajax("模型不存在", 1, c.Ctx())
+		return
+	}
+	c.Table = controllers.GetTableName(document.Table) // 设置表名
+	query := c.Orm.Table(c.Table)
+
+	var data = map[string]any{}
+	c.Ctx().BindJSON(&data)
+	data["created_time"] = helper.NowDate(helper.TimeFormat)
+	data["updated_time"] = helper.NowDate(helper.TimeFormat)
+
+	fields := make([]string, 0, len(data))
+	args := make([]any, 0, len(data))
+	for k, v := range data {
+		fields = append(fields, k)
+		args = append(args, v)
+	}
+	sql := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", c.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(data)), ","))
+	_, err := query.Exec(append([]any{sql}, args...)...)
+	if err == nil {
+		helper.Ajax("更新内容成功", 0, c.Ctx())
+	} else {
+		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
 	}
 }
 
@@ -111,8 +151,14 @@ func (c *ContentController) PostEdit() {
 	c.Table = controllers.GetTableName(document.Table) // 设置表名
 	query := c.Orm.Table(c.Table)
 
-	var data = map[string]interface{}{}
+	var data = map[string]any{}
 	c.Ctx().BindJSON(&data)
+	if len(cast.ToString(data["deleted_time"])) == 0 {
+		delete(data, "deleted_time")
+	}
+	if len(cast.ToString(data["pubtime"])) == 0 {
+		delete(data, "pubtime")
+	}
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
 	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
 	if err == nil {

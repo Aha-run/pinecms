@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
@@ -43,6 +44,12 @@ func (c *IndexController) Bootstrap() {
 		return
 	}
 	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
+
+	startTime := time.Now()
+	defer func() {
+		pine.Logger().Debug("渲染模板总耗时", time.Since(startTime))
+	}()
+
 	switch pageName {
 	case "editor.tpl", "":
 		c.Index()

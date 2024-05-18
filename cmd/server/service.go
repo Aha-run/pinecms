@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,6 +38,7 @@ func (service *Service) Manage(args []string, usage string) (string, error) {
 
 	go func() {
 		config.InitDB()
+		fmt.Println("start server...")
 		server.Server()
 	}()
 

@@ -1,13 +1,12 @@
 package frontend
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 func (c *IndexController) Index() {
@@ -32,8 +31,7 @@ func (c *IndexController) Index() {
 		c.Logger().Error(err)
 		return
 	}
-	data, _ := ioutil.ReadFile(pageFilePath)
-	startTime := time.Now()
+	data, _ := os.ReadFile(pageFilePath)
+
 	c.Ctx().WriteHTMLBytes(data)
-	pine.Logger().Debug("渲染模板总耗时", time.Now().Sub(startTime))
 }

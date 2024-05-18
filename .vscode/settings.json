@@ -2,15 +2,17 @@
     "cSpell.words": [
         "byts",
         "cacher",
+        "apidoc",
         "dede",
         "errcode",
         "gktemplate",
         "interp",
         "pinecms",
         "Sess",
+        "filemanager",
+        "sess",
         "tcell",
         "tview",
-        "xorm",
-        "Yaegi"
+        "webssh"
     ]
 }

@@ -14,19 +14,20 @@ import (
 	"xorm.io/xorm"
 )
 
-/**
+/*
+*
 对接微信服务器Api函数
 主要功能:
-	1. 处理菜单事件
-	2. 处理订阅事件
-	3. 处理消息
-	4. 处理订单回调等
+ 1. 处理菜单事件
+ 2. 处理订阅事件
+ 3. 处理消息
+ 4. 处理订单回调等
 */
 func msgHandler(ctx *pine.Context) {
 	defer func() {
 		if err := recover(); err != nil {
 			pine.Logger().Error(err)
-			ctx.WriteJSON(pine.H{"code": 400500, "message": err})
+			_ = ctx.WriteJSON(pine.H{"code": 400500, "message": err})
 		}
 	}()
 
@@ -58,17 +59,6 @@ func msgHandler(ctx *pine.Context) {
 		var replyMsg interface{}
 		var err error
 
-		return nil
-
-		//goqu.From(controllers.GetTableName("wechat_msg_reply_rule")).Where(
-		//	goqu.Or(goqu.Ex{
-		//		"match_value": msg.Content,
-		//		"exact_match": 1,
-		//	}, goqu.Ex{
-		//		"match_value": msg.Content,
-		//		"exact_match": 0,
-		//	}))
-
 		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR " +
 			"(INSTR(?, match_value) > 0 AND  exact_match = 0)) AND appid = '" + appid +
 			"' AND status = 1 ORDER BY exact_match DESC, id DESC LIMIT 1"
@@ -81,10 +71,10 @@ func msgHandler(ctx *pine.Context) {
 
 		rule := rules[0]
 
-		if message.MsgTypeMiniprogrampage == rule.ReplyType || message.MsgTypeMusic == rule.ReplyType || message.MsgTypeVideo == rule.ReplyType {
+		if message.MsgTypeMiniprogrampage == message.MsgType(rule.ReplyType) || message.MsgTypeMusic == message.MsgType(rule.ReplyType) || message.MsgTypeVideo == message.MsgType(rule.ReplyType) {
 			replyMsg = &WechatMsg{}
 			json.Unmarshal([]byte(rule.ReplyContent), replyMsg)
-		} else if message.MsgTypeNews == rule.ReplyType {
+		} else if message.MsgTypeNews == message.MsgType(rule.ReplyType) {
 			replyMsg = []*message.Article{}
 			err = json.Unmarshal([]byte(rule.ReplyContent), &replyMsg)
 		}
@@ -93,8 +83,8 @@ func msgHandler(ctx *pine.Context) {
 			return nil
 		}
 
-		switch rule.ReplyType {
-		case string(message.MsgTypeText):
+		switch message.MsgType(rule.ReplyType) {
+		case message.MsgTypeText:
 			msgData = message.NewText(rule.ReplyContent)
 		case message.MsgTypeImage:
 			msgData = message.NewImage(rule.ReplyContent)

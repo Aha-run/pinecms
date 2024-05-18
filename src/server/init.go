@@ -1,12 +1,13 @@
 package server
 
 import (
-	"github.com/allegro/bigcache/v3"
-	"github.com/xiusin/pine/cache/providers/pbigcache"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/allegro/bigcache/v3"
+	"github.com/xiusin/pine/cache/providers/pbigcache"
 
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/logger"
@@ -48,7 +49,6 @@ func InitCache() {
 	sess := sessions.New(cacheProvider.NewStore(cacheHandler), &sessions.Config{CookieName: conf.Session.Name, Expires: conf.Session.Expires})
 	di.Instance(sess)
 }
-
 
 func InitDI() {
 	helper.Inject(controllers.ServiceApplication, app)

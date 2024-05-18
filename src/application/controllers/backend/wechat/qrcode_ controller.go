@@ -1,11 +1,12 @@
 package wechat
 
 import (
+	"time"
+
 	"github.com/silenceper/wechat/v2/officialaccount/basic"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -38,6 +39,7 @@ func (c *WechatQrcodeController) Construct() {
 func (c *WechatQrcodeController) after(act int, params interface{}) error {
 	if act == backend.OpAdd {
 		account, _ := GetOfficialAccount(params.(*tables.WechatQrcode).AppId)
+
 		data := c.Table.(*tables.WechatQrcode)
 		var req *basic.Request
 		if data.IsTemp {
@@ -45,7 +47,7 @@ func (c *WechatQrcodeController) after(act int, params interface{}) error {
 			if time.Time(data.ExpireTime).Before(time.Now()) {
 				t = 0
 			} else {
-				t = time.Time(data.ExpireTime).Sub(time.Now())
+				t = time.Until(time.Time(data.ExpireTime))
 			}
 			req = basic.NewTmpQrRequest(t, data.SceneStr)
 		} else {

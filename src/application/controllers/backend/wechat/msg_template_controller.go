@@ -2,12 +2,13 @@ package wechat
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"time"
 )
 
 const templateDeleteURL = "https://api.weixin.qq.com/cgi-bin/template/del_private_template"
@@ -128,8 +129,6 @@ func (c *WechatMsgTemplateController) PostSend() {
 
 	var users []tables.WechatMember
 	sess.Cols("openid").Get(&users)
-
-	pine.Logger().Print(sess.LastSQL())
 
 	if len(users) == 0 {
 		helper.Ajax("无法查找到相关推送用户", 1, c.Ctx())

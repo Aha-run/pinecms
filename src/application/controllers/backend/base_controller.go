@@ -1,11 +1,13 @@
 package backend
 
 import (
+	"errors"
 	"fmt"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"reflect"
 	"strings"
+
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/xiusin/pine"
@@ -43,9 +45,9 @@ type BaseController struct {
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
 	Table          interface{}      // 传入Table结构体引用
 	Entries        interface{}      // 传入Table结构体的切片
-	Orm         *xorm.Engine
-	P           listParam
-	apiEntities map[string]apidoc.Entity
+	Orm            *xorm.Engine
+	P              listParam
+	apiEntities    map[string]apidoc.Entity
 
 	ExceptCols []string // 排除数据表字段不读取
 	Cols       []string // 仅读取指定表字段
@@ -70,7 +72,7 @@ type BaseController struct {
 	pine.Controller
 }
 
-//Construct 默认初始化数据
+// Construct 默认初始化数据
 func (c *BaseController) Construct() {
 	c.TableKey = "id"
 	c.TableStructKey = "Id"
@@ -269,18 +271,18 @@ func (c *BaseController) PostAdd() {
 		}
 	}
 	if err := c.add(); err != nil {
-		if c.OpAfter != nil {
-			if err := c.OpAfter(OpAdd, c.Table); err != nil {
-				helper.Ajax(err.Error(), 1, c.Ctx())
-				return
-			}
-		}
-		if len(c.Ctx().Response.Body()) == 0 {
-			helper.Ajax(c.Table, 0, c.Ctx())
-		}
-	} else {
-		helper.Ajax(c.Table, 0, c.Ctx())
+		helper.Ajax(err.Error(), 1, c.Ctx())
+		return
+
 	}
+
+	if c.OpAfter != nil {
+		if err := c.OpAfter(OpAdd, c.Table); err != nil {
+			helper.Ajax(err.Error(), 1, c.Ctx())
+			return
+		}
+	}
+	helper.Ajax(c.Table, 0, c.Ctx())
 }
 
 func (c *BaseController) add() error {
@@ -319,7 +321,6 @@ func (c *BaseController) buildQueryCols(sess *xorm.Session) {
 				cols = append(cols, s)
 			}
 		}
-		fmt.Println(fields, cols)
 		sess.Cols(cols...)
 	}
 }
@@ -374,14 +375,16 @@ func (c *BaseController) edit() bool {
 	}
 	val := reflect.ValueOf(c.Table).Elem().FieldByName(c.TableStructKey)
 	if !val.IsValid() {
+		c.LastErr = errors.New("无法匹配字段")
 		c.Logger().Error("无法匹配字段", c.TableStructKey)
 		return false
 	}
-	result, err := c.Orm.AllCols().Where(c.TableKey+"=?", val.Interface()).Update(c.Table)
+	_, err := c.Orm.AllCols().Where(c.TableKey+"=?", val.Interface()).Update(c.Table)
 	if err != nil {
+		c.LastErr = err
 		c.Logger().Warning("更新错误", err.Error())
 	}
-	return result > 0
+	return true
 }
 
 func (c *BaseController) PostDelete() {

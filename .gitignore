@@ -35,3 +35,4 @@ dist
 pinecms-web-ui
 *_test.go
 example
+__debug*
