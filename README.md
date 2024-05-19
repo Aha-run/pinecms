@@ -5,7 +5,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 简单使用情况下无需关注代码逻辑.
 
 > 前端仓库: <https://github.com/xiusin/pinecms-web.git> <br/>
-> 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。<br>
+> 目前程序正在持续迭代开发中，提供开发期间的数据库文件`resources/pinecms.sql`, 后期数据库结构变更比较大。 (如果发现项目无法启动,可以先清清除一下npm缓存再重新安装) <br>
 
 > 推荐一个自己写的Redis管理工具, 支持Web端: <https://github.com/xiusin/redis-web-manager.git>
 
@@ -85,41 +85,41 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 <table>
 	<tr>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/apidoc-detail.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/apidoc-debug.png"/></td>
-    </tr>	 
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/apidoc-detail.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/apidoc-debug.png"/></td>
+    </tr>
 </table>
 
 
 ## 插件系统 ##
 
 支持动态插拔插件, 并注册到系统功能, 提供方便便捷的扩展功能.
-系统可以动态扫描插件目录,自动发现并可以热加载进系统.  
+系统可以动态扫描插件目录,自动发现并可以热加载进系统.
 也可以导入第三方人员开发的扩展动态库(受限于系统和版本,后面会提供编译个版本的docker镜像)
 
 ## 系统截图
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/plugin.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/stat.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/model.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/presql.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/plugin.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/stat.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/model.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/presql.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/field_list.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/add_field.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/crud.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-account.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/field_list.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/add_field.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/crud.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-account.png"/></td>
     </tr>
 	<tr>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-member.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-menu.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-template.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-member.png"/></td>
-    </tr>	 
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-member.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-menu.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-template.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-member.png"/></td>
+    </tr>
 	<tr>
-        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/react-pinecms/images/wechat-menu.png"/></td>
-    </tr>	 
+        <td><img src="https://raw.githubusercontent.com/xiusin/pinecms/3c3fd38ee333c16333bcba1fb5bca468a94c57f3/images/wechat-menu.png"/></td>
+    </tr>
 </table>
 
 
@@ -135,12 +135,14 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
   - 客服消息
 
 # TODO #
-- Bleve 全文检索 （插件提供）
+- 配置管理配置动态Key
+- Bleve 全文检索 （插件提供, 为内容管理提供检索支持）
 - 页面编辑器: <https://github.com/lljj-x/vue-json-schema-form>
 - <http://goframe.ele.rxthink.cn/tool/generate>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
 - <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/>
+- 更新第三方库
 - <http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html>
 - <https://github.com/wangyuan389/mall-cook> 低代码商城搭建平台
 - <http://fast-crud.docmirror.cn/element/#/crud/basis/value-change>
@@ -153,7 +155,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
  ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=xiusin/pinecms&type=Date)](https://star-history.com/#xiusin/pinecms&Date)
-  
+
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->
@@ -166,3 +168,4 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 <!-- https://github.com/ashutosh00710/github-readme-activity-graph -->
 <!-- <a href="https://github.com/ashutosh00710/github-readme-activity-graph"><img alt="xiusin's Activity Graph" src="https://activity-graph.herokuapp.com/graph?username=xiusin&bg_color=1F222E&color=F8D866&line=F85D7F&point=FFFFFF&hide_border=true&theme=xcode&custom_title=提交日志" /></a> -->
+

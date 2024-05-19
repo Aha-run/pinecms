@@ -12,6 +12,9 @@
             "vmap",
             "xorm"
         ],
-        "search.useIgnoreFiles": false
+        "search.useIgnoreFiles": false,
+        "search.exclude": {
+            "**/node_modules": false
+        }
     }
 }

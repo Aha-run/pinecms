@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -261,7 +260,7 @@ func scanPluginDir() {
 		for _, f := range plugins {
 			conf := cmdPlugin.Config{}
 			jsonPath := filepath.Join(filepath.Dir(f), jsonName)
-			content, err := ioutil.ReadFile(jsonPath)
+			content, err := os.ReadFile(jsonPath)
 			if err == nil {
 				if err := json.Unmarshal(content, &conf); err != nil {
 					pine.Logger().Warning("解析文件"+jsonPath+"失败", err.Error())
