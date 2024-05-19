@@ -2,10 +2,9 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"sync"
-
-	"github.com/valyala/fasthttp"
 
 	"github.com/casbin/casbin/v2"
 	xd "github.com/casbin/xorm-adapter"
@@ -56,7 +55,7 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 			if ctx.IsAjax() {
 				helper.Ajax("无节点操作权限", 1, ctx)
 			} else {
-				ctx.Abort(fasthttp.StatusForbidden)
+				ctx.Abort(http.StatusForbidden)
 			}
 			return
 		}

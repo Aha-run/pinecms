@@ -8,6 +8,7 @@ import (
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"xorm.io/xorm/caches"
 	"xorm.io/xorm/log"
 
 	"gopkg.in/yaml.v2"
@@ -99,7 +100,7 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		helper.PanicErr(err)
 		_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, configure.Db.DbPrefix))
 		_orm.SetLogger(log.NewSimpleLogger(helper.NewOrmLogFile(config.LogPath)))
- 		helper.PanicErr(_orm.Ping())
+		helper.PanicErr(_orm.Ping())
 
 		_orm.ShowSQL(configure.Orm.ShowSql)
 		_orm.TZLocation = helper.GetLocation()
@@ -108,6 +109,13 @@ func InitDB(conf ...*DbConf) *xorm.Engine {
 		configure.Engine = _orm
 		helper.Inject(controllers.ServiceXorm, _orm)
 		helper.Inject(controllers.ServiceTablePrefix, configure.Db.DbPrefix)
+
+		// 为指定模型添加查询缓存
+		cacher := caches.NewLRUCacher(caches.NewMemoryStore(), 3000)
+		configure.Engine.MapCacher("pinecms_articles", cacher)
+		configure.Engine.MapCacher("pinecms_document_model", cacher)
+		configure.Engine.MapCacher("pinecms_category", cacher)
+
 	})
 	return configure.Engine
 }

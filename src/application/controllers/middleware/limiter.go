@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"golang.org/x/time/rate"
 )
@@ -14,7 +14,7 @@ func Limiter(maxBurstSize int) pine.Handler {
 		if limiter.Allow() {
 			ctx.Next()
 		} else {
-			ctx.Abort(fasthttp.StatusServiceUnavailable, "The service is temporarily unavailable")
+			ctx.Abort(http.StatusServiceUnavailable, "The service is temporarily unavailable")
 		}
 	}
 }

@@ -2,22 +2,23 @@ package taglibs
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"reflect"
-	"strings"
 	"xorm.io/xorm"
 )
 
-/**
+/*
+*
 sons 是否附带直属子分类数据, 可用于下级数据的迭代, 可取代channel的sun功能
 active 是否附带当前活动状态逻辑, 一般用于下级菜单激活上级菜单的高亮样式
 topid 记录当前所处页面的tid
 {{channellist = channelartlist(typeid, row, topid, sons, active)}}
 */
 func ChannelArtList(args jet.Arguments) reflect.Value {
-	fmt.Println("ChannelArtList", args)
 	if !checkArgType(&args) {
 		return defaultArrReturnVal
 	}

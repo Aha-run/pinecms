@@ -2,15 +2,17 @@ package taglibs
 
 import (
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"reflect"
-	"time"
 )
 
-/**
+/*
+*
 typeid = "son | top | self"
 top: 顶级栏目 : parentid 为 0
 son: 父id 为 reid的下级分类
@@ -21,12 +23,13 @@ row = "10" 调用数量
 channel(typeid, reid, type, row)
 */
 func Channel(args jet.Arguments) reflect.Value {
-	startTime := time.Now()
 	var arr = []tables.Category{}
-	helper.AbstractCache().Remember("pine:tag:channel:" + getTagHash(args), &arr, func() (interface{}, error) {
+	helper.AbstractCache().Remember("pine:tag:channel:"+getTagHash(args), &arr, func() (interface{}, error) {
 		if !checkArgType(&args) {
 			return &arr, nil
 		}
+		startTime := time.Now()
+
 		_typeid := getNumber(args.Get(0))
 		_reid := getNumber(args.Get(1))
 		_type := args.Get(2).String()
@@ -72,8 +75,9 @@ func Channel(args jet.Arguments) reflect.Value {
 				arr[k].Url = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(cat1s))
 			}
 		}
+		fmt.Println("channel 耗时", time.Now().Sub(startTime))
+
 		return &arr, nil
 	})
-	fmt.Println("channel 耗时", time.Now().Sub(startTime))
 	return reflect.ValueOf(arr)
 }

@@ -124,17 +124,19 @@ func (c *CategoryModel) GetWithDirForBE(dir string) *tables.Category {
 	return nil
 }
 
-func (c *CategoryModel) GetAll(withCache bool) []tables.Category {
+func (c *CategoryModel) GetAll(cache bool) []tables.Category {
 	var categories []tables.Category
-	if !withCache {
+	if !cache {
 		_ = helper.AbstractCache().Delete(controllers.CacheCategories)
 	}
-	_ = helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (interface{}, error) {
-		if err := c.orm.Asc("listorder").Desc("id").Find(&categories); err != nil {
-			pine.Logger().Error("查询语句错误", err)
-		}
+	err := helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (interface{}, error) {
+		_ = c.orm.Asc("listorder").Desc("id").Find(&categories)
 		return &categories, nil
 	})
+
+	if err != nil {
+		pine.Logger().Error("解析json错误", err)
+	}
 	return categories
 }
 

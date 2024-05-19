@@ -123,8 +123,9 @@ func ArcList(args jet.Arguments) reflect.Value {
 		if modelID == 0 {
 			modelID = 1
 		}
-		exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model)
-		if !exists {
+
+		// 走缓存
+		if exists, _ := helper.GetORM().Table(model).ID(modelID).Get(model); !exists {
 			panic(fmt.Errorf("模型ID%d不存在", modelID))
 		}
 
@@ -191,9 +192,8 @@ func ArcList(args jet.Arguments) reflect.Value {
 			pine.Logger().Error(sess.LastSQL())
 			return &list, err
 		}
-		// 重写URL
-		helper.HandleArtListInfo(list, int(titlelen))
 
+		helper.HandleArtListInfo(list, int(titlelen))
 		cats := models.NewCategoryModel().GetCategoryMap(true)
 
 		for i, v := range list {

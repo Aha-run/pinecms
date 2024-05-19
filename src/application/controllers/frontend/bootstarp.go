@@ -1,49 +1,46 @@
 package frontend
 
 import (
-	"fmt"
-	"io/ioutil"
+	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/config"
 )
 
 func (c *IndexController) Bootstrap() {
-	fmt.Println("BootStrap Route", string(c.Ctx().RequestURI()))
+	pine.Logger().Debug("BootStrap Route", string(c.Ctx().RequestURI()))
 	defer func() {
 		if err := recover(); err != nil {
-			c.Ctx().Abort(fasthttp.StatusInternalServerError, err.(error).Error())
+			c.Ctx().Abort(http.StatusInternalServerError, err.(error).Error())
 		}
 	}()
 	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
-	if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
-		pageName := c.Ctx().Params().Get("pagename") // 必须包含.html, 在nginx要注意如果以/结尾的path需要追加index.html
-		if pageName == "" {
-			pageName = "/"
-		}
-		if strings.HasSuffix(pageName, "/") {
-			pageName += "editor.tpl"
-		}
-		absFilePath := filepath.Join(conf["SITE_STATIC_PAGE_DIR"], pageName)
-		if byts, err := ioutil.ReadFile(absFilePath); err != nil {
-			pine.Logger().Error(err)
-			c.Ctx().Abort(fasthttp.StatusNotFound)
-		} else {
-			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
-			pine.Logger().Print("render file ", absFilePath)
-			_ = c.Ctx().Render().Bytes(byts)
-		}
+	// if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
+	pageName := c.Ctx().Params().Get("pagename") // 必须包含.html, 在nginx要注意如果以/结尾的path需要追加index.html
+	if pageName == "" {
+		pageName = "/"
+	}
+	if strings.HasSuffix(pageName, "/") {
+		pageName += "editor.tpl"
+	}
+	absFilePath := filepath.Join(conf["SITE_STATIC_PAGE_DIR"], pageName)
+	if byts, err := os.ReadFile(absFilePath); err == nil { // 如果已经存在缓存页面则直接并发执行
+		c.Ctx().Render().ContentType(pine.ContentTypeHTML)
+		pine.Logger().Print("render for file", absFilePath)
+		_ = c.Ctx().Render().Bytes(byts)
 		return
 	}
-	pageName := strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
+	// 	return
+	// }
+	pageName = strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
 
 	startTime := time.Now()
 	defer func() {
@@ -97,15 +94,15 @@ func (c *IndexController) Bootstrap() {
 					return
 				}
 			}
-			c.Ctx().Abort(fasthttp.StatusNotFound)
-			c.Logger().Debug("1:地址内容无法匹配", c.Ctx().Path())
+			c.Ctx().Abort(http.StatusNotFound)
+			c.Logger().Debug("无法匹配列表或单页", c.Ctx().Path())
 			return
 		}
 		// 匹配所有内容
 		prefix := models.NewCategoryModel().GetUrlPrefix(cat.Catid)
 		if !strings.HasPrefix(pageName, prefix) {
 			c.Logger().Debug("2:地址前缀无法匹配", c.Ctx().Path())
-			c.Ctx().Abort(fasthttp.StatusNotFound)
+			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
 		c.Ctx().Params().Set("tid", strconv.Itoa(int(cat.Catid)))

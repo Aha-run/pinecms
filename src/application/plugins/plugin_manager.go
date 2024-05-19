@@ -16,7 +16,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	cmdPlugin "github.com/xiusin/pinecms/cmd/plugin"
@@ -167,13 +166,13 @@ func (p *pluginManager) registerRouter(plug PluginIntf) {
 	group := di.MustGet(controllers.ServiceBackendRouter).(*pine.Router)
 	group.Use(func(ctx *pine.Context) {
 		if !plug.IsInstall() {
-			ctx.Abort(fasthttp.StatusNotFound)
+			ctx.Abort(http.StatusNotFound)
 		} else if !plug.Status() {
 			disableMsg := "插件功能已禁用, 不可访问"
 			if ctx.IsAjax() {
 				helper.Ajax(disableMsg, 1, ctx)
 			} else {
-				ctx.Abort(fasthttp.StatusForbidden, disableMsg)
+				ctx.Abort(http.StatusForbidden, disableMsg)
 			}
 		} else {
 			ctx.Next()
