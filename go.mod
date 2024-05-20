@@ -1,6 +1,8 @@
 module github.com/xiusin/pinecms
 
-go 1.19
+go 1.21
+
+toolchain go1.22.2
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
