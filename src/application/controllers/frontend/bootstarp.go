@@ -13,42 +13,39 @@ import (
 	"github.com/xiusin/pinecms/src/config"
 )
 
+const IndexTpl = "editor.tpl"
+
 func (c *IndexController) Bootstrap() {
-	pine.Logger().Debug("BootStrap Route", string(c.Ctx().RequestURI()))
+	begin := time.Now()
 	defer func() {
+		pine.Logger().Debug("请求+渲染总耗时", time.Since(begin))
 		if err := recover(); err != nil {
 			c.Ctx().Abort(http.StatusInternalServerError, err.(error).Error())
 		}
 	}()
-	conf, _ := config.SiteConfig()
 	// todo 开启前端资源缓存 304
 	// todo 拦截存在静态文件的问题, 不过最好交给nginx等服务器转发
-	// if conf["SITE_DEBUG"] == "" || conf["SITE_DEBUG"] == "关闭" {
 	pageName := c.Ctx().Params().Get("pagename") // 必须包含.html, 在nginx要注意如果以/结尾的path需要追加index.html
-	if pageName == "" {
-		pageName = "/"
+	if config.GetSiteConfigByKey("SITE_DEBUG", "关闭") == "关闭" {
+		if pageName == "" {
+			pageName = "/"
+		}
+		if strings.HasSuffix(pageName, "/") {
+			pageName += IndexTpl
+		}
+		absFilePath := filepath.Join(config.GetSiteConfigByKey("SITE_STATIC_PAGE_DIR"), pageName)
+		if byts, err := os.ReadFile(absFilePath); err == nil { // 如果已经存在缓存页面则直接并发执行
+			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
+			pine.Logger().Print("render for file", absFilePath)
+			_ = c.Ctx().Render().Bytes(byts)
+			return
+		}
 	}
-	if strings.HasSuffix(pageName, "/") {
-		pageName += "editor.tpl"
-	}
-	absFilePath := filepath.Join(conf["SITE_STATIC_PAGE_DIR"], pageName)
-	if byts, err := os.ReadFile(absFilePath); err == nil { // 如果已经存在缓存页面则直接并发执行
-		c.Ctx().Render().ContentType(pine.ContentTypeHTML)
-		pine.Logger().Print("render for file", absFilePath)
-		_ = c.Ctx().Render().Bytes(byts)
-		return
-	}
-	// 	return
-	// }
+
 	pageName = strings.Trim(strings.ReplaceAll(c.Ctx().Params().Get("pagename"), "//", "/"), "/") // 必须包含.html
 
-	startTime := time.Now()
-	defer func() {
-		pine.Logger().Debug("渲染模板总耗时", time.Since(startTime))
-	}()
-
 	switch pageName {
-	case "editor.tpl", "":
+	case IndexTpl, "", "/":
 		c.Index()
 	default:
 		urlPartials := strings.Split(pageName, "/")
@@ -57,23 +54,18 @@ func (c *IndexController) Bootstrap() {
 		var isDetail bool
 		// 如果地址内包含 .html 认为是需要请求静态页面
 		if strings.HasSuffix(pageName, ".html") {
-			// 获取目录名
-			last = urlPartials[len(urlPartials)-2]
-
-			// 获取文件名
-			fileName = urlPartials[len(urlPartials)-1]
-
-			// 分析页码
-			if strings.HasPrefix(fileName, "index_") {
+			last = urlPartials[len(urlPartials)-2]     // 获取目录名
+			fileName = urlPartials[len(urlPartials)-1] // 获取文件名
+			if strings.HasPrefix(fileName, "index_") { // 分析页码
 				fileInfo := strings.Split(fileName, "_") // index_2.html => 某个分类的第二页
 				c.Ctx().Params().Set("page", strings.TrimSuffix(fileInfo[1], ".html"))
-			} else if fileName != "editor.tpl" {
+			} else if fileName != IndexTpl {
 				isDetail = true
 				c.Ctx().Params().Set("aid", strings.TrimSuffix(fileName, ".html")) // 设置文档ID
 			}
 		} else {
 			last = urlPartials[len(urlPartials)-1] // 目录名
-			fileName = "editor.tpl"
+			fileName = IndexTpl
 			pageName = filepath.Join(pageName, fileName)
 			c.Ctx().Params().Set("page", "1")
 		}

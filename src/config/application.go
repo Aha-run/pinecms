@@ -113,13 +113,22 @@ func parseConfig(path string, out interface{}) {
 	helper.PanicErr(err)
 }
 
+func GetSiteConfigByKey(key string, def ...string) string {
+	siteConfig, _ := SiteConfig()
+	val := siteConfig[key]
+	if len(val) == 0 && len(def) != 0 {
+		val = def[0]
+	}
+	return val
+}
+
 func SiteConfig() (map[string]string, error) {
-	xorm, cache := helper.GetORM(), helper.AbstractCache()
+	orm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
 
 	err := cache.Remember(controllers.CacheSetting, &settingData, func() (interface{}, error) {
 		var settings []tables.Setting
-		err := xorm.Find(&settings)
+		err := orm.Find(&settings)
 		if err != nil {
 			return nil, err
 		}

@@ -1,18 +1,21 @@
 {
     "cSpell.words": [
+        "apidoc",
+        "bleve",
+        "blevesearch",
         "byts",
         "cacher",
-        "apidoc",
         "dede",
         "errcode",
+        "filemanager",
         "gktemplate",
         "interp",
         "pinecms",
-        "Sess",
-        "filemanager",
         "sess",
+        "Sess",
         "tcell",
         "tview",
-        "webssh"
+        "webssh",
+        "xorm"
     ]
 }
