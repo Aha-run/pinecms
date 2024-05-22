@@ -10,7 +10,6 @@ import (
 	"reflect"
 	"runtime"
 	"strconv"
-	"strings"
 	"time"
 	"unicode/utf8"
 	"unsafe"
@@ -20,8 +19,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"xorm.io/xorm"
-
-	"github.com/kataras/go-mailer"
 )
 
 const TimeFormat = "2006-01-02 15:04:05"
@@ -123,7 +120,7 @@ func Password(password, encrypt string) string {
 }
 
 // IsFalse 检测字段是否为 空 0 nil
-func IsFalse(args ...interface{}) bool {
+func IsFalse(args ...any) bool {
 	for _, v := range args {
 		switch v.(type) {
 		case string:
@@ -149,56 +146,6 @@ type EmailOpt struct {
 	Title        string
 	UrlOrMessage string
 	Address      []string
-}
-
-func SendEmail(opt *EmailOpt, conf map[string]string) error {
-	port, err := strconv.Atoi(conf["EMAIL_PORT"])
-	if err != nil {
-		port = 25
-	}
-	mailService := mailer.New(mailer.Config{
-		Host:      conf["EMAIL_SMTP"],
-		Username:  conf["EMAIL_USER"],
-		Password:  conf["EMAIL_PWD"],
-		Port:      port,
-		FromAlias: conf["EMAIL_SEND_NAME"],
-	})
-
-	str := ""
-	if strings.HasPrefix(opt.UrlOrMessage, "http") {
-		str = `<a href="` + opt.UrlOrMessage + `" class="a-link" target="_blank">` + opt.UrlOrMessage + `</a>
-            <br/>如果链接点击无效，请将链接复制到您的浏览器中继续访问。`
-	} else {
-		str = opt.UrlOrMessage
-	}
-	content := `
-<html>
-<head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-</head>
-<body>
-<style>
-    .main{width:655px;margin:0px auto;border: 2px solid #0382db;background-color:#f8fcff;}
-    .main-box{ padding:15px;}
-    .mail-title{ font-size:15px; color:#ffffff; background-color:#0382db; font-weight:bold; padding:0px 0px 0px 15px;height:80px;line-height:80px;}
-    .fontstyle{ color:#be0303; font-weight:bold;}
-    .a-link{ color:#0078ff; font-weight:bold;}
-    .csdn{ text-align:right; color:#000000; font-weight: bold;}
-    .csdn-color{ color:#000000; font-weight: bold; padding-top:20px;}
-    .logo-right{float:right;display:inline-block;padding-right:15px;}
-</style>
-<div class="main">
-    <div class="mail-title">` + opt.Title + `</div>
-    <div class="main-box">
-        <p>` + opt.Title + `<br/>
-            ` + str + `</p>
-        <p class="csdn csdn-color">by PineCMS</p>
-    </div>
-</div>
-</body>
-</html>
-`
-	return mailService.Send(opt.Title, content, opt.Address...)
 }
 
 func NewOrmLogFile(path string) *os.File {

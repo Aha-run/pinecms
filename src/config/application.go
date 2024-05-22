@@ -64,6 +64,16 @@ type viewConf struct {
 
 var config = &Config{}
 
+type Site map[string]string
+
+func (s Site) Get(key string, def ...string) string {
+	val := s[key]
+	if len(val) == 0 && len(def) != 0 {
+		val = def[0]
+	}
+	return val
+}
+
 func (c *Config) init() {
 	if len(c.Upload.BasePath) == 0 {
 		c.Upload.BasePath = "uploads"
@@ -115,14 +125,10 @@ func parseConfig(path string, out interface{}) {
 
 func GetSiteConfigByKey(key string, def ...string) string {
 	siteConfig, _ := SiteConfig()
-	val := siteConfig[key]
-	if len(val) == 0 && len(def) != 0 {
-		val = def[0]
-	}
-	return val
+	return siteConfig.Get(key, def...)
 }
 
-func SiteConfig() (map[string]string, error) {
+func SiteConfig() (Site, error) {
 	orm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
 

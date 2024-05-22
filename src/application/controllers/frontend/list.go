@@ -1,7 +1,6 @@
 package frontend
 
 import (
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -77,6 +76,6 @@ func (c *IndexController) List(pageFilePath string) {
 		c.Ctx().Abort(http.StatusInternalServerError, err.Error())
 		return
 	}
-	data, _ := ioutil.ReadFile(pageFilePath)
-	c.Ctx().WriteHTMLBytes(data)
+	data, _ := os.ReadFile(pageFilePath)
+	_ = c.Ctx().WriteHTMLBytes(data)
 }

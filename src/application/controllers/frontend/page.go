@@ -1,15 +1,15 @@
 package frontend
 
 import (
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path/filepath"
 )
 
 func (c *IndexController) Page(pathname string) {
@@ -51,7 +51,7 @@ func (c *IndexController) Page(pathname string) {
 	}
 	temp, err := pineJet.GetTemplate(template(tpl))
 	if err != nil {
-		c.Ctx().WriteString(err.Error())
+		_ = c.Ctx().WriteString(err.Error())
 		return
 	}
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), struct {
@@ -65,9 +65,9 @@ func (c *IndexController) Page(pathname string) {
 		TypeID: tid,
 	})
 	if err != nil {
-		c.Ctx().WriteString(err.Error())
+		_ = c.Ctx().WriteString(err.Error())
 		return
 	}
-	data, _ := ioutil.ReadFile(pageFilePath)
-	c.Ctx().WriteHTMLBytes(data)
+	data, _ := os.ReadFile(pageFilePath)
+	_ = c.Ctx().WriteHTMLBytes(data)
 }

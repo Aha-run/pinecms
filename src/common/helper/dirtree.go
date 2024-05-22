@@ -7,10 +7,10 @@ import (
 )
 
 type DirInfo struct {
-	Label    string      `json:"label"`
-	FullPath string      `json:"full_path"`
-	IsDir    bool        `json:"is_dir"`
-	Children interface{} `json:"children"`
+	Label    string `json:"label"`
+	FullPath string `json:"full_path"`
+	IsDir    bool   `json:"is_dir"`
+	Children any    `json:"children"`
 }
 
 func DirTree(dir string) []DirInfo {

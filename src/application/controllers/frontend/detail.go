@@ -2,16 +2,17 @@ package frontend
 
 import (
 	"fmt"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pine/render/engine/pjet"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/render/engine/pjet"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models"
 )
 
 func (c *IndexController) Detail(pathname string) {
@@ -28,10 +29,7 @@ func (c *IndexController) Detail(pathname string) {
 	cacher := pine.Make("cache.AbstractCache").(cache.AbstractCache)
 	cacheKey := fmt.Sprintf(controllers.CacheCategoryContentPrefix, tid, aid)
 	var article = map[string]string{}
-	cacher.GetWithUnmarshal(cacheKey, &article)
-	if len(article) == 0 {
-
-	}
+	_ = cacher.GetWithUnmarshal(cacheKey, &article)
 	m := models.NewCategoryModel()
 	category, err := m.GetCategoryFByIdForBE(tid)
 	if err != nil {

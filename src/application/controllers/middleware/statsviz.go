@@ -16,7 +16,9 @@ func StatesViz(app *pine.Application) pine.Handler {
 		NumGoroutine int
 	}
 	upgrade := websocket.FastHTTPUpgrader{}
-	indexHandler := fasthttpadaptor.NewFastHTTPHandler(statsviz.Index)
+	sev, _ := statsviz.NewServer()
+
+	indexHandler := fasthttpadaptor.NewFastHTTPHandler(sev.Index())
 
 	app.GET("/debug/statsviz/*filepath", func(ctx *pine.Context) {
 		if ctx.Params().Get("filepath") == "ws" {

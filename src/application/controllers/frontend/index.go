@@ -13,7 +13,7 @@ func (c *IndexController) Index() {
 	c.setTemplateData()
 	indexPage := "editor.tpl"
 	pageFilePath := GetStaticFile(indexPage)
-	os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
+	_ = os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
 		c.Logger().Error(err)
@@ -33,5 +33,5 @@ func (c *IndexController) Index() {
 	}
 	data, _ := os.ReadFile(pageFilePath)
 
-	c.Ctx().WriteHTMLBytes(data)
+	_ = c.Ctx().WriteHTMLBytes(data)
 }
