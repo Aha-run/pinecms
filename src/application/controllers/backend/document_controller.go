@@ -46,9 +46,9 @@ type column struct {
 }
 
 type dictItem struct {
-	Label string      `json:"label"`
-	Value interface{} `json:"value"`
-	Type  string      `json:"type"`
+	Label string `json:"label"`
+	Value any    `json:"value"`
+	Type  string `json:"type"`
 }
 
 func (c *DocumentController) Construct() {
@@ -132,7 +132,7 @@ func (c *DocumentController) before(act int, params interface{}) error {
 func (c *DocumentController) after(act int, params interface{}) error {
 	if act == OpAdd {
 		var fields tables.ModelDslFields
-		c.Orm.Where("mid = 0").Find(&fields)
+		_ = c.Orm.Where("mid = 0").Find(&fields)
 		// 生成固定类型的字段
 		for _, field := range fields {
 			field.Id = 0

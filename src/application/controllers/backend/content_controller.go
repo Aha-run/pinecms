@@ -6,7 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blevesearch/bleve"
+	doc "github.com/blevesearch/bleve/v2/document"
 	"github.com/spf13/cast"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/xiusin/pine"
@@ -113,7 +116,7 @@ func (c *ContentController) PostAdd() {
 	query := c.Orm.Table(c.Table)
 
 	var data = map[string]any{}
-	c.Ctx().BindJSON(&data)
+	_ = c.Ctx().BindJSON(&data)
 	data["created_time"] = helper.NowDate(helper.TimeFormat)
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
 
@@ -124,8 +127,18 @@ func (c *ContentController) PostAdd() {
 		args = append(args, v)
 	}
 	sql := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", c.Table, strings.Join(fields, ","), strings.TrimRight(strings.Repeat("?,", len(data)), ","))
-	_, err := query.Exec(append([]any{sql}, args...)...)
+	result, err := query.Exec(append([]any{sql}, args...)...)
 	if err == nil {
+		id, _ := result.LastInsertId()
+		_doc := doc.NewDocument(cast.ToString(id))
+		for field, v := range data {
+			_doc.AddField(doc.NewTextField(field, nil, []byte(cast.ToString(v))))
+		}
+
+		index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
+		if err := index.Index(_doc.ID(), _doc); err != nil {
+			helper.PanicErr(err)
+		}
 		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())

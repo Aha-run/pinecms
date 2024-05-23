@@ -1,6 +1,8 @@
 module github.com/xiusin/pinecms
 
-go 1.19
+go 1.21
+
+toolchain go1.22.2
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -50,6 +52,8 @@ require (
 	xorm.io/xorm v1.3.9
 )
 
+require github.com/vcaesar/cedar v0.20.1 // indirect
+
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/RoaringBitmap/roaring v1.9.3 // indirect
@@ -57,6 +61,7 @@ require (
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/bits-and-blooms/bitset v1.13.0 // indirect
 	github.com/bits-and-blooms/bloom v1.0.1-0.20210513151749-57921726402d // indirect
+	github.com/blevesearch/bleve v1.0.14
 	github.com/blevesearch/bleve_index_api v1.1.7 // indirect
 	github.com/blevesearch/geo v0.1.20 // indirect
 	github.com/blevesearch/go-faiss v1.0.16 // indirect
@@ -85,6 +90,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/go-ego/gse v0.80.2
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -132,6 +138,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fastjson v1.6.3 // indirect
 	github.com/valyala/fastrand v1.1.0 // indirect
+	github.com/vcaesar/gse-bleve v0.40.0
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.etcd.io/bbolt v1.3.10 // indirect

@@ -77,7 +77,7 @@ func (p *[$s]) Upgrade() {
 }
 
 func (p *[$s]) Init(app *pine.Application, backend *pine.Router) {
-	
+
 }
 
 // [$s]Plugin 导出插件可执行变量 不可删除
