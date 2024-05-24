@@ -1,8 +1,6 @@
 module github.com/xiusin/pinecms
 
-go 1.21
-
-toolchain go1.22.2
+go 1.19
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -52,7 +50,17 @@ require (
 	xorm.io/xorm v1.3.9
 )
 
-require github.com/vcaesar/cedar v0.20.1 // indirect
+require (
+	github.com/blevesearch/zap/v11 v11.0.14 // indirect
+	github.com/blevesearch/zap/v12 v12.0.14 // indirect
+	github.com/blevesearch/zap/v13 v13.0.6 // indirect
+	github.com/blevesearch/zap/v14 v14.0.5 // indirect
+	github.com/blevesearch/zap/v15 v15.0.3 // indirect
+	github.com/couchbase/vellum v1.0.2 // indirect
+	github.com/steveyen/gtreap v0.1.0 // indirect
+	github.com/vcaesar/cedar v0.20.1 // indirect
+	github.com/willf/bitset v1.1.10 // indirect
+)
 
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
@@ -90,7 +98,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/go-ego/gse v0.80.2
+	github.com/go-ego/gse v0.80.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

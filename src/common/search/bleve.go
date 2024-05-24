@@ -1,7 +1,6 @@
 package search
 
 import (
-	"github.com/blevesearch/bleve/v2/document"
 	gse "github.com/vcaesar/gse-bleve"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
@@ -20,7 +19,7 @@ func NewBleve() {
 	helper.PanicErr(err)
 	pine.RegisterOnInterrupt(func() { _ = index.Close() })
 
-	doc := document.NewDocument("1")
+	// doc := document.NewDocument("1")
 	// doc.AddField(document.NewTextField("title", nil, []byte("hello world!")))
 	// if err := index.Index(doc.ID(), doc); err != nil {
 	// 	helper.PanicErr(err)
