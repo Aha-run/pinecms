@@ -6,8 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/blevesearch/bleve"
-	doc "github.com/blevesearch/bleve/v2/document"
+	"github.com/blevesearch/bleve/v2"
 	"github.com/spf13/cast"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models"
@@ -130,15 +129,9 @@ func (c *ContentController) PostAdd() {
 	result, err := query.Exec(append([]any{sql}, args...)...)
 	if err == nil {
 		id, _ := result.LastInsertId()
-		_doc := doc.NewDocument(cast.ToString(id))
-		for field, v := range data {
-			_doc.AddField(doc.NewTextField(field, nil, []byte(cast.ToString(v))))
-		}
-
+		data["id"] = id
 		index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
-		if err := index.Index(_doc.ID(), _doc); err != nil {
-			helper.PanicErr(err)
-		}
+		helper.PanicErr(index.Index(cast.ToString(id), data))
 		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
@@ -175,6 +168,8 @@ func (c *ContentController) PostEdit() {
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
 	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
 	if err == nil {
+		index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
+		helper.PanicErr(index.Index(cast.ToString(id), data))
 		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
@@ -236,6 +231,10 @@ func (c *ContentController) PostDelete() {
 	if rowNum, _ := ret.RowsAffected(); rowNum == 0 {
 		helper.Ajax("删除失败", 1, c.Ctx())
 		return
+	}
+	index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
+	for _, id := range idArr {
+		_ = index.Delete(cast.ToString(id))
 	}
 	helper.Ajax("删除成功", 0, c.Ctx())
 }
