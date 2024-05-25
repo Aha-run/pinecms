@@ -1,6 +1,8 @@
 module github.com/xiusin/pinecms
 
-go 1.19
+go 1.21
+
+toolchain go1.22.2
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -9,7 +11,6 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
 	github.com/allegro/bigcache/v3 v3.0.1
 	github.com/arl/statsviz v0.6.0
-	github.com/blevesearch/bleve/v2 v2.4.0
 	github.com/casbin/casbin/v2 v2.89.0
 	github.com/casbin/xorm-adapter v1.0.1-0.20191120030838-267478260350
 	github.com/fasthttp/websocket v1.5.0
@@ -51,6 +52,7 @@ require (
 )
 
 require (
+	github.com/blevesearch/bleve/v2 v2.4.0 // indirect
 	github.com/blevesearch/zap/v11 v11.0.14 // indirect
 	github.com/blevesearch/zap/v12 v12.0.14 // indirect
 	github.com/blevesearch/zap/v13 v13.0.6 // indirect
