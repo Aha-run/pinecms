@@ -24,7 +24,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers/tplfun"
 	"github.com/xiusin/pinecms/src/common/helper"
 	commonLogger "github.com/xiusin/pinecms/src/common/logger"
-	"github.com/xiusin/pinecms/src/common/search"
 	"github.com/xiusin/pinecms/src/config"
 )
 
@@ -56,7 +55,7 @@ func InitDI() {
 	helper.Inject(controllers.ServiceConfig, conf)
 	helper.Inject(logger.GetDefault(), initLoggerService())
 	helper.Inject(controllers.ServiceJetEngine, initJetEngine())
-	go search.NewBleve()
+	// go search.NewBleve()
 
 	pine.RegisterViewEngine(di.MustGet(controllers.ServiceJetEngine).(render.AbstractRenderer))
 }

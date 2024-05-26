@@ -136,14 +136,10 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 # TODO #
 - 配置管理配置动态Key
-- Bleve 全文检索 （插件提供, 为内容管理提供检索支持）
 - 页面编辑器: <https://github.com/lljj-x/vue-json-schema-form>
 - <http://goframe.ele.rxthink.cn/tool/generate>
 - 菜单表增加perms字段， 可以配置权限标识，可以配置节点类型为权限。
-- <http://relation-graph.com/#/demo/scene-network> 组织架构显示
 - 动态构建表单: <https://eddyzhang1986.github.io/antd-jsonschema-form/>
-- 更新第三方库
-- <http://fundemo.funadmin.com/2KmvVJA8dU.php/index/index.html>
 - <https://github.com/wangyuan389/mall-cook> 低代码商城搭建平台
 - <http://fast-crud.docmirror.cn/element/#/crud/basis/value-change>
 - https://www.npmjs.com/package/dc-search-table
