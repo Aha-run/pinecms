@@ -152,6 +152,7 @@ PineCMS是一个GO语言开发的内容管理系统, 让您可以在短时间内
 
 [![Star History Chart](https://api.star-history.com/svg?repos=xiusin/pinecms&type=Date)](https://star-history.com/#xiusin/pinecms&Date)
 
+<!-- https://github.com/Ompluscator/dynamic-struct 动态结构体 -->
 <!-- 参考CMS: http://demo2.wooadmin.cn/run -->
 <!-- http://pigx.pig4cloud.com/#/mp/wxaccountfans/index -->
 <!-- 热门语言卡片 -->

@@ -1,6 +1,8 @@
 module github.com/xiusin/pinecms
 
-go 1.19
+go 1.21
+
+toolchain go1.22.2
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -40,6 +42,7 @@ require (
 	github.com/xiusin/logger v0.0.10-0.20220129022857-69c2a6f6a736
 	github.com/xiusin/pine v0.0.0-20220228094826-647d9c6d15aa
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
+	github.com/zinclabs/sdk-go-zincsearch v0.3.3
 	golang.org/x/crypto v0.23.0
 	golang.org/x/text v0.15.0
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6
@@ -64,8 +67,12 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.5.0 // indirect
+	github.com/elastic/go-elasticsearch/v8 v8.13.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -112,8 +119,12 @@ require (
 	github.com/valyala/fastrand v1.1.0 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	go.opentelemetry.io/otel v1.27.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/term v0.20.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
