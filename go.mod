@@ -1,8 +1,6 @@
 module github.com/xiusin/pinecms
 
-go 1.21
-
-toolchain go1.22.2
+go 1.19
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
@@ -13,6 +11,7 @@ require (
 	github.com/arl/statsviz v0.6.0
 	github.com/casbin/casbin/v2 v2.89.0
 	github.com/casbin/xorm-adapter v1.0.1-0.20191120030838-267478260350
+	github.com/elastic/go-elasticsearch/v8 v8.13.1
 	github.com/fasthttp/websocket v1.5.0
 	github.com/fatih/structs v1.1.0
 	github.com/gbrlsnchs/jwt/v3 v3.0.0
@@ -68,7 +67,6 @@ require (
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.5.0 // indirect
-	github.com/elastic/go-elasticsearch/v8 v8.13.1 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
