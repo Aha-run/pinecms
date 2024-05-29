@@ -1,7 +1,14 @@
 package backend
 
 import (
-	"encoding/json"
+	"io"
+	cnet "net"
+	"net/http"
+	"runtime"
+	"sync"
+	"time"
+
+	"github.com/bytedance/sonic"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
@@ -10,12 +17,6 @@ import (
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/cmd/version"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"io/ioutil"
-	cnet "net"
-	"net/http"
-	"runtime"
-	"sync"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -203,9 +204,9 @@ func (_ StatController) GetOutIp() (*IPLocate, error) {
 			return nil, err
 		}
 		defer responseClient.Body.Close()
-		body, _ := ioutil.ReadAll(responseClient.Body)
+		body, _ := io.ReadAll(responseClient.Body)
 		var ipLocateResult IPLocate
-		err = json.Unmarshal(body, &ipLocateResult)
+		err = sonic.Unmarshal(body, &ipLocateResult)
 		if err != nil {
 			return nil, err
 		}

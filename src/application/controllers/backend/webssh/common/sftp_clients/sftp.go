@@ -3,12 +3,14 @@ package sftp_clients
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/fasthttp/websocket"
-	"github.com/pkg/sftp"
 	"log"
 	"path"
 	"sync"
 	"time"
+
+	"github.com/bytedance/sonic"
+	"github.com/fasthttp/websocket"
+	"github.com/pkg/sftp"
 )
 
 const (
@@ -37,13 +39,13 @@ type MyClient struct {
 
 type clients struct {
 	*sync.RWMutex
-	C    map[string]*MyClient
+	C map[string]*MyClient
 }
 
 var Client clients
 
 func init() {
-	Client = clients{new(sync.RWMutex),make(map[string]*MyClient)}
+	Client = clients{new(sync.RWMutex), make(map[string]*MyClient)}
 }
 
 func (c *MyClient) ReceiveWsMsg(wsConn *websocket.Conn, exitCh chan bool) {
@@ -62,7 +64,7 @@ func (c *MyClient) ReceiveWsMsg(wsConn *websocket.Conn, exitCh chan bool) {
 			}
 			//unmashal bytes into struct
 			msgObj := sftp_req{}
-			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+			if err := sonic.Unmarshal(wsData, &msgObj); err != nil {
 				log.Println("unmarshal websocket message failed:", string(wsData))
 				continue
 			}

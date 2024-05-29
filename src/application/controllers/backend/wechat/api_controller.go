@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"github.com/xiusin/pine"
@@ -73,10 +74,10 @@ func msgHandler(ctx *pine.Context) {
 
 		if message.MsgTypeMiniprogrampage == message.MsgType(rule.ReplyType) || message.MsgTypeMusic == message.MsgType(rule.ReplyType) || message.MsgTypeVideo == message.MsgType(rule.ReplyType) {
 			replyMsg = &WechatMsg{}
-			json.Unmarshal([]byte(rule.ReplyContent), replyMsg)
+			sonic.Unmarshal([]byte(rule.ReplyContent), replyMsg)
 		} else if message.MsgTypeNews == message.MsgType(rule.ReplyType) {
 			replyMsg = []*message.Article{}
-			err = json.Unmarshal([]byte(rule.ReplyContent), &replyMsg)
+			err = sonic.Unmarshal([]byte(rule.ReplyContent), &replyMsg)
 		}
 		if err != nil {
 			pine.Logger().Error("自动文章信息失败", err)

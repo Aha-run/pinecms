@@ -1,16 +1,17 @@
 package backend
 
 import (
-	"encoding/json"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/bytedance/sonic"
+	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -19,7 +20,7 @@ import (
 )
 
 // AssetsManagerController
-//Deprecated:  废弃
+// Deprecated:  废弃
 type AssetsManagerController struct {
 	BaseController
 	conf *config.Config
@@ -103,7 +104,7 @@ func (c *AssetsManagerController) PostEdit() {
 }
 
 func (c *AssetsManagerController) GetThemes() {
-	files, err := ioutil.ReadDir(c.conf.View.FeDirname)
+	files, err := os.ReadDir(c.conf.View.FeDirname)
 	if err != nil {
 		helper.Ajax("读取主题目录失败: "+err.Error(), 1, c.Ctx())
 		return
@@ -111,12 +112,12 @@ func (c *AssetsManagerController) GetThemes() {
 	var dirs []*ThemeConfig
 	for _, f := range files {
 		if f.IsDir() {
-			contentByts, err := ioutil.ReadFile(filepath.Join(c.conf.View.FeDirname, f.Name(), "config.json"))
+			contentByts, err := os.ReadFile(filepath.Join(c.conf.View.FeDirname, f.Name(), "config.json"))
 			if err != nil {
 				continue
 			}
 			var tConf ThemeConfig
-			err = json.Unmarshal(contentByts, &tConf)
+			err = sonic.Unmarshal(contentByts, &tConf)
 			if err != nil {
 				continue
 			}

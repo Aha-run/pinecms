@@ -3,6 +3,10 @@ package webssh
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"time"
+
+	"github.com/bytedance/sonic"
 	"github.com/fasthttp/websocket"
 	"github.com/valyala/fasthttp"
 	"github.com/xiusin/pine"
@@ -14,8 +18,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/errcode"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"log"
-	"time"
 )
 
 var upGrader = websocket.FastHTTPUpgrader{
@@ -46,7 +48,6 @@ type sftpResp struct {
 // MFA https://github.com/renmcc/koko/blob/ab95a0a40d2b851424aab06125483957cf64a219/pkg/auth/server.go
 var mfaInstruction = "Please enter 6 digits."
 var mfaQuestion = "[MFA auth]: "
-
 
 type ApiController struct {
 	backend.BaseController
@@ -106,7 +107,7 @@ func (c *ApiController) GetTerm() {
 				return
 			}
 			msgObj := AuthMsg{}
-			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+			if err := sonic.Unmarshal(wsData, &msgObj); err != nil {
 				log.Println("Auth : unmarshal websocket message failed:", string(wsData))
 				pine.Logger().Print(err)
 				continue
@@ -127,7 +128,7 @@ func (c *ApiController) GetTerm() {
 				_ = wsConn.Close()
 				return
 			}
-			if json.Unmarshal(sInfo, &serInfo) != nil {
+			if sonic.Unmarshal(sInfo, &serInfo) != nil {
 				fmt.Println("服务器信息获取失败，请重试！")
 				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("服务器信息获取失败，请重试！\r\n"))
 				_ = wsConn.Close()
@@ -203,7 +204,7 @@ func (c *ApiController) GetSftp() {
 			}
 			//unmashal bytes into struct
 			msgObj := sftpReq{}
-			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+			if err := sonic.Unmarshal(wsData, &msgObj); err != nil {
 				log.Println("Auth : unmarshal websocket message failed:", string(wsData))
 				continue
 			}

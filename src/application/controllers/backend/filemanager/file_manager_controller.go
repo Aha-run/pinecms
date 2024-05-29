@@ -1,7 +1,6 @@
 package filemanager
 
 import (
-	"encoding/json"
 	"fmt"
 	"mime"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/xiusin/pine"
 
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
@@ -182,12 +182,12 @@ func (c *FileManagerController) PostUpdateFile() {
 	}})
 }
 
-func (c *FileManagerController) GetStreamFile()  {
+func (c *FileManagerController) GetStreamFile() {
 	_ = c.Render().Text(c.engine.GetFullUrl(c.path))
 }
 
-func (c *FileManagerController) GetProxyContent()  {
-	byts , err := c.engine.Content(c.path)
+func (c *FileManagerController) GetProxyContent() {
+	byts, err := c.engine.Content(c.path)
 	if err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
@@ -258,8 +258,8 @@ func (c *FileManagerController) PostCreateDirectory() {
 
 func (c *FileManagerController) PostDelete() {
 	var items []DelItem
-	byts, _ := json.Marshal(c.Input().Get("items"))
-	if err := json.Unmarshal(byts, &items); err != nil {
+	byts, _ := sonic.Marshal(c.Input().Get("items"))
+	if err := sonic.Unmarshal(byts, &items); err != nil {
 		ResponseError(c.Ctx(), err.Error())
 		return
 	}

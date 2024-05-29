@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -9,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 
@@ -315,14 +315,14 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 
 			if len(field.Component) > 0 {
 				var component = map[string]interface{}{}
-				if err := json.Unmarshal([]byte(field.Component), &component); err == nil {
+				if err := sonic.Unmarshal([]byte(field.Component), &component); err == nil {
 					listColumn.Component = component
 				} else {
 					listColumn.Component = field.Component
 				}
 			} else if len(fieldDefineMap[field.FieldType].ListComp) > 0 {
-				vv := map[string]interface{}{}
-				json.Unmarshal([]byte(fieldDefineMap[field.FieldType].ListComp), &vv)
+				vv := map[string]any{}
+				sonic.Unmarshal([]byte(fieldDefineMap[field.FieldType].ListComp), &vv)
 				listColumn.Component = vv
 			}
 
@@ -330,9 +330,9 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 				table.Columns = append(table.Columns, listColumn)
 			}
 
-			var props = map[string]interface{}{}
-			_ = json.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
-			comp := map[string]interface{}{
+			var props = map[string]any{}
+			_ = sonic.Unmarshal([]byte(fieldDefineMap[field.FieldType].Props), &props)
+			comp := map[string]any{
 				"name":  fieldDefineMap[field.FieldType].FormComp,
 				"props": props,
 			}
@@ -340,10 +340,10 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 				field.FieldLen = 24
 			}
 
-			comp = map[string]interface{}{"prop": field.TableField, "label": field.FormName, "span": field.Span, "component": comp}
+			comp = map[string]any{"prop": field.TableField, "label": field.FormName, "span": field.Span, "component": comp}
 
 			if field.Required {
-				comp["rules"] = map[string]interface{}{"required": true, "message": field.RequiredTips}
+				comp["rules"] = map[string]any{"required": true, "message": field.RequiredTips}
 			}
 			table.UpsetComps = append(table.UpsetComps, comp)
 		}

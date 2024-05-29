@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	cmdPlugin "github.com/xiusin/pinecms/cmd/plugin"
@@ -262,7 +263,7 @@ func scanPluginDir() {
 			jsonPath := filepath.Join(filepath.Dir(f), jsonName)
 			content, err := os.ReadFile(jsonPath)
 			if err == nil {
-				if err := json.Unmarshal(content, &conf); err != nil {
+				if err := sonic.Unmarshal(content, &conf); err != nil {
 					pine.Logger().Warning("解析文件"+jsonPath+"失败", err.Error())
 				} else {
 					pluginMgr.scannedPlugins[f] = &conf

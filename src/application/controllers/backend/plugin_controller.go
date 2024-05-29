@@ -1,13 +1,14 @@
 package backend
 
 import (
-	"encoding/json"
 	"errors"
+	"math/rand"
+	"time"
+
+	"github.com/bytedance/sonic"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/application/plugins"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"math/rand"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -86,7 +87,7 @@ func (c *PluginController) PostInstall() {
 		} else {
 			mgr.Reload()
 			var viewConf []map[string]interface{}
-			err = json.Unmarshal([]byte(entity.View()), &viewConf)
+			err = sonic.Unmarshal([]byte(entity.View()), &viewConf)
 			if err != nil {
 				return nil, err
 			}

@@ -2,14 +2,15 @@ package core
 
 import (
 	"bytes"
-	"encoding/json"
-	"github.com/fasthttp/websocket"
-	"github.com/pkg/sftp"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/bytedance/sonic"
+	"github.com/fasthttp/websocket"
+	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
 )
 
 // copy data from WebSocket to ssh server
@@ -51,7 +52,7 @@ type SshConn struct {
 	SftpClient  *sftp.Client
 }
 
-//flushComboOutput flush ssh.session combine output into websocket response
+// flushComboOutput flush ssh.session combine output into websocket response
 func flushComboOutput(w *wsBufferWriter, wsConn *websocket.Conn) error {
 	if w.buffer.Len() != 0 {
 		err := wsConn.WriteMessage(websocket.BinaryMessage, w.buffer.Bytes())
@@ -98,7 +99,7 @@ func NewSshConn(cols, rows int, sshClient *ssh.Client) (*SshConn, error) {
 	if err := sshSession.Shell(); err != nil {
 		return nil, err
 	}
-	sftpclient, err := sftp.NewClient(sshClient)	//创建一个sftp客户端
+	sftpclient, err := sftp.NewClient(sshClient) //创建一个sftp客户端
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +110,12 @@ func (s *SshConn) Close() {
 	if s.Session != nil {
 		s.Session.Close()
 	}
-	if s.SftpClient != nil{
+	if s.SftpClient != nil {
 		s.SftpClient.Close()
 	}
 }
 
-//ReceiveWsMsg  receive websocket msg do some handling then write into ssh.session.stdin
+// ReceiveWsMsg  receive websocket msg do some handling then write into ssh.session.stdin
 func (ssConn *SshConn) ReceiveWsMsg(wsConn *websocket.Conn, exitCh chan bool) {
 	//tells other go routine quit
 	defer setQuit(exitCh)
@@ -137,7 +138,7 @@ func (ssConn *SshConn) ReceiveWsMsg(wsConn *websocket.Conn, exitCh chan bool) {
 				Rows: 50,
 				Cols: 180,
 			}
-			if err := json.Unmarshal(wsData, &msgObj); err != nil {
+			if err := sonic.Unmarshal(wsData, &msgObj); err != nil {
 				log.Println("unmarshal websocket message failed:", string(wsData))
 				continue
 			}
