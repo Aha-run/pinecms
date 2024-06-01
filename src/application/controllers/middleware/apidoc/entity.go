@@ -6,13 +6,13 @@ import (
 )
 
 type Entity struct {
-	Title    string      // 标题
-	Desc     string      // 描述
-	ApiParam interface{} // 参数
-	AppId    string      // 应用id
-	Group    string      // 分组名称
-	SubGroup string      // 子分组名称
-	Tag      []string    // 标签
+	Title    string   // 标题
+	Desc     string   // 描述
+	ApiParam any      // 参数
+	AppId    string   // 应用id
+	Group    string   // 分组名称
+	SubGroup string   // 子分组名称
+	Tag      []string // 标签
 }
 
 // SetApiEntity 设置接口实体信息

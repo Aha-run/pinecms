@@ -230,13 +230,13 @@ func (p *pluginManager) Download(name string) {
 func (p *pluginManager) Uninstall(name string) {
 	p.Lock()
 	defer p.Unlock()
-	intf, exist := p.plugins[name]
+	plugin, exist := p.plugins[name]
 	if !exist {
 		return
 	}
-	intf.pi.Uninstall()
-	intf.plug = nil
-	intf.pi = nil
+	plugin.pi.Uninstall()
+	plugin.plug = nil
+	plugin.pi = nil
 
 	delete(p.plugins, name)
 }

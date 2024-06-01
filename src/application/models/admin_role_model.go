@@ -1,10 +1,11 @@
 package models
 
 import (
+	"log"
+
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"log"
 
 	"github.com/xiusin/pine/di"
 
@@ -22,15 +23,15 @@ func NewAdminRoleModel() *AdminRoleModel {
 
 func (a *AdminRoleModel) List(page, rows int) ([]tables.AdminRole, int64) {
 	start := (page - 1) * rows
-	myroles := []tables.AdminRole{}
-	total, _ := a.orm.Limit(rows, start).FindAndCount(&myroles)
-	return myroles, total
+	roles := []tables.AdminRole{}
+	total, _ := a.orm.Limit(rows, start).FindAndCount(&roles)
+	return roles, total
 }
 
 func (a *AdminRoleModel) All() map[int64]*tables.AdminRole {
 	c := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	var roles = map[int64]*tables.AdminRole{}
-	c.Remember(controllers.CacheAdminRoles, &roles, func() (interface{}, error) {
+	c.Remember(controllers.CacheAdminRoles, &roles, func() (any, error) {
 		var roles []*tables.AdminRole
 		a.orm.Find(&roles)
 		var data = map[int64]*tables.AdminRole{}

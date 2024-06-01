@@ -120,7 +120,7 @@ func App() *Config {
 	return config
 }
 
-func parseConfig(path string, out interface{}) {
+func parseConfig(path string, out any) {
 	absPath, err := filepath.Abs(path)
 	helper.PanicErr(err)
 	fileContent, err := os.ReadFile(absPath)
@@ -138,7 +138,7 @@ func SiteConfig() (Site, error) {
 	orm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
 
-	err := cache.Remember(controllers.CacheSetting, &settingData, func() (interface{}, error) {
+	err := cache.Remember(controllers.CacheSetting, &settingData, func() (any, error) {
 		var settings []tables.Setting
 		err := orm.Find(&settings)
 		if err != nil {

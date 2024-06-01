@@ -1,6 +1,9 @@
 package backend
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -20,7 +23,7 @@ func (c *SettingController) Construct() {
 	c.Group = "系统配置"
 	c.SubGroup = "配置模块"
 	c.ApiEntityName = "配置"
-
+	fmt.Println("初始化~~~")
 	c.BaseController.Construct()
 
 	c.apiEntities = map[string]apidoc.Entity{
@@ -37,18 +40,18 @@ func (c *SettingController) Construct() {
 	c.OpAfter = c.after
 }
 
-func (c *SettingController) before(act int, params interface{}) error {
+func (c *SettingController) before(act int, params any) error {
 	if act == OpList {
 		pars := c.Input().Get("params")
 		if pars == nil {
-			panic("必须选择分组")
+			panic(errors.New("必须选择分组"))
 		}
-		params.(*xorm.Session).Where("`group` = ?", pars.(map[string]interface{})["group"])
+		params.(*xorm.Session).Where("`group` = ?", pars.(map[string]any)["group"])
 	}
 	return nil
 }
 
-func (c *SettingController) after(act int, _ interface{}) error {
+func (c *SettingController) after(act int, _ any) error {
 	if act == OpEdit {
 		helper.AbstractCache().Delete(controllers.CacheSetting)
 		config.SiteConfig()

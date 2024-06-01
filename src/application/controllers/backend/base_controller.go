@@ -33,8 +33,8 @@ type SearchFieldDsl struct {
 	Field    string                              // 字段
 	Op       string                              // 操作字符	默认为 =
 	DataExp  string                              // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
-	SkipFn   func(interface{}) bool              // 校验某些值不作为筛选条件如： 0， false不筛选状态
-	CallBack func(*xorm.Session, ...interface{}) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
+	SkipFn   func(any) bool              // 校验某些值不作为筛选条件如： 0， false不筛选状态
+	CallBack func(*xorm.Session, ...any) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
 
 type BaseController struct {
@@ -43,8 +43,8 @@ type BaseController struct {
 	SearchFields   []SearchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
 	BindType       uint             // 表单绑定类型
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
-	Table          interface{}      // 传入Table结构体引用
-	Entries        interface{}      // 传入Table结构体的切片
+	Table          any      // 传入Table结构体引用
+	Entries        any      // 传入Table结构体的切片
 	Orm            *xorm.Engine
 	P              listParam
 	apiEntities    map[string]apidoc.Entity
@@ -55,8 +55,8 @@ type BaseController struct {
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
 
-	OpBefore func(int, interface{}) error // 操作前置
-	OpAfter  func(int, interface{}) error // 操作后置
+	OpBefore func(int, any) error // 操作前置
+	OpAfter  func(int, any) error // 操作后置
 
 	apidoc.Entity
 	ApiEntityName string
@@ -171,7 +171,7 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 	}
 	if len(c.KeywordsSearch) > 0 && c.P.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
-		var whereLikeBind []interface{}
+		var whereLikeBind []any
 		for _, v := range c.KeywordsSearch {
 			if v.Field == "" && v.CallBack == nil {
 				continue
@@ -227,7 +227,7 @@ func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, e
 					query.Where(fmt.Sprintf("%s %s ?", v.Field, v.Op), val)
 				} else {
 					switch val := val.(type) {
-					case []interface{}:
+					case []any:
 						v.CallBack(query, val...)
 					default:
 						v.CallBack(query, val)
@@ -296,7 +296,7 @@ func (c *BaseController) buildQueryCols(sess *xorm.Session) {
 	} else if len(c.ExceptCols) > 0 {
 		tableName := c.Orm.TableName(c.Table)
 		var fields = []string{}
-		if err := helper.AbstractCache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (interface{}, error) {
+		if err := helper.AbstractCache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (any, error) {
 			concat, err := c.Orm.QueryString(`select group_concat(COLUMN_NAME SEPARATOR ',') as fields from information_schema.COLUMNS where table_name = '` + tableName + `'`)
 			if err != nil {
 				c.Ctx().Logger().Warning("读取数据表"+tableName+"表字段失败", err)
@@ -393,7 +393,7 @@ func (c *BaseController) PostDelete() {
 		helper.Ajax("参数错误: "+err.Error(), 1, c.Ctx())
 		return
 	}
-	_, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+	_, err := c.Orm.Transaction(func(session *xorm.Session) (any, error) {
 		if c.OpBefore != nil {
 			if err := c.OpBefore(OpDel, &ids); err != nil {
 				return nil, err

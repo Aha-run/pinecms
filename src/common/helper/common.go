@@ -77,7 +77,7 @@ func GetMd5(str string) string {
 }
 
 // Ajax Ajax返回数据给前端
-func Ajax(msg interface{}, errcode int64, this *pine.Context) {
+func Ajax(msg any, errcode int64, this *pine.Context) {
 	if errcode == 0 {
 		errcode = 1000
 	}
@@ -169,19 +169,19 @@ func GetORM() *xorm.Engine {
 	return pine.Make(controllers.ServiceXorm).(*xorm.Engine)
 }
 
-func ToInterfaces(values interface{}) []interface{} {
+func ToInterfaces(values any) []any {
 	v := reflect.ValueOf(values)
 	if v.Kind() != reflect.Slice {
 		return nil
 	}
-	var is []interface{}
+	var is []any
 	for i := 0; i < v.Len(); i++ {
 		is = append(is, v.Index(i).Interface())
 	}
 	return is
 }
 
-func InArray(val interface{}, array interface{}) (exists bool, index int) {
+func InArray(val any, array any) (exists bool, index int) {
 	exists = false
 	index = -1
 	switch reflect.TypeOf(array).Kind() {
@@ -219,14 +219,14 @@ func IsWindows() bool {
 }
 
 // Inject 注入依赖
-func Inject(key interface{}, v interface{}, single ...bool) {
+func Inject(key any, v any, single ...bool) {
 	if len(single) == 0 {
 		single = append(single, true)
 	}
 	if vi, ok := v.(di.BuildHandler); ok {
 		di.Set(key, vi, single[0])
 	} else {
-		di.Set(key, func(builder di.AbstractBuilder) (i interface{}, e error) {
+		di.Set(key, func(builder di.AbstractBuilder) (i any, e error) {
 			return v, nil
 		}, single[0])
 	}
