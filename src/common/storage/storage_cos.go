@@ -153,7 +153,7 @@ func (s *CosUploader) getObjectName(name string) string {
 }
 
 func init() {
-	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&CosUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&CosUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (any, error) {
 		var engine Uploader
 		var err error
 		defer func() {

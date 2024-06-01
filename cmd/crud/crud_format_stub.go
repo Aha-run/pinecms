@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 )
 
-func FormatEnum(field string, opts []map[string]interface{}, item map[string]interface{}) {
+func FormatEnum(field string, opts []map[string]any, item map[string]any) {
 	item["type"] = "tpl"
-	vmap := map[string]interface{}{}
+	vmap := map[string]any{}
 	for _, opt := range opts {
 		vmap[opt["value"].(string)] = opt["label"]
 	}
@@ -20,9 +20,9 @@ func FormatEnum(field string, opts []map[string]interface{}, item map[string]int
 	item["tpl"] = "<%=formatterEnum(data." + field + ", _" + field + ")%>"
 }
 
-func FormatSet(field string, opts []map[string]interface{}, item map[string]interface{}) {
+func FormatSet(field string, opts []map[string]any, item map[string]any) {
 	item["type"] = "tpl"
-	vmap := map[string]interface{}{}
+	vmap := map[string]any{}
 	for _, opt := range opts {
 		vmap[opt["value"].(string)] = opt["label"]
 	}
@@ -35,7 +35,7 @@ func FormatSet(field string, opts []map[string]interface{}, item map[string]inte
 }
 
 // JSONMarshal 不转义字符串编码
-func JSONMarshal(t interface{}) ([]byte, error) {
+func JSONMarshal(t any) ([]byte, error) {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)

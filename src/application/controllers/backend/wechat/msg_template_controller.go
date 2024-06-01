@@ -97,7 +97,7 @@ func (c *WechatMsgTemplateController) PostSend() {
 			PagePath string `json:"pagePath"`
 		}
 		Url                string `json:"url"`
-		WxUserFilterParams map[string]interface{}
+		WxUserFilterParams map[string]any
 	}{}
 
 	if err := c.Ctx().BindJSON(&p); err != nil {

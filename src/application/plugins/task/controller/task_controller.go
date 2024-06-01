@@ -1,15 +1,16 @@
 package controller
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -25,7 +26,7 @@ func (c *TaskController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *TaskController) before(act int, query interface{}) error {
+func (c *TaskController) before(act int, query any) error {
 	if act == backend.OpList {
 		sess := query.(*xorm.Session)
 		status := c.Input().GetInt("status")

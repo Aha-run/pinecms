@@ -1,10 +1,10 @@
 package common
 
 import (
-	"github.com/golang-jwt/jwt"
 	"time"
-)
 
+	"github.com/golang-jwt/jwt"
+)
 
 var jwtKet = []byte("config.Config.Jwt.Key")
 
@@ -30,7 +30,7 @@ func ReleaseToken(id int64) (token string, err error) {
 }
 
 func ParseToken(token string) (*Claims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (any, error) {
 		return jwtKet, nil
 	})
 

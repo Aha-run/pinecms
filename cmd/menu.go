@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/xiusin/pinecms/src/config"
 
 	"github.com/spf13/cobra"
@@ -72,7 +73,7 @@ var menuCmd = &cobra.Command{
 
 		Orm().Where("c = ?", table).Delete(role)
 
-		_, err := Orm().Transaction(func(session *xorm.Session) (interface{}, error) {
+		_, err := Orm().Transaction(func(session *xorm.Session) (any, error) {
 			var parId int64
 			for k, item := range menus {
 				role := tables.Menu{}

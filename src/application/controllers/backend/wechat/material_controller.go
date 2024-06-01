@@ -3,17 +3,18 @@ package wechat
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/silenceper/wechat/v2/officialaccount/material"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -77,7 +78,7 @@ func (c *WechatMaterialController) PostSync() {
 	appid := "wxe43df03110f5981b"
 	account, _ := GetOfficialAccount(appid)
 
-	_, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+	_, err := c.Orm.Transaction(func(session *xorm.Session) (any, error) {
 		session.Where("id > 0").Delete(c.Table)
 		types := []material.PermanentMaterialType{
 			material.PermanentMaterialTypeImage,
@@ -121,7 +122,7 @@ func (c *WechatMaterialController) PostTotal(cacher cache.AbstractCache) {
 
 	var ret material.ResMaterialCount
 	cacheKey := fmt.Sprintf(CacheKeyWechatMaterialCount, appid)
-	cacher.Remember(cacheKey, &ret, func() (interface{}, error) {
+	cacher.Remember(cacheKey, &ret, func() (any, error) {
 		data, err := account.GetMaterial().GetMaterialCount()
 		if err == nil {
 			SaveCacheMaterialListKey(cacheKey, cacher)

@@ -62,7 +62,7 @@ func (c *IndexController) List(pageFilePath string) {
 		TypeID    int64
 		ArtCount  int64
 		ModelName string
-		QP        map[string]interface{}
+		QP        map[string]any
 		PageNum   int64
 	}{
 		Field:     category,

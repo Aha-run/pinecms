@@ -12,12 +12,12 @@ type MenuV2 struct {
 }
 
 type ThemeConfig struct {
-	Name        string                 `json:"name"`
-	Author      string                 `json:"author"`
-	Description string                 `json:"description"`
-	Extra       map[string]interface{} `json:"extra"`
-	IsDefault   bool                   `json:"is_default"`
-	Dir         string                 `json:"dir"`
+	Name        string         `json:"name"`
+	Author      string         `json:"author"`
+	Description string         `json:"description"`
+	Extra       map[string]any `json:"extra"`
+	IsDefault   bool           `json:"is_default"`
+	Dir         string         `json:"dir"`
 }
 
 type FieldShowInPageList struct {
@@ -26,10 +26,10 @@ type FieldShowInPageList struct {
 }
 
 type KV struct {
-	Label   string      `json:"label"`
-	Value   interface{} `json:"value"`
-	Name    string      `json:"-"`
-	Checked bool        `json:"-"`
+	Label   string `json:"label"`
+	Value   any    `json:"value"`
+	Name    string `json:"-"`
+	Checked bool   `json:"-"`
 }
 
 type TabsSchema struct {
@@ -47,20 +47,20 @@ type FormController struct {
 }
 
 type FormControl struct {
-	Type             string        `json:"type"`
-	Name             string        `json:"name"`
-	Label            string        `json:"label"`
-	Value            interface{}   `json:"value"`
-	Options          []KV          `json:"options"`
-	Validations      string        `json:"validations"`
-	Required         bool          `json:"required"`
-	Description      string        `json:"description"`
-	Placeholder      string        `json:"placeholder"`
-	ValidationErrors string        `json:"validationErrors"`
-	Multiple         bool          `json:"multiple"`
-	Precision        int           `json:"precision"`
-	Inline           bool          `json:"inline"`
-	Buttons          []interface{} `json:"buttons"`
-	Limits           []string      `json:"limits"`
-	LimitsLogic      string        `json:"limitsLogic"`
+	Type             string   `json:"type"`
+	Name             string   `json:"name"`
+	Label            string   `json:"label"`
+	Value            any      `json:"value"`
+	Options          []KV     `json:"options"`
+	Validations      string   `json:"validations"`
+	Required         bool     `json:"required"`
+	Description      string   `json:"description"`
+	Placeholder      string   `json:"placeholder"`
+	ValidationErrors string   `json:"validationErrors"`
+	Multiple         bool     `json:"multiple"`
+	Precision        int      `json:"precision"`
+	Inline           bool     `json:"inline"`
+	Buttons          []any    `json:"buttons"`
+	Limits           []string `json:"limits"`
+	LimitsLogic      string   `json:"limitsLogic"`
 }

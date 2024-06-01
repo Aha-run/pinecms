@@ -47,8 +47,8 @@ func (c *AssetsManagerController) GetSelect() {
 	helper.Ajax(kv, 0, c.Ctx())
 }
 
-func (c *AssetsManagerController) getTempList(dir string) []map[string]interface{} {
-	var files []map[string]interface{}
+func (c *AssetsManagerController) getTempList(dir string) []map[string]any {
+	var files []map[string]any
 	_ = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		f, _ := d.Info()
 		cutset := "/"
@@ -57,7 +57,7 @@ func (c *AssetsManagerController) getTempList(dir string) []map[string]interface
 		}
 
 		if strings.HasSuffix(f.Name(), ".jet") {
-			files = append(files, map[string]interface{}{
+			files = append(files, map[string]any{
 				"id":      strings.TrimLeft(strings.TrimPrefix(path, dir), cutset),
 				"name":    strings.TrimLeft(strings.TrimPrefix(path, dir), cutset),
 				"size":    f.Size(),
@@ -132,7 +132,7 @@ func (c *AssetsManagerController) GetThemes() {
 }
 
 func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
-	var p = map[string]interface{}{}
+	var p = map[string]any{}
 	_ = c.Ctx().BindJSON(&p)
 	name := p["theme"].(string)
 

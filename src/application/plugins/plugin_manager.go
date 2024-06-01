@@ -36,7 +36,7 @@ type PluginIntf interface {
 	Init(di.AbstractBuilder)         // 初始化插件
 	Sign() string                    // 插件的唯一标识, 需要开发者搞一个独一无二如 uuid
 	View() string                    // 配置视图json信息
-	Menu(interface{}, int)           // 安装插件位置
+	Menu(any, int)                   // 安装插件位置
 	Install()                        // 安装插件, 首次扫描后执行.
 	IsInstall() bool                 // 安装状态
 	Uninstall()                      // 卸载后禁止访问

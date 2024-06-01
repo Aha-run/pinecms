@@ -141,7 +141,7 @@ func (s *OssUploader) Exists(name string) (bool, error) {
 }
 
 func init() {
-	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&OssUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&OssUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (any, error) {
 		var engine Uploader
 		var err error
 		defer func() {

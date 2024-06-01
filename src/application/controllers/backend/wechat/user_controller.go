@@ -1,11 +1,12 @@
 package wechat
 
 import (
+	"time"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -32,7 +33,7 @@ func (c *WechatUserController) Construct() {
 	c.OpBefore = c.Before
 }
 
-func (c *WechatUserController) Before(act int, params interface{}) error {
+func (c *WechatUserController) Before(act int, params any) error {
 	if act == backend.OpList {
 		appid, _ := c.Input().GetString("appid")
 		if len(appid) > 0 {
@@ -42,7 +43,7 @@ func (c *WechatUserController) Before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *WechatUserController) After(act int, _ interface{}) error {
+func (c *WechatUserController) After(act int, _ any) error {
 	if act == backend.OpEdit {
 		account, _ := GetOfficialAccount(c.Table.(*tables.WechatMember).Appid)
 		account.GetUser().UpdateRemark(c.Table.(*tables.WechatMember).Openid, c.Table.(*tables.WechatMember).Remark)

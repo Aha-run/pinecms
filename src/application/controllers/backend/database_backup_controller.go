@@ -1,10 +1,11 @@
 package backend
 
 import (
+	"path/filepath"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"path/filepath"
 )
 
 type DatabaseBackupController struct {
@@ -49,11 +50,11 @@ func (c *DatabaseBackupController) BackupDownload() {
 func (c *DatabaseBackupController) BackupDelete() {
 	settingData := c.Ctx().Value(controllers.CacheSetting).(map[string]string)
 	names := c.Input().Get("ids")
-	if len(names.([]interface{})) == 0 {
+	if len(names.([]any)) == 0 {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
 	}
-	relName := names.([]interface{})[0].(string)
+	relName := names.([]any)[0].(string)
 	uploader := getStorageEngine(settingData)
 	if err := uploader.Remove(relName); err != nil {
 		helper.Ajax(err, 1, c.Ctx())

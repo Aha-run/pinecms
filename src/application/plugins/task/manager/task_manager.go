@@ -51,7 +51,7 @@ func TaskManager() *taskManager {
 	return tm
 }
 
-func (tm *taskManager) CheckErr(err error, msg string, _panic bool, extra ...interface{}) {
+func (tm *taskManager) CheckErr(err error, msg string, _panic bool, extra ...any) {
 	if err != nil {
 		tm.logger.Error(err, msg, extra...)
 		if _panic {

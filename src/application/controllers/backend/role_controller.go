@@ -3,6 +3,7 @@ package backend
 import (
 	"errors"
 	"fmt"
+
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -31,7 +32,7 @@ func (c *AdminRoleController) Construct() {
 	}{Key: "Id", Value: "Rolename"}
 }
 
-func (c *AdminRoleController) before(opType int, param interface{}) error {
+func (c *AdminRoleController) before(opType int, param any) error {
 	if opType == OpDel {
 		p := param.(*idParams)
 		for _, id := range p.Ids {
@@ -52,8 +53,8 @@ func (c *AdminRoleController) PostAdd() {
 		helper.Ajax(err.Error(), 1, c.Ctx())
 		return
 	}
-	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
-		if err := c.add(); err != nil  {
+	if _, err := c.Orm.Transaction(func(session *xorm.Session) (any, error) {
+		if err := c.add(); err != nil {
 			return nil, err
 		}
 		t := c.Table.(*tables.AdminRole)
@@ -81,7 +82,7 @@ func (c *AdminRoleController) PostEdit() {
 	helper.Ajax("修改数据成功", 0, c.Ctx())
 }
 
-func (c *AdminRoleController) after(opType int, param interface{}) error {
+func (c *AdminRoleController) after(opType int, param any) error {
 	switch opType {
 	case OpDel:
 		p := param.(*idParams)

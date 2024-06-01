@@ -2,9 +2,10 @@ package crud
 
 import (
 	"fmt"
-	"github.com/xiusin/pinecms/cmd/util"
 	"strconv"
 	"strings"
+
+	"github.com/xiusin/pinecms/cmd/util"
 )
 
 var searchFieldDsl string
@@ -31,9 +32,9 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 	var str strings.Builder
 	str.WriteString(fmt.Sprintf("type %s struct {\n", util.CamelString(tableName)))
 
-	var tableDsl []map[string]interface{}
-	var formDsl []map[string]interface{}
-	var filterDsl []map[string]interface{}
+	var tableDsl []map[string]any
+	var formDsl []map[string]any
+	var filterDsl []map[string]any
 
 	for _, col := range t.Cols {
 		tableField := util.SnakeString(col.Name)
@@ -122,10 +123,10 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 
 		labelName, elFieldType, elProps := getLabelAndFieldTypeAndProps(col, coreCol)
 
-		tableItem := map[string]interface{}{"prop": tableField, "label": labelName} // 列表字段
+		tableItem := map[string]any{"prop": tableField, "label": labelName} // 列表字段
 
-		comp := map[string]interface{}{"name": elFieldType, "props": elProps}                     // 渲染组件
-		item := map[string]interface{}{"prop": tableField, "label": labelName, "component": comp} // upsert 组件
+		comp := map[string]any{"name": elFieldType, "props": elProps}                     // 渲染组件
+		item := map[string]any{"prop": tableField, "label": labelName, "component": comp} // upsert 组件
 
 		// 设置字段默认值
 		if !coreCol.DefaultIsEmpty {
@@ -147,8 +148,8 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 			case "el-checkbox", "el-switch", "el-select", "cms-checkbox", "cms-radio":
 				filterType = "el-select"
 			}
-			props := map[string]interface{}{}
-			filterItem := map[string]interface{}{
+			props := map[string]any{}
+			filterItem := map[string]any{
 				"name":  util.SnakeString(col.Name),
 				"label": labelName,
 				"type":  filterType,
@@ -168,7 +169,7 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 					filterItem["options"] = elProps["options"]
 					tableItem["dict"] = filterItem["options"]
 					comp["name"] = "cms-radio" // 单选
-					elProps = map[string]interface{}{}
+					elProps = map[string]any{}
 					elProps["options"] = filterItem["options"]
 					elProps["size"] = "mini"
 					comp["props"] = elProps
@@ -179,7 +180,7 @@ func (t *SQLTable) toXorm(print bool, tableName string, frontendPath string) str
 					filterItem["options"] = elProps["options"]
 					tableItem["dict"] = filterItem["options"]
 					comp["name"] = "cms-select" // 多选
-					elProps = map[string]interface{}{}
+					elProps = map[string]any{}
 					elProps["options"] = filterItem["options"]
 					elProps["size"] = "mini"
 					comp["props"] = elProps

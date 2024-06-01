@@ -2,17 +2,18 @@ package frontend
 
 import (
 	"fmt"
+	"net/http"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -69,7 +70,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 	}
 
 	var whereSqls []string
-	var whereArgs []interface{}
+	var whereArgs []any
 	if len(startTime) > 0 {
 		whereSqls = append(whereSqls, "$$.create_time > ?")
 		whereArgs = append(whereArgs, startTime)
@@ -139,7 +140,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 	}
 	query = strings.ReplaceAll(query, "$1", controllers.GetTableName("category"))
 	// 先统计数据量
-	totals, err := orm.QueryString(append([]interface{}{strings.ReplaceAll(query, "$?", countField)}, whereArgs...)...)
+	totals, err := orm.QueryString(append([]any{strings.ReplaceAll(query, "$?", countField)}, whereArgs...)...)
 	if err != nil {
 		pine.Logger().Error(err)
 		c.Ctx().Abort(http.StatusInternalServerError, err.Error())
@@ -176,7 +177,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 				query = strings.ReplaceAll(query, "$$", controllers.GetTableName(tableName))
 			}
 			query = strings.ReplaceAll(query, "$1", controllers.GetTableName("category"))
-			list, err = orm.QueryString(append([]interface{}{fmt.Sprintf("%s ", query)}, whereArgs...)...)
+			list, err = orm.QueryString(append([]any{fmt.Sprintf("%s ", query)}, whereArgs...)...)
 			if err != nil {
 				pine.Logger().Error(err)
 			}
@@ -205,7 +206,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		ArtCount    int64
 		ModelName   string
 		TopCategory *tables.Category
-		QP          map[string]interface{}
+		QP          map[string]any
 		PageNum     int64
 		ListFunc    func(int64) []map[string]string
 	}{

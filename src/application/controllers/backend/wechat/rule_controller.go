@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"xorm.io/xorm"
@@ -21,7 +22,7 @@ func (c *WechatRuleController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c WechatRuleController) before(act int, params interface{}) error {
+func (c WechatRuleController) before(act int, params any) error {
 	if act == backend.OpEdit || act == backend.OpAdd {
 		//sess := params.(*xorm.Session).Clone()
 		sess := params.(*xorm.Session)

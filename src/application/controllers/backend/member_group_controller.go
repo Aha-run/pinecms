@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -20,7 +21,7 @@ func (c *MemberGroupController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *MemberGroupController) before(act int, params interface{}) error {
+func (c *MemberGroupController) before(act int, params any) error {
 	switch act {
 	case OpList:
 		(params.(*xorm.Session)).Asc("listorder", "id")

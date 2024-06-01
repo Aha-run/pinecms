@@ -39,7 +39,7 @@ var dedeCmd = &cobra.Command{
 1. 导出广告位以及广告
 2. 导入模型,自动分析模型字段以及映射关系(模型完全由导入决定. 只是替换一下必须字段为pinecms)
 1. 根据模型创建表字段以及模型内容
-2. 导入织梦文档表, 只匹配已知可对应字段 
+2. 导入织梦文档表, 只匹配已知可对应字段
 `,
 	// todo 尽最大可能保留非默认字段数据
 	Run: func(cmd *cobra.Command, args []string) {
@@ -221,7 +221,7 @@ func transDocument(modelTableName string, data *tables.DocumentModel, modelField
 
 	for _, archive := range archives {
 		var fs []string
-		var vs []interface{}
+		var vs []any
 	OuterLoop:
 		for field, val := range archive {
 			switch field {
@@ -261,7 +261,7 @@ func transDocument(modelTableName string, data *tables.DocumentModel, modelField
 		}
 		placeholders := strings.TrimRight(strings.Repeat("?,", len(fs)), ",")
 		// 入库
-		vs = append([]interface{}{"INSERT INTO `" + modelTableName + "` (" + strings.Join(fs, ", ") + ") VALUES (" + placeholders + ");"}, vs...)
+		vs = append([]any{"INSERT INTO `" + modelTableName + "` (" + strings.Join(fs, ", ") + ") VALUES (" + placeholders + ");"}, vs...)
 		_, err := pineOrm.Exec(vs...)
 		helper.PanicErr(err)
 	}

@@ -1,8 +1,9 @@
 package filemanager
 
 import (
-	"github.com/xiusin/pine/di"
 	"sync"
+
+	"github.com/xiusin/pine/di"
 
 	"github.com/xiusin/pinecms/src/config"
 
@@ -53,7 +54,7 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 			}
 		}
 
-		di.Set(serviceFtpStorage, func(builder di.AbstractBuilder) (interface{}, error) {
+		di.Set(serviceFtpStorage, func(builder di.AbstractBuilder) (any, error) {
 			cfg, _ := config.SiteConfig()
 			cfg["PROXY_SITE_URL"] = "/filemanager/proxy_content?path={path}"
 			ftp := storage.NewFtpUploader(cfg)
@@ -112,7 +113,7 @@ type FMFileProps struct {
 }
 
 type FMFile struct {
-	ID        interface{} `json:"id"`
+	ID        any         `json:"id"`
 	Basename  string      `json:"basename"`
 	Filename  string      `json:"filename"`
 	Dirname   string      `json:"dirname"`

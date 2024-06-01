@@ -2,6 +2,7 @@ package wechat
 
 import (
 	"fmt"
+
 	"github.com/silenceper/wechat/v2/officialaccount"
 	"github.com/silenceper/wechat/v2/officialaccount/user"
 	"github.com/xiusin/pine"
@@ -28,7 +29,7 @@ func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
 		return
 	}
 	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
-	err := cacher.Remember(cacheKey, &tags, func() (interface{}, error) {
+	err := cacher.Remember(cacheKey, &tags, func() (any, error) {
 		account, _ := GetOfficialAccount(appid)
 		return account.GetUser().GetTag()
 	}, CacheTimeSecs)

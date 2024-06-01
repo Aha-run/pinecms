@@ -65,7 +65,7 @@ func (c *ContentController) PostList() {
 		query.Where("catid = ?", catid).OrderBy("listorder DESC").OrderBy("id DESC")
 		query.Cols(fields.GetListFields()...)
 		var count int64
-		var contents []map[string]interface{}
+		var contents []map[string]any
 		if p.Size == 0 {
 			err = query.Find(&contents)
 		} else {
@@ -85,7 +85,7 @@ func (c *ContentController) PostList() {
 			contents[i] = content
 		}
 		if contents == nil {
-			contents = []map[string]interface{}{}
+			contents = []map[string]any{}
 		}
 		helper.Ajax(pine.H{
 			"list": contents,
@@ -211,7 +211,7 @@ func (c *ContentController) GetInfo() {
 	for field, value := range contents[0] {
 		switch value := value.(type) {
 		case []byte:
-			contents[0][field] = interface{}(helper.Bytes2String(value))
+			contents[0][field] = any(helper.Bytes2String(value))
 		}
 	}
 	helper.Ajax(contents[0], 0, c.Ctx())

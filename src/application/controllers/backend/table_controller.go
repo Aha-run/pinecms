@@ -3,6 +3,7 @@ package backend
 import (
 	"errors"
 	"fmt"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
@@ -40,7 +41,7 @@ func (c TableController) GetFields() {
 	helper.Ajax(fields, 0, c.Ctx())
 }
 
-func (c *TableController) before(act int, params interface{}) error {
+func (c *TableController) before(act int, params any) error {
 	if OpList == act {
 		params.(*xorm.Session).Unscoped().Where("mid <> ?", 0)
 		v, _ := c.Input().GetInt64("mid")
@@ -70,7 +71,7 @@ func (c *TableController) before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *TableController) after(act int, params interface{}) {
+func (c *TableController) after(act int, params any) {
 	if act == OpDel || act == OpAdd || act == OpEdit {
 		pine.Logger().Print("操作模型字段, 清除缓存")
 		cacher := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)

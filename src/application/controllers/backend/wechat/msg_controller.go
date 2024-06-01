@@ -1,12 +1,13 @@
 package wechat
 
 import (
+	"strings"
+	"time"
+
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"strings"
-	"time"
 	"xorm.io/xorm"
 )
 
@@ -59,7 +60,7 @@ func (c *WechatMagController) PostReply() {
 	helper.Ajax("回复成功", 0, c.Ctx())
 }
 
-func (c *WechatMagController) before(act int, params interface{}) error {
+func (c *WechatMagController) before(act int, params any) error {
 	if act == backend.OpList {
 		sess := params.(*xorm.Session)
 		if msgType, ok := c.P.Param["msg_type"]; ok && len(msgType.(string)) > 0 {
@@ -75,7 +76,7 @@ func (c *WechatMagController) before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *WechatMagController) after(act int, params interface{}) error {
+func (c *WechatMagController) after(act int, params any) error {
 	if act == backend.OpList {
 		lists := c.Entries.(*[]tables.WechatLog)
 		openIds := backend.ArrayCol(*lists, "OpenId")

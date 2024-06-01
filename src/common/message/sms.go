@@ -1,6 +1,7 @@
 package message
 
-//import (
+// import (
+//
 //	"sync"
 //
 //	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
@@ -8,9 +9,10 @@ package message
 //	"github.com/alibabacloud-go/tea/tea"
 //	"xorm.io/xorm"
 //	"github.com/xiusin/pine/di"
-//)
 //
+// )
 const ServiceSmsMessage = "pinecms.message.service.sms"
+
 //
 //type SmsMessage struct {
 //	client *dysmsapi20170525.Client
@@ -43,7 +45,7 @@ const ServiceSmsMessage = "pinecms.message.service.sms"
 //	return err
 //}
 //
-//func (n *SmsMessage) Notice(receiver []string, params []interface{}, templateId int) error {
+//func (n *SmsMessage) Notice(receiver []string, params []any, templateId int) error {
 //	return nil
 //}
 //
@@ -62,7 +64,7 @@ const ServiceSmsMessage = "pinecms.message.service.sms"
 //}
 //
 //func init() {
-//	di.Set(ServiceSmsMessage, func(builder di.AbstractBuilder) (interface{}, error) {
+//	di.Set(ServiceSmsMessage, func(builder di.AbstractBuilder) (any, error) {
 //		msgService := &SmsMessage{}
 //		err := msgService.Init()
 //		if err != nil {

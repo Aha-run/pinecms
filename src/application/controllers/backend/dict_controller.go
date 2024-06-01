@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -28,7 +29,7 @@ func (c *DictController) Construct() {
 	c.OpAfter = c.after
 }
 
-func (c *DictController) before(act int, param interface{}) error {
+func (c *DictController) before(act int, param any) error {
 	switch act {
 	case OpAdd, OpEdit:
 		p := param.(*tables.Dict)
@@ -51,7 +52,7 @@ func (c *DictController) before(act int, param interface{}) error {
 	return nil
 }
 
-func (c *DictController) after(act int, param interface{}) error {
+func (c *DictController) after(act int, param any) error {
 	switch act {
 	case OpList:
 		entities := c.Entries.(*[]*tables.Dict)

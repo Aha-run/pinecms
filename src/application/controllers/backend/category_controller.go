@@ -29,7 +29,7 @@ func (c *CategoryController) Construct() {
 	c.TableStructKey = "Catid"
 }
 
-func (c *CategoryController) before(act int, params interface{}) error {
+func (c *CategoryController) before(act int, params any) error {
 	if act == OpList {
 		typ, _ := c.Input().GetString("type")
 		if typ == "content" {
@@ -53,7 +53,7 @@ func (c *CategoryController) before(act int, params interface{}) error {
 			}
 			return nil
 		}
-		sql := []interface{}{fmt.Sprintf(c.sql, controllers.GetTableName(document.Table)), cat.Catid}
+		sql := []any{fmt.Sprintf(c.sql, controllers.GetTableName(document.Table)), cat.Catid}
 		totals, _ := c.Orm.QueryString(sql...)
 		var total = "0"
 		if len(totals) > 0 {

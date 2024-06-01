@@ -14,7 +14,7 @@ type AbstractMessage interface {
 	Init() error
 	Send(receiver []string, subject string, body string) error
 	// receiver 接收人数组 params 模板内数据
-	Notice(receiver []string, params []interface{}, templateId int) error
+	Notice(receiver []string, params []any, templateId int) error
 	// 更新单例配置
 	UpdateCfg() error
 }

@@ -1,15 +1,16 @@
 package wechat
 
 import (
-	cache2 "github.com/xiusin/pine/cache"
 	"time"
+
+	cache2 "github.com/xiusin/pine/cache"
 )
 
 type WechatTokenCacher struct {
 	cache2.AbstractCache
 }
 
-func (w WechatTokenCacher) Get(key string) interface{} {
+func (w WechatTokenCacher) Get(key string) any {
 	byts, err := w.AbstractCache.Get(key)
 	if err != nil {
 		return nil
@@ -17,7 +18,7 @@ func (w WechatTokenCacher) Get(key string) interface{} {
 	return string(byts)
 }
 
-func (w WechatTokenCacher) Set(key string, val interface{}, timeout time.Duration) error {
+func (w WechatTokenCacher) Set(key string, val any, timeout time.Duration) error {
 	return w.AbstractCache.Set(key, []byte(val.(string)), int(timeout.Seconds()))
 }
 

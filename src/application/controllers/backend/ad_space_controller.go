@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
@@ -20,7 +21,7 @@ func (c *AdSpaceController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *AdSpaceController) before(act int, params interface{}) error {
+func (c *AdSpaceController) before(act int, params any) error {
 	if act == OpDel {
 		ids := params.(*idParams).Ids
 		count, _ := c.Orm.In("space_id", ids).Count(&tables.Advert{})

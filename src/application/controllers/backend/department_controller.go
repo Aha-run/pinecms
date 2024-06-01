@@ -21,7 +21,7 @@ func (c *DepartmentController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *DepartmentController) before(act int, params interface{}) error {
+func (c *DepartmentController) before(act int, params any) error {
 	if act == OpEdit || act == OpAdd {
 		p := params.(*tables.Department)
 		sess := c.Orm.NewSession()
@@ -32,7 +32,7 @@ func (c *DepartmentController) before(act int, params interface{}) error {
 			if uint(p.Id) == p.ParentId {
 				return errors.New("父级部门不能为自己")
 			} else {
-				ids := []interface{}{p.Id}
+				ids := []any{p.Id}
 				for len(ids) > 0 {
 					var subs []tables.Department
 					_ = c.Orm.In("parent_id", ids).Cols("id").Find(&subs)

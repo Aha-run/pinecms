@@ -14,12 +14,12 @@ type idParams struct {
 }
 
 type listParam struct {
-	Page       int                    `json:"page" api:"remark:分页数|default:1|require:true"`   // 分页数
-	Size       int                    `json:"size" api:"remark:分页条数|default:10|require:true"` // 页码
-	OrderField string                 `json:"order" api:"remark:排序字段"`                        // 排序字段
-	Sort       string                 `json:"sort" api:"remark:排序方法desc=逆序,asc=正序"`           // 排序规则
-	Keywords   string                 `json:"keyWord" api:"remark:查询关键字"`                     // 搜索关键字
-	Export     bool                   `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
-	Params     map[string]interface{} `json:"params" api:"remark:额外参数用于非配置字段导出"`       // 额外附加参数
-	Param      map[string]interface{} `json:"param" api:"remark:cl-filter组件参数"`               // 额外附加参数
+	Page       int            `json:"page" api:"remark:分页数|default:1|require:true"`   // 分页数
+	Size       int            `json:"size" api:"remark:分页条数|default:10|require:true"` // 页码
+	OrderField string         `json:"order" api:"remark:排序字段"`                        // 排序字段
+	Sort       string         `json:"sort" api:"remark:排序方法desc=逆序,asc=正序"`           // 排序规则
+	Keywords   string         `json:"keyWord" api:"remark:查询关键字"`                     // 搜索关键字
+	Export     bool           `json:"_isExport" api:"remark:是否导出"`                    // 是否导出
+	Params     map[string]any `json:"params" api:"remark:额外参数用于非配置字段导出"`              // 额外附加参数
+	Param      map[string]any `json:"param" api:"remark:cl-filter组件参数"`               // 额外附加参数
 }

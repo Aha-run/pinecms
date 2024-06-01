@@ -105,7 +105,7 @@ func (s *FileUploader) Rename(oldname, newname string) error {
 }
 
 func init() {
-	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FileUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (any, error) {
 		cfg, err := config.SiteConfig()
 		if err != nil {
 			return nil, err

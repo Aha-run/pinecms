@@ -22,10 +22,10 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	helper.PanicErr(err)
 	enforcer, err := casbin.NewEnforcer(helper.GetRootPath(conf), adapter)
 	helper.PanicErr(err)
-	di.Set(controllers.ServiceCasbinEnforcer, func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(controllers.ServiceCasbinEnforcer, func(builder di.AbstractBuilder) (any, error) {
 		return enforcer, nil
 	}, true)
-	di.Set(controllers.ServiceCasbinClearPolicy, func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(controllers.ServiceCasbinClearPolicy, func(builder di.AbstractBuilder) (any, error) {
 		return clearPolicy(enforcer, _locker), nil
 	}, true)
 

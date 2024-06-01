@@ -30,8 +30,8 @@ type apiPublicResponse struct {
 }
 
 type apiGroup struct {
-	Title string      `json:"title"`
-	Name  interface{} `json:"name"`
+	Title string `json:"title"`
+	Name  any    `json:"name"`
 }
 
 type apiItem struct {
@@ -52,13 +52,13 @@ type apiDoc struct {
 
 // apiParam 请求或响应参数
 type apiParam struct {
-	Name         string      `json:"name"`
-	Type         string      `json:"type"`
-	Desc         string      `json:"desc"`
-	Default      interface{} `json:"default"`
-	Require      bool        `json:"require"`
-	ChildrenType string      `json:"childrenType"`
-	Params       []apiParam  `json:"params,omitempty"`
+	Name         string     `json:"name"`
+	Type         string     `json:"type"`
+	Desc         string     `json:"desc"`
+	Default      any        `json:"default"`
+	Require      bool       `json:"require"`
+	ChildrenType string     `json:"childrenType"`
+	Params       []apiParam `json:"params,omitempty"`
 }
 
 type apiEntity struct {
@@ -89,7 +89,7 @@ type apiEntity struct {
 	//Enable          bool        `json:"enable"`            // 是否启用参数
 }
 
-func (e *apiEntity) ID() (jsonField string, value interface{}) {
+func (e *apiEntity) ID() (jsonField string, value any) {
 	value, jsonField = e.MenuKey, "menu_key"
 	return
 }
@@ -156,7 +156,7 @@ type apiReturn struct {
 
 type apiList struct {
 	Group    string      `json:"group"`
-	Sort     interface{} `json:"sort"`
+	Sort     any         `json:"sort"`
 	Title    string      `json:"title"`
 	MenuKey  string      `json:"menu_key"`
 	Children []apiEntity `json:"children"`
@@ -174,7 +174,7 @@ type DemoParams struct {
 }
 
 type DemoResponseParam struct {
-	Code    int         `json:"code" api:"require:true,remark:状态码,default:0"`
-	Message string      `json:"message" api:"require:true,remark:操作描述"`
-	Data    interface{} `json:"data" api:"require:true,remark:业务数据"`
+	Code    int    `json:"code" api:"require:true,remark:状态码,default:0"`
+	Message string `json:"message" api:"require:true,remark:操作描述"`
+	Data    any    `json:"data" api:"require:true,remark:业务数据"`
 }

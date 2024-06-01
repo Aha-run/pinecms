@@ -26,7 +26,7 @@ func (c *PluginController) Construct() {
 	c.OpAfter = c.after
 }
 
-func (c *PluginController) after(act int, _ interface{}) error {
+func (c *PluginController) after(act int, _ any) error {
 	if act == OpList {
 		// 合并安装插件和未安装插件
 		mgr := plugins.PluginMgr()
@@ -74,7 +74,7 @@ func (c *PluginController) PostInstall() {
 		helper.Ajax("请传入要安装的插件地址", 1, c.Ctx())
 		return
 	}
-	if _, err := c.Orm.Transaction(func(session *xorm.Session) (interface{}, error) {
+	if _, err := c.Orm.Transaction(func(session *xorm.Session) (any, error) {
 		mgr := plugins.PluginMgr()
 		conf, err := mgr.GetPluginInfo(path)
 		if err != nil {
@@ -86,7 +86,7 @@ func (c *PluginController) PostInstall() {
 			return nil, err
 		} else {
 			mgr.Reload()
-			var viewConf []map[string]interface{}
+			var viewConf []map[string]any
 			err = sonic.Unmarshal([]byte(entity.View()), &viewConf)
 			if err != nil {
 				return nil, err

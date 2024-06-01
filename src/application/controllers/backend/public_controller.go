@@ -71,7 +71,7 @@ func (c *PublicController) PostUpload() {
 		md5sum := fmt.Sprintf("%x", md5hash.Sum(nil))
 		attach := &tables.Attachments{}
 		c.Orm.Where("md5 = ?", md5sum).Get(attach)
-		resJson := map[string]interface{}{"originalName": fs.Filename, "size": fs.Size, "md5": md5sum}
+		resJson := map[string]any{"originalName": fs.Filename, "size": fs.Size, "md5": md5sum}
 		if len(attach.Url) == 0 {
 			filename := string(helper.Krand(16, 3)) + strings.ToLower(filepath.Ext(fs.Filename))
 			storageName := uploadDir + "/" + filename

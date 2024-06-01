@@ -55,8 +55,8 @@ func msgHandler(ctx *pine.Context) {
 	orm := ctx.Value("orm").(*xorm.Engine)
 	srv.SetMessageHandler(func(msg *message.MixMessage) *message.Reply {
 		var rules []*tables.WechatMsgReplyRule
-		var msgData interface{}
-		var replyMsg interface{}
+		var msgData any
+		var replyMsg any
 		var err error
 
 		var baseSql = "SELECT * FROM %s WHERE ((match_value = ? AND exact_match = 1) OR " +

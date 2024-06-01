@@ -3,16 +3,16 @@ package apidoc
 import "github.com/xiusin/pinecms/src/config"
 
 type Config struct {
-	RoutePrefix   string      `json:"route_prefix"`
-	Enable        bool        `json:"enable"`         // 是否启用apidoc
-	DataPath      string      `json:"-"`              // 配置数据存储目录
-	ResponseParam interface{} `json:"-"`              // 用于反射返回值信息
-	Title         string      `json:"title"`          // 标题目录
-	Desc          string      `json:"desc"`           // 描述
-	Copyright     string      `json:"copyright"`      // 版权
-	DefaultAuthor string      `json:"default_author"` // 默认作者
-	Apps          []apiApp    `json:"apps"`           // 应用， 例如 前端接口，后端接口
-	Groups        []apiGroup  `json:"groups"`         //  应用分组
+	RoutePrefix   string     `json:"route_prefix"`
+	Enable        bool       `json:"enable"`         // 是否启用apidoc
+	DataPath      string     `json:"-"`              // 配置数据存储目录
+	ResponseParam any        `json:"-"`              // 用于反射返回值信息
+	Title         string     `json:"title"`          // 标题目录
+	Desc          string     `json:"desc"`           // 描述
+	Copyright     string     `json:"copyright"`      // 版权
+	DefaultAuthor string     `json:"default_author"` // 默认作者
+	Apps          []apiApp   `json:"apps"`           // 应用， 例如 前端接口，后端接口
+	Groups        []apiGroup `json:"groups"`         //  应用分组
 	Cache         struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path"`
@@ -23,9 +23,9 @@ type Config struct {
 		Enable    bool   `json:"enable"`
 		SecretKey string `json:"secret_key"`
 	} `json:"auth"`
-	FilterMethod []interface{}       `json:"filter_method"`
+	FilterMethod []any               `json:"filter_method"`
 	Headers      []apiHeader         `json:"headers"` // 猜测是保存的公共头部
-	Parameters   []interface{}       `json:"parameters"`
+	Parameters   []any               `json:"parameters"`
 	Responses    []apiPublicResponse `json:"responses"`
 	Docs         struct {
 		MenuTitle string `json:"menu_title"`

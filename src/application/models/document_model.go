@@ -18,7 +18,7 @@ type DocumentModel struct {
 }
 
 func init() {
-	di.Set(&DocumentModel{}, func(builder di.AbstractBuilder) (i interface{}, err error) {
+	di.Set(&DocumentModel{}, func(builder di.AbstractBuilder) (i any, err error) {
 		return &DocumentModel{
 			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
 			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
@@ -83,7 +83,7 @@ func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 	if err != nil || total > 0 {
 		return false, errors.New("模型已经被使用, 请删除使用分类后再执行删除操作")
 	}
-	if _, err := d.orm.Transaction(func(session *xorm.Session) (i interface{}, err error) {
+	if _, err := d.orm.Transaction(func(session *xorm.Session) (i any, err error) {
 		i, err = d.orm.ID(id).Delete(&tables.DocumentModel{})
 		if err != nil {
 			pine.Logger().Error(err)

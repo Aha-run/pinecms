@@ -2,6 +2,12 @@ package frontend
 
 import (
 	"fmt"
+	"path/filepath"
+	"reflect"
+	"runtime"
+	"strconv"
+	"strings"
+
 	jet2 "github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
@@ -10,11 +16,6 @@ import (
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
-	"path/filepath"
-	"reflect"
-	"runtime"
-	"strconv"
-	"strings"
 	"xorm.io/xorm"
 )
 
@@ -28,7 +29,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.GET("/*pagename", "Bootstrap")
 }
 
-func viewDataToJetMap(binding map[string]interface{}) jet2.VarMap {
+func viewDataToJetMap(binding map[string]any) jet2.VarMap {
 	vars := jet2.VarMap{}
 	for k, v := range binding {
 		vars[k] = reflect.ValueOf(v)

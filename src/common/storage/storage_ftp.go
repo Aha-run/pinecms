@@ -183,7 +183,7 @@ func (s *FtpUploader) Rename(oldname, newname string) error {
 }
 
 func init() {
-	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FtpUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (interface{}, error) {
+	di.Set(fmt.Sprintf(controllers.ServiceUploaderEngine, (&FtpUploader{}).GetEngineName()), func(builder di.AbstractBuilder) (any, error) {
 		cfg, err := config.SiteConfig()
 		if err != nil {
 			return nil, err

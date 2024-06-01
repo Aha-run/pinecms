@@ -55,10 +55,10 @@ var Cmd = &cobra.Command{
 	Short: "生成模块的crud功能",
 	Long: `
 字段设定格式: 字段注释(:字典备注:组件名称)
-如: 
+如:
 状态 -  仅解析名称, 组件根据类型或字段后缀推导
 状态:-1=禁用,0=待审核,1=正常 - 解析名称并设置下拉
-状态:-1=禁用,0=待审核,1=正常:el-checkbox 
+状态:-1=禁用,0=待审核,1=正常:el-checkbox
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.GetDefault().SetReportCaller(false)
@@ -253,7 +253,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 }
 
 // genFrontendFile 生成前端模块
-func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []map[string]interface{}) {
+func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []map[string]any) {
 	//fmt.Println(tableDsl)
 	//data, _ := json.Marshal(tableDsl)
 	//fmt.Println(string(data))
@@ -284,8 +284,8 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 }
 
 // getLabelAndFieldTypeAndProps 解析生成基础结构
-func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *schemas.Column) (labelName, inputType string, props map[string]interface{}) {
-	inputType, fieldType, fieldName, props := "el-input", col.Type, col.Name, map[string]interface{}{"size": "mini", "is_number": false, "is_float": false}
+func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *schemas.Column) (labelName, inputType string, props map[string]any) {
+	inputType, fieldType, fieldName, props := "el-input", col.Type, col.Name, map[string]any{"size": "mini", "is_number": false, "is_float": false}
 
 	if matchSuffix.match(matchSuffix.imageSuffix, fieldName) {
 		fieldType = "image"
@@ -384,12 +384,12 @@ func getLabelAndFieldTypeAndProps(col SQLColumn, xormCol *schemas.Column) (label
 }
 
 // 返回默认值
-func parseCommentInfo(colName, comment string, isNumber bool) (name string, options []map[string]interface{}, customComponent string) {
+func parseCommentInfo(colName, comment string, isNumber bool) (name string, options []map[string]any, customComponent string) {
 	if len(comment) == 0 {
 		name = colName
 		return
 	}
-	options = []map[string]interface{}{}
+	options = []map[string]any{}
 	commentInfo := strings.Split(comment, ":") // "状态:0=关闭,1=开启"
 	name = commentInfo[0]
 	if len(commentInfo) > 1 {
@@ -397,7 +397,7 @@ func parseCommentInfo(colName, comment string, isNumber bool) (name string, opti
 		for _, v := range dict {
 			kv := strings.SplitN(v, "=", 2)
 			if len(kv) == 2 && kv[1] != "" {
-				opt := map[string]interface{}{
+				opt := map[string]any{
 					"key":   strings.TrimSpace(kv[0]),
 					"label": kv[1],
 				}

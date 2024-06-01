@@ -26,23 +26,23 @@ type DocumentController struct {
 }
 
 type table struct {
-	Columns      []column      `json:"columns"`
-	Props        interface{}   `json:"props"`
-	UpsetComps   []interface{} `json:"upset_comps"`
-	SearchFields []interface{} `json:"search_fields"`
+	Columns      []column `json:"columns"`
+	Props        any      `json:"props"`
+	UpsetComps   []any    `json:"upset_comps"`
+	SearchFields []any    `json:"search_fields"`
 }
 
 type column struct {
-	Prop                string      `json:"prop"`                // 绑定字段
-	Label               string      `json:"label"`               // 显示内容
-	Component           interface{} `json:"component"`           // 自渲染组件
-	Dict                []dictItem  `json:"dict"`                // 字典, 一般针对下拉数据
-	Width               uint        `json:"width"`               // 固定宽度
-	MinWidth            uint        `json:"minWidth"`            // 最小宽度
-	Align               string      `json:"align"`               // 对齐
-	Sortable            bool        `json:"sortable"`            // 可排序
-	SortBy              interface{} `json:"sortBy"`              // 排序字段
-	ShowOverflowTooltip bool        `json:"showOverflowTooltip"` // 溢出自动tooltip
+	Prop                string     `json:"prop"`                // 绑定字段
+	Label               string     `json:"label"`               // 显示内容
+	Component           any        `json:"component"`           // 自渲染组件
+	Dict                []dictItem `json:"dict"`                // 字典, 一般针对下拉数据
+	Width               uint       `json:"width"`               // 固定宽度
+	MinWidth            uint       `json:"minWidth"`            // 最小宽度
+	Align               string     `json:"align"`               // 对齐
+	Sortable            bool       `json:"sortable"`            // 可排序
+	SortBy              any        `json:"sortBy"`              // 排序字段
+	ShowOverflowTooltip bool       `json:"showOverflowTooltip"` // 溢出自动tooltip
 }
 
 type dictItem struct {
@@ -116,7 +116,7 @@ func (c *DocumentController) Construct() {
 	c.BaseController.Construct()
 }
 
-func (c *DocumentController) before(act int, params interface{}) error {
+func (c *DocumentController) before(act int, params any) error {
 	if act == OpDel {
 		modelID := params.(*idParams).Ids[0]
 		if modelID < 1 {
@@ -129,7 +129,7 @@ func (c *DocumentController) before(act int, params interface{}) error {
 	return nil
 }
 
-func (c *DocumentController) after(act int, params interface{}) error {
+func (c *DocumentController) after(act int, params any) error {
 	if act == OpAdd {
 		var fields tables.ModelDslFields
 		_ = c.Orm.Where("mid = 0").Find(&fields)
@@ -250,7 +250,7 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
-		ret, _ := orm.ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]interface{}{"execed": 1})
+		ret, _ := orm.ID(modelID).Table(&tables.DocumentModel{}).Update(map[string]any{"execed": 1})
 		if ret > 0 {
 			helper.Ajax("执行SQL成功", 0, c.Ctx())
 			return
@@ -268,13 +268,13 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 		return
 	}
 
-	table := table{Props: nil, Columns: []column{}, UpsetComps: []interface{}{}}
+	table := table{Props: nil, Columns: []column{}, UpsetComps: []any{}}
 
 	modelTableCacheKey := "model_table_" + strconv.Itoa(mid)
 
 	cacher.Delete(modelTableCacheKey)
 
-	err = cacher.Remember(modelTableCacheKey, &table, func() (interface{}, error) {
+	err = cacher.Remember(modelTableCacheKey, &table, func() (any, error) {
 		var fieldDefines []*tables.DocumentModelField
 		var fieldDefineMap = map[int64]*tables.DocumentModelField{}
 		if err := c.Orm.Find(&fieldDefines); err != nil {
@@ -314,7 +314,7 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 			}
 
 			if len(field.Component) > 0 {
-				var component = map[string]interface{}{}
+				var component = map[string]any{}
 				if err := sonic.Unmarshal([]byte(field.Component), &component); err == nil {
 					listColumn.Component = component
 				} else {

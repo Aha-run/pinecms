@@ -3,11 +3,12 @@ package backend
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiusin/pine/cache"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/xiusin/pine/cache"
 
 	"xorm.io/xorm/schemas"
 
@@ -33,9 +34,9 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 
 func (c *DatabaseController) Manager(orm *xorm.Engine, cache cache.AbstractCache) {
 	var mataDatas []*schemas.Table
-	var data []map[string]interface{}
+	var data []map[string]any
 
-	if err := cache.Remember(controllers.CacheTableNames, &mataDatas, func() (interface{}, error) {
+	if err := cache.Remember(controllers.CacheTableNames, &mataDatas, func() (any, error) {
 		v, err := orm.DBMetas()
 		return &v, err
 	}, 600); err != nil {
@@ -49,7 +50,7 @@ func (c *DatabaseController) Manager(orm *xorm.Engine, cache cache.AbstractCache
 		go func(mataData *schemas.Table) {
 			defer wg.Done()
 			total, _ := orm.Table(mataData.Name).Count()
-			data = append(data, map[string]interface{}{
+			data = append(data, map[string]any{
 				"id":      mataData.Name,
 				"total":   total,
 				"engine":  mataData.StoreEngine,

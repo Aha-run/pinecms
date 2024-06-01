@@ -22,7 +22,7 @@ func (c *WechatQrcodeController) Construct() {
 		{Field: "appid"},
 	}
 
-	c.OpBefore = func(act int, intf interface{}) error {
+	c.OpBefore = func(act int, intf any) error {
 		if act == backend.OpList {
 			sess := intf.(*xorm.Session)
 
@@ -36,7 +36,7 @@ func (c *WechatQrcodeController) Construct() {
 	c.OpAfter = c.after
 }
 
-func (c *WechatQrcodeController) after(act int, params interface{}) error {
+func (c *WechatQrcodeController) after(act int, params any) error {
 	if act == backend.OpAdd {
 		account, _ := GetOfficialAccount(params.(*tables.WechatQrcode).AppId)
 

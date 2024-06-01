@@ -2,10 +2,11 @@ package backend
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"strings"
 	"xorm.io/builder"
 	"xorm.io/xorm"
 )
@@ -21,7 +22,7 @@ func (c *UserController) Construct() {
 	}
 
 	c.SearchFields = []SearchFieldDsl{
-		{Field: "departmentIds", CallBack: func(session *xorm.Session, i ...interface{}) {
+		{Field: "departmentIds", CallBack: func(session *xorm.Session, i ...any) {
 			session.Where(builder.In("department_id", i))
 		}},
 	}
@@ -63,7 +64,7 @@ func (c *UserController) PostPersonUpdate() {
 	helper.Ajax("更新信息成功", 0, c.Ctx())
 }
 
-func (c *UserController) before(opType int, param interface{}) error {
+func (c *UserController) before(opType int, param any) error {
 	if opType == OpAdd || opType == OpEdit {
 		p, exist := param.(*tables.Admin), false
 		if p.Userid > 0 {
@@ -91,7 +92,7 @@ func (c *UserController) before(opType int, param interface{}) error {
 	return nil
 }
 
-func (c *UserController) after(opType int, param interface{}) error {
+func (c *UserController) after(opType int, param any) error {
 	if opType == OpList {
 		admins := c.Entries.(*[]*tables.Admin)
 		roles := models.NewAdminRoleModel().All()

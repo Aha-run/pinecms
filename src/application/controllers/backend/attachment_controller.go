@@ -29,7 +29,7 @@ func (c *AttachmentController) Construct() {
 	c.BaseController.Construct()
 }
 
-func (c *AttachmentController) before(act int, params interface{}) error {
+func (c *AttachmentController) before(act int, params any) error {
 	if act == OpList {
 		cid, _ := c.Input().GetInt64("classifyId")
 		if cid > 0 {
@@ -56,7 +56,7 @@ func (c *AttachmentController) PostAdd() {
 	if exist, _ := c.Orm.Where("md5 = ?", md5).Get(data); exist {
 		helper.Ajax(data, 0, c.Ctx())
 		return
-	} else if err := c.add(); err == nil  {
+	} else if err := c.add(); err == nil {
 		helper.Ajax(c.Table, 0, c.Ctx())
 	} else {
 		helper.Ajax(err, 1, c.Ctx())

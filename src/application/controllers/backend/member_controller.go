@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"xorm.io/builder"
 )
@@ -23,7 +24,7 @@ func (c *MemberController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *MemberController) before(act int, params interface{}) error {
+func (c *MemberController) before(act int, params any) error {
 	switch act {
 	case OpAdd:
 		data := c.Table.(*tables.Member)

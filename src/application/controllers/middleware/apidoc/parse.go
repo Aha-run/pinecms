@@ -1,12 +1,13 @@
 package apidoc
 
 import (
-	"github.com/fatih/structs"
 	"reflect"
 	"strings"
+
+	"github.com/fatih/structs"
 )
 
-func parseInterface(reqParams interface{}) ([]apiParam, []apiReturn) {
+func parseInterface(reqParams any) ([]apiParam, []apiReturn) {
 	if reqParams != nil {
 		s := structs.Fields(reqParams)
 		var apiReqParams []apiParam

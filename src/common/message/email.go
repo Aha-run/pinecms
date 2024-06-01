@@ -41,7 +41,7 @@ func (n *EmailMessage) Init() error {
 	return nil
 }
 
-func (n *EmailMessage) Notice(receiver []string, params []interface{}, templateId int) error {
+func (n *EmailMessage) Notice(receiver []string, params []any, templateId int) error {
 	return nil
 }
 

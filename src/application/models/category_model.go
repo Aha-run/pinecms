@@ -28,14 +28,14 @@ var ErrCategoryNotExists = errors.New("category not exists")
 
 func init() {
 	model := &CategoryModel{}
-	di.Set(model, func(builder di.AbstractBuilder) (i interface{}, err error) {
+	di.Set(model, func(builder di.AbstractBuilder) (i any, err error) {
 		return &CategoryModel{
 			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
 			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
 		}, nil
 	}, true)
 
-	di.Bind(controllers.ServiceCatUrlPrefixFunc, func(builder di.AbstractBuilder) (interface{}, error) { // (id int64) string
+	di.Bind(controllers.ServiceCatUrlPrefixFunc, func(builder di.AbstractBuilder) (any, error) { // (id int64) string
 		return model.GetUrlPrefix, nil
 	})
 }
@@ -66,8 +66,8 @@ func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 	}
 	return reverse(links)
 }
-func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
-	var res = []map[string]interface{}{}
+func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []map[string]any {
+	var res = []map[string]any{}
 	if len(categorys) != 0 {
 		models, _ := NewDocumentModel().GetList(1, 1000)
 		var m = map[int64]string{}
@@ -92,7 +92,7 @@ func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []m
 				if category.Type != 2 {
 					url = fmt.Sprintf("/%s/", c.GetUrlPrefix(category.Catid))
 				}
-				son := map[string]interface{}{
+				son := map[string]any{
 					"parentid":    category.Parentid,
 					"catid":       category.Catid,
 					"catname":     category.Catname,
@@ -129,7 +129,7 @@ func (c *CategoryModel) GetAll(cache bool) []tables.Category {
 	if !cache {
 		_ = helper.AbstractCache().Delete(controllers.CacheCategories)
 	}
-	err := helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (interface{}, error) {
+	err := helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (any, error) {
 		_ = c.orm.Asc("listorder").Desc("id").Find(&categories)
 		return &categories, nil
 	})
@@ -172,16 +172,16 @@ func (c *CategoryModel) GetNextCategoryOnlyCatids(parentid int64, withSelf bool)
 	return ids
 }
 
-func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
+func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]any {
 	categorys := new([]tables.Category)
 	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categorys)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	maps := []map[string]interface{}{}
+	maps := []map[string]any{}
 	if len(*categorys) > 0 {
 		for _, v := range *categorys {
-			maps = append(maps, map[string]interface{}{
+			maps = append(maps, map[string]any{
 				"value":    v.Catid,
 				"label":    v.Catname,
 				"children": c.GetSelectTree(v.Catid),
@@ -192,12 +192,12 @@ func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]interface{} {
 }
 
 // 取得内容管理右部分类tree结构
-func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category, parentid int64) []map[string]interface{} {
-	maps := []map[string]interface{}{}
+func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category, parentid int64) []map[string]any {
+	maps := []map[string]any{}
 	if len(categorys) > 0 {
 		for _, v := range categorys {
 			if v.Parentid == parentid {
-				maps = append(maps, map[string]interface{}{
+				maps = append(maps, map[string]any{
 					"label":    v.Catname,
 					"value":    v.Catid,
 					"children": c.GetContentRightCategoryTree(categorys, v.Catid),

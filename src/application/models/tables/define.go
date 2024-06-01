@@ -67,7 +67,7 @@ func (l *LocalTime) FromDB(b []byte) error {
 	return err
 }
 
-//func (t *LocalTime) Scan(v interface{}) error {
+//func (t *LocalTime) Scan(v any) error {
 //	// Should be more strictly to check this type.
 //	vt, err := time.Parse("2006-01-02 15:04:05", string(v.([]byte)))
 //	if err != nil {

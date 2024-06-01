@@ -33,7 +33,7 @@ func (g GkTemplate) Ext() string {
 	return g.GkTemplateConf.Ext
 }
 
-func (g GkTemplate) AddFunc(s string, i interface{}) {
+func (g GkTemplate) AddFunc(s string, i any) {
 	switch i := i.(type) {
 	case gktemplate.TagFunc:
 		fun := map[string]gktemplate.TagFunc{s: i}
@@ -41,7 +41,7 @@ func (g GkTemplate) AddFunc(s string, i interface{}) {
 	}
 }
 
-func (g GkTemplate) HTML(writer io.Writer, name string, binding map[string]interface{}) error {
+func (g GkTemplate) HTML(writer io.Writer, name string, binding map[string]any) error {
 	var str string
 	var err error
 	if str, err = gktemplate.ParseFile(name, binding); err == nil {

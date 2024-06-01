@@ -2,6 +2,7 @@ package backend
 
 import (
 	"errors"
+
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -27,7 +28,7 @@ func (c *DictCategoryController) Construct() {
 	c.OpBefore = c.before
 }
 
-func (c *DictCategoryController) before(act int, param interface{}) error {
+func (c *DictCategoryController) before(act int, param any) error {
 	switch act {
 	case OpAdd, OpEdit:
 		key := param.(*tables.DictCategory).Key

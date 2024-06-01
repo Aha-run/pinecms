@@ -73,7 +73,7 @@ type FormItemNumberInput struct {
 	Controls     bool    `json:"controls"`
 }
 
-//FormItemCheckbox 多选框
+// FormItemCheckbox 多选框
 type FormItemCheckbox struct {
 }
 
@@ -84,7 +84,7 @@ type FormItemRadio struct {
 	Disabled bool        `json:"disabled"`
 	Size     string      `json:"size"`
 	Border   bool        `json:"border"`
-	Label    interface{} `json:"label"`
+	Label    any         `json:"label"`
 }
 
 // FormItemSwitch 开关按钮

@@ -31,10 +31,10 @@ func (p *Task) Prefix() string {
 	return "/pinecms-task-manager"
 }
 
-func (p *Task) Menu(table interface{}, pluginId int) {
+func (p *Task) Menu(table any, pluginId int) {
 	exist, _ := p.orm.Table(table).Where("plugin_id = ?", pluginId).Exist()
 	if !exist {
-		p.orm.Table(table).Insert(map[string]interface{}{
+		p.orm.Table(table).Insert(map[string]any{
 			"plugin_id":  pluginId,
 			"name":       p.Name(),
 			"parentid":   0,

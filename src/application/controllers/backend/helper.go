@@ -45,27 +45,27 @@ func strFirstToUpper(str string) string {
 	return temp[0] + upperStr
 }
 
-func parseParam(ctx *pine.Context, param interface{}) error {
+func parseParam(ctx *pine.Context, param any) error {
 	if ctx.IsJson() && len(ctx.RequestCtx.PostBody()) > 0 {
 		return ctx.BindJSON(param)
 	}
 	return nil
 }
 
-func ArrayCol(arr interface{}, col string) []interface{} {
+func ArrayCol(arr any, col string) []any {
 	val := reflect.ValueOf(arr)
 	if val.Kind() != reflect.Slice {
 		panic(errors.New("ArrayCol第一个参数必须为切片类型"))
 	}
-	var cols []interface{}
+	var cols []any
 	for i := 0; i < val.Len(); i++ {
 		cols = append(cols, val.Index(i).FieldByName(col).Interface())
 	}
 	return cols
 }
 
-func ArrayColMap(arr interface{}, col string) map[interface{}]interface{} {
-	var maps = map[interface{}]interface{}{}
+func ArrayColMap(arr any, col string) map[any]any {
+	var maps = map[any]any{}
 	val := reflect.ValueOf(arr)
 	if val.Kind() != reflect.Slice {
 		panic(errors.New("ArrayCol第一个参数必须为切片类型"))

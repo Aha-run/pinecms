@@ -25,7 +25,7 @@ func LikeArticle(args jet.Arguments) reflect.Value {
 	limit := int(getNumber(args.Get(0)))
 	catid := getNumber(args.Get(4))
 	titlelen := int(getNumber(args.Get(6)))
-	var keywords []interface{}
+	var keywords []any
 	if limit < 1 {
 		limit = 10
 	}

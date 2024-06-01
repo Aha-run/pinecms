@@ -1,13 +1,14 @@
 package core
 
 import (
-	"github.com/fasthttp/websocket"
-	"github.com/xiusin/pine"
 	"log"
 	"time"
+
+	"github.com/fasthttp/websocket"
+	"github.com/xiusin/pine"
 )
 
-func JsonError(c *pine.Context, msg interface{}) {
+func JsonError(c *pine.Context, msg any) {
 	c.WriteJSON(pine.H{"ok": false, "msg": msg})
 }
 
@@ -22,10 +23,10 @@ func HandleError(c *pine.Context, err error) bool {
 
 func WshandleError(ws *websocket.Conn, err error) bool {
 	if err != nil {
-		log.Println("handler ws ERROR:",err.Error())
+		log.Println("handler ws ERROR:", err.Error())
 		dt := time.Now().Add(time.Second)
 		if err := ws.WriteControl(websocket.CloseMessage, []byte(err.Error()), dt); err != nil {
-			log.Println("websocket writes control message failed:",err.Error())
+			log.Println("websocket writes control message failed:", err.Error())
 		}
 		return true
 	}

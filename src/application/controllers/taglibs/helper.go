@@ -4,18 +4,19 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/CloudyKit/jet"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"reflect"
-	"strconv"
-	"strings"
 	"xorm.io/xorm"
 )
 
-var defaultArrReturnVal = reflect.ValueOf([]interface{}{})
+var defaultArrReturnVal = reflect.ValueOf([]any{})
 
 var defaultSignalVal = reflect.ValueOf(nil)
 
@@ -64,7 +65,7 @@ func getCategoryTable() string {
 }
 
 func getTagHash(args jet.Arguments) string {
-	var arr []interface{}
+	var arr []any
 	for i := 0; i < args.NumOfArguments(); i++ {
 		arr = append(arr, args.Get(i).Interface())
 	}
