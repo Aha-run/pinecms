@@ -7,7 +7,9 @@ import (
 	"fmt"
 
 	elasticsearch8 "github.com/elastic/go-elasticsearch/v8"
+	"github.com/spf13/cast"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/config"
 )
 
 type ElasticSearch struct {
@@ -102,7 +104,7 @@ func (e *ElasticSearch) Index(index string, doc map[string]any) (string, error) 
 		return "", nil
 	}
 
-	return r["_id"].(string), nil
+	return cast.ToString(r["_id"]), nil
 }
 
 func (e *ElasticSearch) Update(index string, id string, doc map[string]any) error {
@@ -120,8 +122,12 @@ func (e *ElasticSearch) Delete(index string, id string) error {
 }
 
 func NewElasticSearch() ISearch {
-	es8, err := elasticsearch8.NewDefaultClient()
+	cfg := config.App().Search
+	es8, err := elasticsearch8.NewClient(elasticsearch8.Config{
+		Addresses: []string{cfg.Url},
+		Username:  cfg.Username,
+		Password:  cfg.Password,
+	})
 	helper.PanicErr(err)
-
 	return &ElasticSearch{client: es8}
 }

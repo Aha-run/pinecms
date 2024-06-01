@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/xiusin/pinecms/src/config"
 	client "github.com/zinclabs/sdk-go-zincsearch"
 )
 
@@ -41,16 +42,15 @@ func (p *PineZincSearch) Index(index string, doc map[string]any) (string, error)
 	return resp.GetId(), nil
 }
 
-func NewZincSearch(username, password, url string) ISearch {
+func NewZincSearch() ISearch {
+	cfg := config.App().Search
 	ctx := context.WithValue(context.Background(), client.ContextBasicAuth, client.BasicAuth{
-		UserName: username,
-		Password: password,
+		UserName: cfg.Username,
+		Password: cfg.Password,
 	})
-
 	configuration := client.NewConfiguration()
 	configuration.Servers = client.ServerConfigurations{
-		client.ServerConfiguration{URL: url},
+		client.ServerConfiguration{URL: cfg.Url},
 	}
-
 	return &PineZincSearch{client: client.NewAPIClient(configuration), ctx: ctx}
 }

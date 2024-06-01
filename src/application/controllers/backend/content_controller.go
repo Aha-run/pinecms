@@ -6,13 +6,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/spf13/cast"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/models"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"github.com/xiusin/pinecms/src/common/search"
 )
 
 type ContentController struct {
@@ -128,8 +131,11 @@ func (c *ContentController) PostAdd() {
 	if err == nil {
 		id, _ := result.LastInsertId()
 		data["id"] = id
-		// index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
-		// helper.PanicErr(index.Index(cast.ToString(id), data))
+		eid, err := di.MustGet(controllers.ServiceSearchName).(search.ISearch).Index("document", data)
+		if err != nil {
+			pine.Logger().Error("数据入search失败", err, "id: ", id)
+		}
+		c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": eid})
 		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
@@ -166,8 +172,20 @@ func (c *ContentController) PostEdit() {
 	data["updated_time"] = helper.NowDate(helper.TimeFormat)
 	_, err := query.Where("id = ?", id).Where("mid = ?", mid).Where("catid = ?", catid).AllCols().Update(&data)
 	if err == nil {
-		// index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
-		// helper.PanicErr(index.Index(cast.ToString(id), data))
+		engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
+		var s tables.SearchMAE
+		ok, _ := c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", mid, id).Get(&s)
+		if ok {
+			err = engine.Update("document", s.Eid, data)
+		} else {
+			var index string
+			index, err = engine.Index("document", data)
+			c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"mid": mid, "aid": id, "eid": index})
+		}
+
+		if err != nil {
+			pine.Logger().Error("保存数据到search失败", err)
+		}
 		helper.Ajax("更新内容成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新内容失败: "+err.Error(), 1, c.Ctx())
@@ -230,10 +248,13 @@ func (c *ContentController) PostDelete() {
 		helper.Ajax("删除失败", 1, c.Ctx())
 		return
 	}
-	// index := di.MustGet(controllers.ServiceSearchName).(bleve.Index)
-	// for _, id := range idArr {
-	// 	_ = index.Delete(cast.ToString(id))
-	// }
+	engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
+	var s []tables.SearchMAE
+	c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", idArr).Find(&s)
+	for _, v := range s {
+		engine.Delete("document", v.Eid)
+		c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ?", mid).In("aid", idArr).Delete()
+	}
 	helper.Ajax("删除成功", 0, c.Ctx())
 }
 
@@ -269,6 +290,17 @@ func (c *ContentController) PostPage() {
 		ret, _ = c.Orm.InsertOne(&page)
 	}
 	if ret > 0 {
+		var document = map[string]any{}
+		structs.FillMap(&page, document)
+		var s tables.SearchMAE
+		engine := di.MustGet(controllers.ServiceSearchName).(search.ISearch)
+		ok, _ := c.Orm.Table(controllers.GetTableName("search_m_a_e")).Where("mid = ? and aid = ?", 0, page.Id).Get(&s)
+		if ok {
+			engine.Update("pine_cms_system_page", s.Eid, document)
+		} else {
+			eid, _ := engine.Index("pine_cms_system_page", document)
+			c.Orm.Table(controllers.GetTableName("search_m_a_e")).Insert(map[string]any{"aid": page.Id, "eid": eid})
+		}
 		helper.Ajax("更新单页成功", 0, c.Ctx())
 	} else {
 		helper.Ajax("更新单页失败", 1, c.Ctx())

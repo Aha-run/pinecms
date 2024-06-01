@@ -1,5 +1,6 @@
 package search
 
+
 type ISearch interface {
 	Search(index string, query any) (any, error)
 	Index(index string, doc map[string]any) (string, error)

@@ -30,3 +30,9 @@ upload:
 statics:
   - { route: "/assets/", path: "./resources/assets/"}
   - { route: "/uploads/", path: "./resources/assets/uploads/"}
+
+
+search:
+  url: http://127.0.0.1:4080
+  username: admin
+  password: 123456

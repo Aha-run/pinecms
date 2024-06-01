@@ -1,7 +1,6 @@
 package wechat
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
