@@ -2,6 +2,7 @@ package logger
 
 import (
 	"bytes"
+	"strings"
 	"time"
 
 	"github.com/xiusin/logger"
@@ -10,6 +11,9 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
+
+var firstLineChar = "pine.(*routerWrapper).result"
+var _sp = "\n"
 
 type pineCmsLoggerWriter struct {
 	orm       *xorm.Engine
@@ -30,14 +34,13 @@ func (p *pineCmsLoggerWriter) BeginConsume() {
 		if !isCloser {
 			return
 		}
-		_, err := p.orm.InsertOne(p.parseLog(log))
-		if err != nil {
+		if _, err := p.orm.InsertOne(p.parseLog(log)); err != nil {
 			pine.Logger().Warning("日志入库失败", err)
 		}
 	}
 }
 
-func (p *pineCmsLoggerWriter) Write(data []byte) (int, error) { // 只记录错误日志
+func (p *pineCmsLoggerWriter) Write(data []byte) (int, error) {
 	defer func() {
 		if err := recover(); err != nil {
 			p.closed = true
@@ -49,12 +52,19 @@ func (p *pineCmsLoggerWriter) Write(data []byte) (int, error) { // 只记录错�
 	return 0, nil
 }
 
-func (p *pineCmsLoggerWriter) parseLog(logData []byte) *tables.Log {
-	return &tables.Log{
-		Level:   uint8(logger.ErrorLevel),
-		Message: *helper.Bytes2String(logData),
-		Time:    tables.LocalTime(time.Now()),
+func (p *pineCmsLoggerWriter) parseLog(log []byte) *tables.Log {
+	lines := strings.Split(*helper.Bytes2String(log), _sp)
+	var index = -1
+	for i, v := range lines {
+		if strings.Contains(v, firstLineChar) {
+			index = i
+			break
+		}
 	}
+	if index-3 > 3 {
+		lines = append(lines[0:1], lines[3:index-3]...)
+	}
+	return &tables.Log{Level: uint8(logger.ErrorLevel), Message: strings.Join(lines, _sp), Time: tables.LocalTime(time.Now())}
 }
 
 func (p *pineCmsLoggerWriter) Close() {

@@ -23,15 +23,13 @@ import (
 
 const TimeFormat = "2006-01-02 15:04:05"
 
-var location *time.Location
-
 func init() {
-	location = time.FixedZone("CST", 8*3600)
+	time.Local = time.FixedZone("CST", 8*3600)
 	rand.Seed(time.Now().UnixNano())
 }
 
 func GetLocation() *time.Location {
-	return location
+	return time.Local
 }
 
 func AppPath() string {
@@ -105,13 +103,13 @@ func Ajax(msg any, errcode int64, this *pine.Context) {
 
 // GetTimeStamp 获取时间戳
 func GetTimeStamp() int {
-	timestamp := time.Now().In(location).Unix()
+	timestamp := time.Now().Unix()
 	return int(timestamp)
 }
 
 // NowDate 当前时间 Y m d H:i:s
 func NowDate(str string) string {
-	return time.Now().In(location).Format(str)
+	return time.Now().Format(str)
 }
 
 // Password 生成密码
@@ -189,7 +187,7 @@ func InArray(val any, array any) (exists bool, index int) {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) {
 				index = i
 				exists = true
 				return

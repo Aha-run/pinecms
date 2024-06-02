@@ -162,7 +162,7 @@ func (c *ContentController) PostEdit() {
 	query := c.Orm.Table(c.Table)
 
 	var data = map[string]any{}
-	c.Ctx().BindJSON(&data)
+	helper.PanicErr(c.Ctx().BindJSON(&data))
 	if len(cast.ToString(data["deleted_time"])) == 0 {
 		delete(data, "deleted_time")
 	}

@@ -2,7 +2,6 @@ package backend
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -23,7 +22,6 @@ func (c *SettingController) Construct() {
 	c.Group = "系统配置"
 	c.SubGroup = "配置模块"
 	c.ApiEntityName = "配置"
-	fmt.Println("初始化~~~")
 	c.BaseController.Construct()
 
 	c.apiEntities = map[string]apidoc.Entity{

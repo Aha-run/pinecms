@@ -64,7 +64,7 @@ func InitDI() {
 func initLoggerService() di.BuildHandler {
 	return func(builder di.AbstractBuilder) (i any, e error) {
 		loggers := logger.New()
-		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 10)
+		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 100)
 		cmsLogger, err := os.OpenFile(filepath.Join(conf.LogPath, "pinecms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 		helper.PanicErr(err)
 
