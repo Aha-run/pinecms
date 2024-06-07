@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/xiusin/pinecms/src/common/helper"
+	"gopkg.in/yaml.v2"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"gopkg.in/yaml.v2"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 const dbYml = "resources/configs/database.yml"
@@ -140,8 +140,7 @@ func SiteConfig() (Site, error) {
 
 	err := cache.Remember(controllers.CacheSetting, &settingData, func() (any, error) {
 		var settings []tables.Setting
-		err := orm.Find(&settings)
-		if err != nil {
+		if err := orm.Find(&settings); err != nil {
 			return nil, err
 		}
 		if len(settings) != 0 {

@@ -8,12 +8,13 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	xd "github.com/casbin/xorm-adapter"
+	"xorm.io/xorm"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"xorm.io/xorm"
 )
 
 func Casbin(engine *xorm.Engine, conf string) pine.Handler {
