@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	annotation "github.com/YReshetko/go-annotation/pkg"
 	"github.com/spf13/cobra"
 
+	annotation "github.com/xiusin/go-annotation/pkg"
 	_ "github.com/xiusin/pinecms/cmd/util/annotations/rest"
 )
 
