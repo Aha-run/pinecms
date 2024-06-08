@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+
 	"github.com/xiusin/pinecms/cmd/crud"
 	"github.com/xiusin/pinecms/cmd/dede"
 	"github.com/xiusin/pinecms/cmd/plugin"
 	servCmd "github.com/xiusin/pinecms/cmd/server"
 	"github.com/xiusin/pinecms/cmd/version"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 	"github.com/xiusin/pinecms/src/server"
 )
@@ -15,12 +15,12 @@ import (
 var rootCmd = &cobra.Command{
 	Use:               "pinecms",
 	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true, DisableNoDescFlag: true},
-	Long: `       _                             
-      (_)                            
- ____  _ ____   ____ ____ ____   ___ 
+	Long: `       _
+      (_)
+ ____  _ ____   ____ ____ ____   ___
 |  _ \| |  _ \ / _  ) ___)    \ /___)
 | | | | | | | ( (/ ( (___| | | |___ |
-| ||_/|_|_| |_|\____)____)_|_|_(___/ 
+| ||_/|_|_| |_|\____)____)_|_|_(___/
 |_|     		      version: ` + version.Version,
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	helper.PanicErr(rootCmd.Execute())
+	_ = rootCmd.Execute()
 }
 
 func init() {
@@ -41,6 +41,7 @@ func init() {
 	rootCmd.AddCommand(crud.Cmd)
 	rootCmd.AddCommand(menuCmd)
 	rootCmd.AddCommand(dede.Cmd)
+	rootCmd.AddCommand(annotationsCmd)
 
 	server.InitApp()
 }

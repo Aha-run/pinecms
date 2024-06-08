@@ -1,12 +1,14 @@
 package backend
 
 import (
+	"xorm.io/xorm"
+
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"xorm.io/xorm"
 )
 
+// @Rest(path = "/api/v1/11/{container_id}")
 type AttachmentController struct {
 	BaseController
 }
@@ -40,6 +42,7 @@ func (c *AttachmentController) before(act int, params any) error {
 	return nil
 }
 
+// @Rest(method = "GET", route = "/gaa")
 func (c *AttachmentController) PostAdd() {
 	if err := c.BindParse(); err != nil {
 		helper.Ajax(err.Error(), 1, c.Ctx())

@@ -9,7 +9,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"xorm.io/core"
 	"xorm.io/xorm"
-	"xorm.io/xorm/caches"
 	"xorm.io/xorm/log"
 
 	"github.com/xiusin/pinecms/src/application/controllers"

@@ -6,6 +6,7 @@ toolchain go1.22.2
 
 require (
 	github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible
+	github.com/YReshetko/go-annotation v0.1.4
 	github.com/alecthomas/chroma v0.10.0
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.9+incompatible
@@ -45,8 +46,8 @@ require (
 	github.com/xiusin/pine v0.0.6
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/zinclabs/sdk-go-zincsearch v0.3.3
-	golang.org/x/crypto v0.23.0
-	golang.org/x/text v0.15.0
+	golang.org/x/crypto v0.24.0
+	golang.org/x/text v0.16.0
 	golang.org/x/time v0.5.0
 	gopkg.in/yaml.v2 v2.4.0
 	xorm.io/builder v0.3.13
@@ -87,6 +88,8 @@ require (
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/gorilla/schema v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/hashicorp/errwrap v1.0.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23 // indirect
@@ -128,10 +131,11 @@ require (
 	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/term v0.20.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/term v0.21.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 )
