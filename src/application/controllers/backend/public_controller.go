@@ -10,7 +10,6 @@ import (
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"github.com/xiusin/pinecms/src/common/captcha"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
@@ -87,15 +86,6 @@ func (c *PublicController) PostUpload() {
 		resJson["url"] = attach.Url
 		helper.Ajax(resJson, 0, c.Ctx())
 	}
-}
-
-func (c *PublicController) GetCaptcha() {
-	id, base64s, err := captcha.Get("")
-	if err != nil {
-		helper.Ajax(err, 1, c.Ctx())
-		return
-	}
-	helper.Ajax(pine.H{"captchaId": id, "data": base64s}, 0, c.Ctx())
 }
 
 func (c *PublicController) GetPprof() {

@@ -4,11 +4,12 @@ import (
 	"errors"
 	"strings"
 
+	"xorm.io/builder"
+	"xorm.io/xorm"
+
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"xorm.io/builder"
-	"xorm.io/xorm"
 )
 
 type UserController struct {
@@ -19,6 +20,7 @@ func (c *UserController) Construct() {
 	c.KeywordsSearch = []SearchFieldDsl{
 		{Field: "username", Op: "LIKE", DataExp: "%$?%"},
 		{Field: "email", Op: "LIKE", DataExp: "%$?%"},
+		{Field: "realname", Op: "LIKE", DataExp: "%$?%"},
 	}
 
 	c.SearchFields = []SearchFieldDsl{
@@ -39,12 +41,16 @@ func (c *UserController) Construct() {
 }
 
 func (c *UserController) GetAdminInfo() {
+	c.GetInfo()
+}
+func (c *UserController) GetInfo() {
 	c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(c.Table)
+	c.Table.(*tables.Admin).Password = ""
 	helper.Ajax(c.Table, 0, c.Ctx())
 }
 
 func (c *UserController) PostPersonUpdate() {
-	c.Ctx().BindJSON(c.Table)
+	helper.PanicErr(c.Ctx().BindJSON(c.Table))
 	user := c.Table.(*tables.Admin)
 	loginUser := &tables.Admin{}
 	c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(loginUser)

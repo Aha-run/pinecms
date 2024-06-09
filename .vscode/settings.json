@@ -12,6 +12,7 @@
         "filemanager",
         "gktemplate",
         "interp",
+        "pbigcache",
         "pinecms",
         "roleid",
         "sess",

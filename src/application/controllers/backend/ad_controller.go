@@ -1,10 +1,11 @@
 package backend
 
 import (
+	"github.com/xiusin/pine/pointer"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
-// @Rest(path = "/api/v1/containers/{container_id}")
 type AdController struct {
 	BaseController
 }
@@ -12,14 +13,25 @@ type AdController struct {
 func (c *AdController) Construct() {
 	c.Table = &tables.Advert{}
 	c.Entries = &[]tables.Advert{}
+
+	c.KeywordsSearch = []SearchFieldDsl{
+		{Field: "name", Op: "LIKE", DataExp: "%$?%"},
+	}
+
 	c.AppId = "admin"
 	c.Group = "广告管理"
 	c.SubGroup = "广告管理"
 	c.ApiEntityName = "广告"
 	c.BaseController.Construct()
-}
 
-// @Rest(method = "GET")
-func (c *AdController) GG() {
-
+	c.OpBefore = func(i int, a any) error {
+		if c.IsOperate(i) {
+			t := a.(*tables.Advert)
+			if len(t.DateRange) == 2 {
+				t.StartTime = pointer.To(helper.ToTableTime(t.DateRange[0]))
+				t.EndTime = pointer.To(helper.ToTableTime(t.DateRange[1]))
+			}
+		}
+		return nil
+	}
 }

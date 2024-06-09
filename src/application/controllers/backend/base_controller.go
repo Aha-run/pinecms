@@ -4,16 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/application/models/tables"
-
 	"github.com/go-playground/validator/v10"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
-	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
+
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
+	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 var validate = validator.New()
@@ -30,9 +31,9 @@ const (
 )
 
 type SearchFieldDsl struct {
-	Field    string                              // 字段
-	Op       string                              // 操作字符	默认为 =
-	DataExp  string                              // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
+	Field    string                      // 字段
+	Op       string                      // 操作字符	默认为 =
+	DataExp  string                      // 数据匹配格式 匹配值=$? 如 LIKE %$?% 默认=$?
 	SkipFn   func(any) bool              // 校验某些值不作为筛选条件如： 0， false不筛选状态
 	CallBack func(*xorm.Session, ...any) // 替换callback 如果设置, 将绝对忽略Field Op DataExp的设置 匹配值=$?
 }
@@ -43,8 +44,8 @@ type BaseController struct {
 	SearchFields   []SearchFieldDsl // 设置可以搜索的字段 接收或匹配params的字段
 	BindType       uint             // 表单绑定类型
 	KeywordsSearch []SearchFieldDsl // 关键字搜索字段 用于关键字匹配字段
-	Table          any      // 传入Table结构体引用
-	Entries        any      // 传入Table结构体的切片
+	Table          any              // 传入Table结构体引用
+	Entries        any              // 传入Table结构体的切片
 	Orm            *xorm.Engine
 	P              listParam
 	apiEntities    map[string]apidoc.Entity
@@ -55,8 +56,8 @@ type BaseController struct {
 	TableKey       string // 表主键
 	TableStructKey string // 表结构体主键字段 主要用于更新逻辑反射数据
 
-	OpBefore func(int, any) error // 操作前置
-	OpAfter  func(int, any) error // 操作后置
+	OpBefore func(op int, v any) error // 操作前置
+	OpAfter  func(op int, v any) error // 操作后置
 
 	apidoc.Entity
 	ApiEntityName string
@@ -95,6 +96,10 @@ func (c *BaseController) Construct() {
 		}
 	}
 	c.setApiEntity()
+}
+
+func (c *BaseController) IsOperate(op int) bool {
+	return slices.Contains([]int{OpAdd, OpEdit}, op)
 }
 
 func (c *BaseController) BindParse() (err error) {

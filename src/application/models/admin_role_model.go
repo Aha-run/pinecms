@@ -3,14 +3,10 @@ package models
 import (
 	"log"
 
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/application/controllers"
-	"github.com/xiusin/pinecms/src/common/helper"
-
-	"github.com/xiusin/pine/di"
+	"xorm.io/xorm"
 
 	"github.com/xiusin/pinecms/src/application/models/tables"
-	"xorm.io/xorm"
+	"github.com/xiusin/pinecms/src/common/helper"
 )
 
 type AdminRoleModel struct {
@@ -29,17 +25,12 @@ func (a *AdminRoleModel) List(page, rows int) ([]tables.AdminRole, int64) {
 }
 
 func (a *AdminRoleModel) All() map[int64]*tables.AdminRole {
-	c := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
 	var roles = map[int64]*tables.AdminRole{}
-	c.Remember(controllers.CacheAdminRoles, &roles, func() (any, error) {
-		var roles []*tables.AdminRole
-		a.orm.Find(&roles)
-		var data = map[int64]*tables.AdminRole{}
-		for _, role := range roles {
-			data[role.Id] = role
-		}
-		return data, nil
-	})
+	var _roles []*tables.AdminRole
+	a.orm.Find(&_roles)
+	for _, role := range _roles {
+		roles[role.Id] = role
+	}
 	return roles
 }
 

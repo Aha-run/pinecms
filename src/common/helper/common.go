@@ -14,11 +14,12 @@ import (
 	"unicode/utf8"
 	"unsafe"
 
-	"github.com/xiusin/pine/di"
+	"xorm.io/xorm"
 
 	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
-	"xorm.io/xorm"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 )
 
 const TimeFormat = "2006-01-02 15:04:05"
@@ -269,4 +270,9 @@ func PanicErr(err error, msg ...string) {
 			panic(fmt.Sprintf("%s: %s", err, msg[0]))
 		}
 	}
+}
+
+func ToTableTime(t string) tables.LocalTime {
+	s, _ := time.ParseInLocation(time.DateTime, t, time.Local)
+	return tables.LocalTime(s)
 }

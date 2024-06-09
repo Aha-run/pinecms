@@ -48,34 +48,16 @@ func (l LocalTime) MarshalText() ([]byte, error) {
 
 func (l *LocalTime) FromDB(b []byte) error {
 	if nil == b || len(b) == 0 {
-		l = nil
 		return nil
 	}
 	var now time.Time
 	var err error
-	now, err = time.ParseInLocation(localDateTimeFormat, string(b), time.Local)
-	if nil == err {
-		*l = LocalTime(now)
-		return nil
+	if now, err = time.ParseInLocation(localDateTimeFormat, string(b), time.Local); err != nil {
+		return err
 	}
-	now, err = time.ParseInLocation("2006-01-02T15:04:05Z", string(b), time.Local)
-	if nil == err {
-		*l = LocalTime(now)
-		return nil
-	}
-	panic("自己定义个layout日期格式处理一下数据库里面的日期型数据解析!")
-	return err
+	*l = LocalTime(now)
+	return nil
 }
-
-//func (t *LocalTime) Scan(v any) error {
-//	// Should be more strictly to check this type.
-//	vt, err := time.Parse("2006-01-02 15:04:05", string(v.([]byte)))
-//	if err != nil {
-//		return err
-//	}
-//	*t = LocalTime(vt)
-//	return nil
-//}
 
 func (l *LocalTime) ToDB() ([]byte, error) {
 	if nil == l {

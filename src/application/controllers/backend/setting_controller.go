@@ -3,13 +3,14 @@ package backend
 import (
 	"errors"
 
+	"xorm.io/xorm"
+
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/common/message"
 	"github.com/xiusin/pinecms/src/config"
-	"xorm.io/xorm"
 )
 
 type SettingController struct {
@@ -44,7 +45,7 @@ func (c *SettingController) before(act int, params any) error {
 		if pars == nil {
 			panic(errors.New("必须选择分组"))
 		}
-		params.(*xorm.Session).Where("`group` = ?", pars.(map[string]any)["group"])
+		params.(*xorm.Session).Where("`group` = ?", pars.(map[string]any)["group"]).OrderBy("listorder DESC").OrderBy("id")
 	}
 	return nil
 }

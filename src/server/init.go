@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/allegro/bigcache/v3"
-	"github.com/xiusin/pine/cache/providers/pbigcache"
-
 	"github.com/CloudyKit/jet"
+	"github.com/allegro/bigcache/v3"
+
 	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/cache/providers/pbigcache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
 	"github.com/xiusin/pine/render"
@@ -29,9 +29,8 @@ import (
 )
 
 var (
-	app  = pine.New()
-	conf = config.App()
-
+	app          = pine.New()
+	conf         = config.App()
 	cacheHandler cache.AbstractCache
 )
 
@@ -41,9 +40,12 @@ func InitApp() {
 }
 
 func InitCache() {
-	cacheHandler = pbigcache.New(bigcache.DefaultConfig(time.Hour))
-	theme, _ := cacheHandler.Get(controllers.CacheTheme)
-	if len(theme) > 0 {
+	cfg := bigcache.DefaultConfig(time.Hour)
+	cfg.Shards = 512
+	cfg.MaxEntriesInWindow = 1000
+	cfg.MaxEntrySize = 100
+	cacheHandler = pbigcache.New(cfg)
+	if theme, _ := cacheHandler.Get(controllers.CacheTheme); len(theme) > 0 {
 		conf.View.Theme = string(theme)
 	}
 	helper.Inject(controllers.ServiceICache, cacheHandler)
