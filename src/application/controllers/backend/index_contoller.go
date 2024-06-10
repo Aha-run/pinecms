@@ -2,16 +2,17 @@ package backend
 
 import (
 	"encoding/json"
-	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
-	"github.com/xiusin/pinecms/src/application/models/tables"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
 	"xorm.io/xorm"
 
+	"github.com/xiusin/pine"
+	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -78,7 +79,7 @@ func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
 	var referNames = map[string]string{"baidu": "1.百度", "google": "2.谷歌", "so": "3.360搜索", "bing": "4.必应", "sougou": "5.搜狗", "other": "6.其他"}
 	var totalRefer = 0
 	var refers = map[string]int{}
-	iCache.GetWithUnmarshal(controllers.CacheRefer, &refers)
+	_ = iCache.GetWithUnmarshal(controllers.CacheRefer, &refers)
 	if len(refers) == 0 {
 		refers = defaultRefers
 	} else {

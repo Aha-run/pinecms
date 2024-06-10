@@ -6,12 +6,13 @@ import (
 	"path/filepath"
 	"time"
 
+	"xorm.io/xorm"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/plugins/task/manager"
 	"github.com/xiusin/pinecms/src/application/plugins/task/table"
 	"github.com/xiusin/pinecms/src/common/helper"
-	"xorm.io/xorm"
 )
 
 // TaskController 控制器区域
@@ -29,10 +30,11 @@ func (c *TaskController) Construct() {
 func (c *TaskController) before(act int, query any) error {
 	if act == backend.OpList {
 		sess := query.(*xorm.Session)
-		status := c.Input().GetInt("status")
+		status, _ := c.Input().GetInt("status")
 		sess.Where("status = ?", status)
 		if status == 1 {
-			sess.Where("`type` = ?", c.Input().GetInt("type"))
+			t, _ := c.Input().GetInt("type")
+			sess.Where("`type` = ?", t)
 		}
 	}
 	return nil
@@ -42,20 +44,26 @@ func (c *TaskController) before(act int, query any) error {
 func (c *TaskController) PostStop() {
 	c.save(0, "停止")
 	task := &table.TaskInfo{}
-	c.Orm.Where(c.TableKey+"=?", c.Input().GetInt("id")).Get(task)
+	id, err := c.Input().GetInt("id")
+	helper.PanicErr(err)
+	c.Orm.Where(c.TableKey+"=?", id).Get(task)
 	manager.RemoveTask(task)
 }
 
 func (c *TaskController) PostStart() {
 	c.save(1, "开启")
 	task := &table.TaskInfo{}
-	c.Orm.Where(c.TableKey+"=?", c.Input().GetInt("id")).Get(task)
+	id, err := c.Input().GetInt("id")
+	helper.PanicErr(err)
+	c.Orm.Where(c.TableKey+"=?", id).Get(task)
 	manager.RegisterTask(task.Id, task)
 }
 
 func (c *TaskController) PostOnce() {
 	task := &table.TaskInfo{}
-	c.Orm.Where(c.TableKey+"=?", c.Input().GetInt("id")).Get(task)
+	id, err := c.Input().GetInt("id")
+	helper.PanicErr(err)
+	c.Orm.Where(c.TableKey+"=?", id).Get(task)
 
 	manager.TaskJobFunc(task)()
 	helper.Ajax("任务触发成功", 0, c.Ctx())
@@ -93,12 +101,14 @@ func (c *TaskController) GetLog() {
 }
 
 func (c *TaskController) save(status uint, act string) {
-	exist, err := c.Orm.Where(c.TableKey+"=?", c.Input().GetInt("id")).Get(c.Table)
+	id, err := c.Input().GetInt("id")
+	helper.PanicErr(err)
+	exist, err := c.Orm.Where(c.TableKey+"=?", id).Get(c.Table)
 	if err != nil || !exist {
 		helper.Ajax("任务不存在", 1, c.Ctx())
 		return
 	}
-	if rest, _ := c.Orm.Where(c.TableKey+"=?", c.Input().GetInt("id")).
+	if rest, _ := c.Orm.Where(c.TableKey+"=?", id).
 		Cols("status", "updated_at").
 		Update(&table.TaskInfo{
 			Status:    status,
@@ -115,7 +125,7 @@ func (c *TaskController) PostScriptList() {
 }
 
 func (c *TaskController) PostScriptInfo() {
-	fullPath := string(c.Input().GetStringBytes("path"))
+	fullPath, _ := c.Input().GetString("path")
 	f, err := os.Open(fullPath)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -133,12 +143,13 @@ func (c *TaskController) PostScriptInfo() {
 }
 
 func (c *TaskController) PostScriptSave() {
-	edit := c.Input().GetBool("edit")
-	fullPath := string(c.Input().GetStringBytes("path"))
+	edit, _ := c.Input().GetBool("edit")
+	fullPath, _ := c.Input().GetString("path")
 	if !edit {
 		fullPath = filepath.Join(helper.GetRootPath("tasks"), fullPath)
 	}
-	if err := ioutil.WriteFile(fullPath, c.Input().GetStringBytes("content"), os.ModePerm); err != nil {
+	content, _ := c.Input().GetBytes("content")
+	if err := ioutil.WriteFile(fullPath, content, os.ModePerm); err != nil {
 		helper.Ajax(err, 1, c.Ctx())
 	} else {
 		helper.Ajax(fullPath, 0, c.Ctx())

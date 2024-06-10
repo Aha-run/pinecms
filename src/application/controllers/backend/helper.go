@@ -8,9 +8,8 @@ import (
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
-	"github.com/xiusin/pinecms/src/common/storage"
-
 	"github.com/xiusin/pinecms/src/application/controllers"
+	"github.com/xiusin/pinecms/src/common/storage"
 )
 
 func getStorageEngine(settingData map[string]string) storage.Uploader {

@@ -31,7 +31,7 @@ func (c *LoginController) Login() {
 		Desc:     "账号密码登录系统， 并且返回JWT凭证",
 	})
 
-	parseParam(c.Ctx(), &p)
+	helper.PanicErr(parseParam(c.Ctx(), &p))
 
 	if p.Password == "" || p.Username == "" || p.CaptchaId == "" || p.CaptchaValue == "" {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
