@@ -276,3 +276,11 @@ func ToTableTime(t string) tables.LocalTime {
 	s, _ := time.ParseInLocation(time.DateTime, t, time.Local)
 	return tables.LocalTime(s)
 }
+
+func ConvertToAnySlice[T any](s []T) []any {
+	var slice = make([]any, 0, len(s))
+	for _, v := range s {
+		slice = append(slice, v)
+	}
+	return slice
+}

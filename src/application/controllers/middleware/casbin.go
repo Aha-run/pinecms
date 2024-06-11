@@ -53,11 +53,7 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 					}
 				}
 			}
-			if ctx.IsAjax() {
-				helper.Ajax("无节点操作权限", 1, ctx)
-			} else {
-				ctx.Abort(http.StatusForbidden)
-			}
+			ctx.Abort(http.StatusForbidden)
 			return
 		}
 		ctx.Next()
@@ -77,19 +73,30 @@ func addPolicy(engine *xorm.Engine, enforcer *casbin.Enforcer, _locker *sync.Mut
 	return func() {
 		_locker.Lock()
 		defer _locker.Unlock()
-		if count, _ := engine.Table(&xd.CasbinRule{}).Count(); count == 0 {
-			var roles []tables.AdminRole
-			engine.Find(&roles)
-			for _, role := range roles {
-				var privs []tables.AdminRolePriv
-				engine.Where("roleid = ?", role.Id).Find(&privs)
-				for _, priv := range privs {
-					enforcer.AddPolicy(fmt.Sprintf("%d", role.Id), fmt.Sprintf("%d", priv.MenuId))
-				}
-			}
-			enforcer.SavePolicy()
-		} else {
-			_ = enforcer.LoadPolicy()
+		_, _ = engine.Table(&xd.CasbinRule{}).Where("v0 > 0").Delete()
+		var roles []tables.AdminRole
+		_ = engine.Find(&roles)
+		var menus []*tables.Menu
+		_ = engine.Find(&menus)
+
+		var menuMap = map[int64]*tables.Menu{}
+		for _, menu := range menus {
+			menuMap[menu.Id] = menu
 		}
+		for _, role := range roles {
+			var privs []tables.AdminRolePriv
+			engine.Where("role_id = ?", role.Id).Find(&privs)
+			for _, priv := range privs {
+				menu := menuMap[priv.MenuId]
+				if menu == nil {
+					continue
+				}
+
+				args := []string{fmt.Sprintf("%d", role.Id)}
+				args = append(args, strings.Split(strings.Trim(menu.Router, "/"), "/")...)
+				enforcer.AddPolicy(helper.ConvertToAnySlice(args)...)
+			}
+		}
+		enforcer.SavePolicy()
 	}
 }

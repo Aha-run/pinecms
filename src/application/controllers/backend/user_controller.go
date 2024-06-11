@@ -41,10 +41,12 @@ func (c *UserController) Construct() {
 }
 
 func (c *UserController) GetAdminInfo() {
+	c.Ctx().Input().Add("id", c.Ctx().Value("adminid"))
 	c.GetInfo()
 }
 func (c *UserController) GetInfo() {
-	c.Orm.Where("id = ?", c.Ctx().Value("adminid")).Get(c.Table)
+	adminid := c.Ctx().Input().Get("id")
+	c.Orm.Where("id = ?", adminid).Get(c.Table)
 	c.Table.(*tables.Admin).Password = ""
 	helper.Ajax(c.Table, 0, c.Ctx())
 }

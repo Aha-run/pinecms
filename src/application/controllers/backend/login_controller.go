@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gbrlsnchs/jwt/v3"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/controllers/middleware/apidoc"
@@ -33,7 +34,7 @@ func (c *LoginController) Login() {
 
 	helper.PanicErr(parseParam(c.Ctx(), &p))
 
-	if p.Password == "" || p.Username == "" || p.CaptchaId == "" || p.CaptchaValue == "" {
+	if p.Password == "" || p.Username == "" {
 		helper.Ajax("参数不能为空", 1, c.Ctx())
 		return
 	}
