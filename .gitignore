@@ -36,3 +36,4 @@ pinecms-web-ui
 example
 __debug*
 *.gen.go
+data/_metadata.bolt

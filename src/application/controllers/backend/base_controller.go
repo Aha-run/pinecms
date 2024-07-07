@@ -102,17 +102,21 @@ func (c *BaseController) IsOperate(op int) bool {
 	return slices.Contains([]int{OpAdd, OpEdit}, op)
 }
 
-func (c *BaseController) BindParse() (err error) {
+func (c *BaseController) BindParse(receivers ...any) (err error) {
+	receiver := c.Table
+	if len(receivers) > 0 {
+		receiver = receivers[0]
+	}
 	switch c.BindType {
 	case BindTypeForm:
-		err = c.Ctx().BindForm(c.Table)
+		err = c.Ctx().BindForm(receiver)
 	default:
-		err = c.Ctx().BindJSON(c.Table)
+		err = c.Ctx().BindJSON(receiver)
 	}
 	if err != nil {
 		return err
 	}
-	if err = validate.Struct(c.Table); err != nil {
+	if err = validate.Struct(receiver); err != nil {
 		errs := err.(validator.ValidationErrors)
 		return errs[0]
 	}

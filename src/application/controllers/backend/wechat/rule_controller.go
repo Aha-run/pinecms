@@ -4,7 +4,9 @@ import (
 	"errors"
 
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
+	"github.com/xiusin/pinecms/src/application/controllers/backend/wechat/dto"
 	"github.com/xiusin/pinecms/src/application/models/tables"
+	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
 )
 
@@ -33,6 +35,13 @@ func (c WechatRuleController) before(act int, params any) error {
 		}
 		if exist, _ := sess.Exist(&tables.WechatMsgReplyRule{}); exist {
 			return errors.New("规则匹配值已经存在")
+		}
+	} else if act == backend.OpList {
+		var search dto.RuleSearch
+		helper.PanicErr(c.BindParse(&search))
+		sess := params.(*xorm.Session)
+		if search.Param.Appid != "" {
+			sess.Where("appid = ?", search.Param.Appid)
 		}
 	}
 	return nil

@@ -1,12 +1,14 @@
 package wechat
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
+	"golang.org/x/sync/errgroup"
 	"xorm.io/xorm"
 )
 
@@ -79,6 +81,9 @@ func (c *WechatUserController) PostSync() {
 		}
 		nextOpenId = users.NextOpenID
 
+		g, ctx := errgroup.WithContext(c.Ctx().RequestCtx)
+
+		g.SetLimit(20)
 		for _, openid := range users.Data.OpenIDs {
 			u, err := account.GetUser().GetUserInfo(openid)
 			if err != nil {
@@ -86,31 +91,40 @@ func (c *WechatUserController) PostSync() {
 				continue
 			}
 			if exist, _ := c.Orm.Where("openid = ?", openid).Exist(&tables.WechatMember{}); exist {
-				c.Orm.Where("openid = ?", openid).Cols("tagid_list").Update(&tables.WechatMember{
-					TagidList: u.TagIDList,
-					Remark:    u.Remark,
+				g.Go(func() error {
+					c.Orm.Context(ctx).Where("openid = ?", openid).Cols("tagid_list").Update(&tables.WechatMember{
+						TagidList: u.TagIDList,
+						Remark:    u.Remark,
+					})
+					return nil
 				})
 			} else {
-				c.Orm.InsertOne(&tables.WechatMember{
-					Appid:          q.AppId,
-					Openid:         u.OpenID,
-					Nickname:       u.Nickname,
-					Sex:            int(u.Sex),
-					City:           u.City,
-					Province:       u.Province,
-					Headimgurl:     u.Headimgurl,
-					SubscribeTime:  time.Unix(int64(u.SubscribeTime), 0).Format(helper.TimeFormat),
-					Subscribe:      u.Subscribe > 0,
-					Unionid:        u.UnionID,
-					Remark:         u.Remark,
-					TagidList:      u.TagIDList,
-					SubscribeScene: u.SubscribeScene,
-					QrSceneStr:     u.QrSceneStr,
+				g.Go(func() error {
+					fmt.Printf("%+v\n", u)
+					c.Orm.Context(ctx).InsertOne(&tables.WechatMember{
+						Appid:          q.AppId,
+						Openid:         u.OpenID,
+						Nickname:       u.Nickname,
+						Sex:            int(u.Sex),
+						City:           u.City,
+						Province:       u.Province,
+						Headimgurl:     u.Headimgurl,
+						SubscribeTime:  time.Unix(int64(u.SubscribeTime), 0).Format(helper.TimeFormat),
+						Subscribe:      u.Subscribe > 0,
+						Unionid:        u.UnionID,
+						Remark:         u.Remark,
+						TagidList:      u.TagIDList,
+						SubscribeScene: u.SubscribeScene,
+						QrSceneStr:     u.QrSceneStr,
+					})
+
+					return nil
 				})
 			}
 
 		}
 
+		g.Wait()
 	}
 	helper.Ajax("同步完成", 0, c.Ctx())
 }

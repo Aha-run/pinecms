@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
 	"unsafe"
@@ -21,6 +22,13 @@ import (
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 )
+
+type DirInfo struct {
+	Label    string `json:"label"`
+	FullPath string `json:"full_path"`
+	IsDir    bool   `json:"is_dir"`
+	Children any    `json:"children"`
+}
 
 const TimeFormat = "2006-01-02 15:04:05"
 
@@ -180,6 +188,34 @@ func ToInterfaces(values any) []any {
 	return is
 }
 
+func DirTree(dir string) []DirInfo {
+	fileInfos, _ := os.ReadDir(dir)
+	var ms []DirInfo
+	for _, f := range fileInfos {
+		fullPath := filepath.Join(dir, f.Name())
+		if f.IsDir() {
+			s := DirInfo{
+				Label:    f.Name(),
+				IsDir:    true,
+				FullPath: fullPath,
+				Children: DirTree(fullPath),
+			}
+			ms = append(ms, s)
+		} else {
+			ext := strings.ToLower(filepath.Ext(f.Name()))
+			if ext != ".css" && ext != ".js" && ext != ".jet" && ext != ".html" && ext != ".htm" && ext != ".sh" {
+				continue
+			}
+			ms = append(ms, DirInfo{
+				Label:    f.Name(),
+				FullPath: fullPath,
+				Children: "",
+			})
+		}
+	}
+	return ms
+}
+
 func InArray(val any, array any) (exists bool, index int) {
 	exists = false
 	index = -1
@@ -217,21 +253,7 @@ func IsWindows() bool {
 	return runtime.GOOS == "windows"
 }
 
-// Inject 注入依赖
-func Inject(key any, v any, single ...bool) {
-	if len(single) == 0 {
-		single = append(single, true)
-	}
-	if vi, ok := v.(di.BuildHandler); ok {
-		di.Set(key, vi, single[0])
-	} else {
-		di.Set(key, func(builder di.AbstractBuilder) (i any, e error) {
-			return v, nil
-		}, single[0])
-	}
-
-}
-
+// 获取Url前缀
 func GetUrlPrefix(catid int64) string {
 	getUrlPrefix := di.MustGet(controllers.ServiceCatUrlPrefixFunc).(func(int64) string)
 	return getUrlPrefix(catid)
