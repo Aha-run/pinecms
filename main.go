@@ -6,5 +6,8 @@ import (
 )
 
 func main() {
+
+	// debug.SetCrashOutput() 设置崩溃日志输出
+
 	cmd.Execute()
 }
