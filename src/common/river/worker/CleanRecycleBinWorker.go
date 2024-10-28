@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/riverqueue/river"
-	"github.com/xiusin/pinecms/src/common/job/args"
+	"github.com/xiusin/pinecms/src/common/river/args"
 )
 
 type CleanRecycleBinWorker struct {

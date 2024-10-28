@@ -1,4 +1,4 @@
-package job
+package river
 
 import (
 	"context"
