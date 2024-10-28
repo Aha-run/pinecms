@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"time"
 
 	"github.com/CloudyKit/jet"
@@ -64,7 +65,7 @@ func InitDI() {
 }
 
 func initLoggerService() di.BuildHandler {
-	return func(builder di.AbstractBuilder) (i any, e error) {
+	return func(_ di.AbstractBuilder) (i any, e error) {
 		loggers := logger.New()
 		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 100)
 		cmsLogger, err := os.OpenFile(filepath.Join(conf.LogPath, "pinecms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
@@ -77,6 +78,8 @@ func initLoggerService() di.BuildHandler {
 
 		loggers.SetOutput(io.MultiWriter(os.Stdout, ormLogger, cmsLogger))
 		logger.SetDefault(loggers)
+
+		debug.SetCrashOutput(cmsLogger, debug.CrashOptions{})
 
 		loggers.SetReportCaller(true, 3)
 		if config.IsDebug() {
