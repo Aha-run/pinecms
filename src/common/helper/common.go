@@ -3,6 +3,7 @@ package helper
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -17,6 +18,7 @@ import (
 
 	"xorm.io/xorm"
 
+	"github.com/jinzhu/copier"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -216,24 +218,6 @@ func DirTree(dir string) []DirInfo {
 	return ms
 }
 
-func InArray(val any, array any) (exists bool, index int) {
-	exists = false
-	index = -1
-	switch reflect.TypeOf(array).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(array)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) {
-				index = i
-				exists = true
-				return
-			}
-		}
-	}
-	return
-}
-
 func UcFirst(str string) string {
 	if len(str) < 1 {
 		return ""
@@ -288,9 +272,8 @@ func PanicErr(err error, msg ...string) {
 	if err != nil {
 		if len(msg) == 0 {
 			panic(err)
-		} else {
-			panic(fmt.Sprintf("%s: %s", err, msg[0]))
 		}
+		panic(fmt.Sprintf("%s: %s", err, msg[0]))
 	}
 }
 
@@ -305,4 +288,139 @@ func ConvertToAnySlice[T any](s []T) []any {
 		slice = append(slice, v)
 	}
 	return slice
+}
+
+// HasZero 常用类型零值判断
+func HasZero(values ...any) bool {
+	for _, value := range values {
+		if IsZero(value) {
+			return true
+		}
+	}
+	return false
+}
+
+// IsZero 常用类型零值判断
+func IsZero(t any) bool {
+	if t == nil {
+		return true
+	}
+	v := reflect.ValueOf(t)
+	if !v.IsValid() {
+		return true
+	}
+	if v.Kind() == reflect.Ptr {
+		if v.IsNil() {
+			return true
+		}
+		return IsZero(v.Elem().Interface())
+	}
+	switch v.Kind() {
+	case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
+		return v.Len() == 0
+	case reflect.String:
+		return v.String() == ""
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	case reflect.Bool:
+		return !v.Bool()
+	}
+	return false
+}
+
+// ConvertTo 对结构体做copy转换
+func ConvertTo[S any, T any](input *S, cbs ...func(*T, *S)) (*T, error) {
+	data := new(T)
+	if err := copier.Copy(data, input); err != nil {
+		return nil, err
+	}
+	if cbs != nil {
+		cbs[0](data, input)
+	}
+	return data, nil
+}
+
+// Or 常用类型default判断
+func Or[T any](a T, b T) T {
+	return CondOr(!IsZero(a), a, b)
+}
+
+// CondOr 常用类型default判断
+func CondOr[T any](condition bool, trueValue, falseValue T) T {
+	if condition {
+		return trueValue
+	}
+	return falseValue
+}
+
+// InArray 判断元素是否在切片中
+func InArray[T comparable](item T, items []T) bool {
+	for _, it := range items {
+		if item == it {
+			return true
+		}
+	}
+	return false
+}
+
+// ArrayColumn 从items中获取元素值
+func ArrayColumn[T any, I any](items []T, field string) []I {
+	var values = make([]I, 0)
+	var typeof reflect.Type
+	var ok bool
+	var fieldTypeof reflect.StructField
+
+	for _, item := range items {
+		if typeof == nil {
+			typeof = reflect.TypeOf(item)
+			if typeof.Kind() == reflect.Ptr {
+				typeof = typeof.Elem()
+			}
+			if typeof.Kind() != reflect.Struct {
+				panic(errors.New("ArrayColumn only support struct or struct pointer"))
+			}
+			if fieldTypeof, ok = typeof.FieldByName(field); !ok {
+				for i := 0; i < typeof.NumField(); i++ {
+					if tag, _ := typeof.Field(i).Tag.Lookup("json"); strings.HasPrefix(tag, field) {
+						fieldTypeof = typeof.Field(i)
+						break
+					}
+				}
+			}
+			if len(fieldTypeof.Name) == 0 {
+				panic(fmt.Errorf("field [%s] not found", field))
+			}
+		}
+
+		valueOf := reflect.ValueOf(item)
+		if valueOf.Kind() == reflect.Ptr {
+			if valueOf.IsNil() {
+				continue
+			}
+			valueOf = valueOf.Elem()
+		}
+
+		if v, ok := valueOf.FieldByIndex(fieldTypeof.Index).Interface().(I); ok {
+			v := v
+			values = append(values, v)
+		}
+	}
+	return values
+}
+
+// ArrayUnique 对切片去重
+func ArrayUnique[T comparable](items []T) []T {
+	exists := map[T]struct{}{}
+	var filterItems []T
+	for _, item := range items {
+		if _, ok := exists[item]; !ok {
+			exists[item] = struct{}{}
+			filterItems = append(filterItems, item)
+		}
+	}
+	return filterItems
 }

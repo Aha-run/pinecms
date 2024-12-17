@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/mitchellh/go-homedir"
-	"golang.org/x/crypto/ssh"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/go-homedir"
+	"golang.org/x/crypto/ssh"
 	//"github.com/pkg/sftp"
 )
 
@@ -73,7 +73,7 @@ func publicKeyAuthFunc(kPath string) ssh.AuthMethod {
 	if err != nil {
 		log.Fatal("find key's home dir failed", err)
 	}
-	key, err := ioutil.ReadFile(keyPath)
+	key, err := os.ReadFile(keyPath)
 	if err != nil {
 		log.Fatal("ssh key file read failed", err)
 	}

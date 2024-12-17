@@ -6,13 +6,10 @@
     ],
     "extensions": {
         "recommendations": [
-            "alefragnani.project-manager", // 项目管理
             "GuodongSun.vscode-git-cruise", // git 历史管理
             "maciejdems.add-to-gitignore", // 添加到忽略
-            "donjayamanne.githistory", // 文件历史记录
             "JanBn.git-last-commit-message", // 快速提交
             "k--kato.intellij-idea-keybindings", // idea 快捷键
-            "Codeium.codeium", // 代码补全
             "anweber.vscode-httpyac", // http 接口测试
             "saber2pr.file-git-history", // 文件历史记录
             "mk12.better-git-line-blame", // git blame

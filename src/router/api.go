@@ -21,15 +21,13 @@ type Interceptor struct {
 	Interceptor pine.Handler
 }
 
-const CasbinModelConf = "resources/configs/rbac_models.conf"
-
 func InitApiRouter(app *pine.Application) {
 	if config.IsDebug() {
 		app.Use(middleware.Cors(), requestLog.RequestRecorder())
 	}
 	app.Use(middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
 
-	casbin := middleware.Casbin(config.InitDB(), CasbinModelConf)
+	casbin := middleware.Casbin(config.InitDB())
 
 	admin := app.Group("/v2", middleware.VerifyJwtToken(), casbin)
 

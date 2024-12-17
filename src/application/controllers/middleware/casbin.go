@@ -1,12 +1,15 @@
 package middleware
 
 import (
+	_ "embed"
 	"fmt"
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/casbin/casbin/v2"
+	casbinModel "github.com/casbin/casbin/v2/model"
 	xd "github.com/casbin/xorm-adapter"
 	"xorm.io/xorm"
 
@@ -24,14 +27,27 @@ var publicApis = []string{
 	"/user/logout",
 }
 
-func Casbin(engine *xorm.Engine, conf string) pine.Handler {
+//go:embed rbac_models.conf
+var _model string
+
+func Casbin(engine *xorm.Engine) pine.Handler {
 	var _locker = &sync.Mutex{}
 	adapter, err := xd.NewAdapterByEngine(engine)
 	helper.PanicErr(err)
-	enforcer, err := casbin.NewEnforcer(helper.GetRootPath(conf), adapter)
+
+	model, err := casbinModel.NewModelFromString(_model)
 	helper.PanicErr(err)
+
+	enforcer, err := casbin.NewSyncedCachedEnforcer(model, adapter)
+	helper.PanicErr(err)
+	enforcer.EnableCache(true)
+	enforcer.EnableAutoSave(true)
+	enforcer.StartAutoLoadPolicy(time.Minute * 2)
+
+	helper.PanicErr(enforcer.LoadPolicy())
+
 	helper.Inject(controllers.ServiceCasbinEnforcer, enforcer, true)
-	di.Set(controllers.ServiceCasbinClearPolicy, func(builder di.AbstractBuilder) (any, error) {
+	di.Set(controllers.ServiceCasbinClearPolicy, func(_ di.AbstractBuilder) (any, error) {
 		return clearPolicy(enforcer, _locker), nil
 	}, true)
 
@@ -45,8 +61,6 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	}
 
 	return func(ctx *pine.Context) {
-		ctx.Next()
-		return
 		adminId := ctx.Value("adminid")
 		if adminId != nil {
 			var admin = &tables.Admin{}
@@ -75,7 +89,7 @@ func Casbin(engine *xorm.Engine, conf string) pine.Handler {
 	}
 }
 
-func clearPolicy(enforcer *casbin.Enforcer, _locker *sync.Mutex) func() {
+func clearPolicy(enforcer *casbin.SyncedCachedEnforcer, _locker *sync.Mutex) func() {
 	return func() {
 		_locker.Lock()
 		defer _locker.Unlock()
@@ -84,7 +98,7 @@ func clearPolicy(enforcer *casbin.Enforcer, _locker *sync.Mutex) func() {
 }
 
 // 根据角色注入权限
-func addPolicy(engine *xorm.Engine, enforcer *casbin.Enforcer, _locker *sync.Mutex) func() {
+func addPolicy(engine *xorm.Engine, enforcer *casbin.SyncedCachedEnforcer, _locker *sync.Mutex) func() {
 	return func() {
 		_locker.Lock()
 		defer _locker.Unlock()
