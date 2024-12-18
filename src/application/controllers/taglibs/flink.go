@@ -1,6 +1,7 @@
 package taglibs
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -16,7 +17,7 @@ func Flink(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Warning(err)
+			pine.Logger().Warn(fmt.Sprintf("flink panic: %v", err))
 		}
 	}()
 	orm := helper.GetORM()

@@ -102,14 +102,14 @@ func (c *ApiController) GetTerm() {
 		for {
 			_, wsData, err := wsConn.ReadMessage()
 			if err != nil {
-				pine.Logger().Print(err)
+				pine.Logger().Info(err.Error())
 				_ = wsConn.Close()
 				return
 			}
 			msgObj := AuthMsg{}
 			if err := sonic.Unmarshal(wsData, &msgObj); err != nil {
 				log.Println("Auth : unmarshal websocket message failed:", string(wsData))
-				pine.Logger().Print(err)
+				pine.Logger().Info(err.Error())
 				continue
 			}
 			token := msgObj.Token
@@ -146,14 +146,14 @@ func (c *ApiController) GetTerm() {
 		}
 		client, err := core.NewSshClient(core.Server{Ip: serInfo.Ip, Port: serInfo.Port, User: serInfo.Username, Passwd: serInfo.Password})
 		if err != nil {
-			pine.Logger().Print(err)
+			pine.Logger().Info(err.Error())
 			return
 		}
 
 		defer client.Close()
 		ssConn, err := core.NewSshConn(cols, rows, client) //加入sftp客户端
 		if err != nil {
-			pine.Logger().Print(err)
+			pine.Logger().Info(err.Error())
 			return
 		}
 		sftp_clients.Client.Lock()
@@ -189,7 +189,7 @@ func (c *ApiController) GetSftp() {
 		var resp Apiform.Resp
 		resp.Code = errcode.C_from_err
 		resp.Msg = err.Error()
-		pine.Logger().Print(err)
+		pine.Logger().Info(err.Error())
 		c.Render().JSON(resp)
 		return
 	}

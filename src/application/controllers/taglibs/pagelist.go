@@ -1,6 +1,7 @@
 package taglibs
 
 import (
+	"fmt"
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pinecms/src/application/models"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -12,13 +13,11 @@ import (
 	"github.com/CloudyKit/jet"
 )
 
-/**
-  {{pagelist(row, .TypeID, .ArtCount, .PageNum, .QP) | unsafe}}
-*/
+// PageList {{pagelist(row, .TypeID, .ArtCount, .PageNum, .QP) | unsafe}}
 func PageList(args jet.Arguments) reflect.Value {
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Errorf("pagelist Failed %s", err)
+			pine.Logger().Error(fmt.Sprintf("pagelist Failed %s", err))
 		}
 	}()
 	limit := int(getNumber(args.Get(0)))

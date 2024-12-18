@@ -68,7 +68,7 @@ func NewFtpUploader(opt map[string]string) *FtpUploader {
 		for range time.Tick(time.Second * 5) {
 			uploader.Lock()
 			if err := uploader.client.NoOp(); err != nil {
-				pine.Logger().Warning("ftp链接错误", err.Error())
+				pine.Logger().Warn("ftp链接错误", err.Error())
 				uploader.conn()
 			}
 			uploader.Unlock()

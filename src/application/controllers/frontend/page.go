@@ -22,7 +22,7 @@ func (c *IndexController) Page(pathname string) {
 	}
 	category, err := models.NewCategoryModel().GetCategoryFByIdForBE(tid)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(404)
 		return
 	}
@@ -39,7 +39,7 @@ func (c *IndexController) Page(pathname string) {
 	_ = os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}

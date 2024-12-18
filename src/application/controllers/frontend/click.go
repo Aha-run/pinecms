@@ -2,8 +2,8 @@ package frontend
 
 func (c *IndexController) Click() {
 
-	//aid, _ := c.Ctx().GetInt64("aid")
-	//tid, _ := c.Ctx().GetInt64("tid")
+	//aid, _ := c.Ctx().Input().GetInt64("aid")
+	//tid, _ := c.Ctx().Input().GetInt64("tid")
 	//if aid < 1 || tid < 1 {
 	//	c.Ctx().Abort(http.StatusNotFound)
 	//	return
@@ -23,8 +23,8 @@ func (c *IndexController) Click() {
 }
 
 func (c *IndexController) GetClick() {
-	//aid, _ := c.Ctx().GetInt64("aid")
-	//tid, _ := c.Ctx().GetInt64("tid")
+	//aid, _ := c.Ctx().Input().GetInt64("aid")
+	//tid, _ := c.Ctx().Input().GetInt64("tid")
 	//if aid < 1 || tid < 1 {
 	//	c.Ctx().Abort(http.StatusNotFound)
 	//	return

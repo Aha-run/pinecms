@@ -3,6 +3,7 @@ package wechat
 import (
 	"bytes"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 	"io"
 	"net/http"
 	"os"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/silenceper/wechat/v2/officialaccount/material"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -28,7 +28,7 @@ func (c *WechatMaterialController) Construct() {
 	c.BaseController.Construct()
 }
 
-func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
+func (c *WechatMaterialController) PostList(cacher contracts.Cache) {
 	var p = struct {
 		Appid string `json:"appid"`
 		Type  string `json:"type"`
@@ -61,7 +61,7 @@ func (c *WechatMaterialController) PostList(cacher cache.AbstractCache) {
 
 func (c *WechatMaterialController) GetPreview() {
 	c.Ctx().Response.Header.Set("Cache-Control", "max-age=78400")
-	url, _ := c.Ctx().GetString("url")
+	url, _ := c.Ctx().Input().GetString("url")
 	resp, err := http.Get(url)
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -116,7 +116,7 @@ func (c *WechatMaterialController) PostSync() {
 	}
 }
 
-func (c *WechatMaterialController) PostTotal(cacher cache.AbstractCache) {
+func (c *WechatMaterialController) PostTotal(cacher contracts.Cache) {
 	appid := "wxe43df03110f5981b"
 	account, _ := GetOfficialAccount(appid)
 
@@ -133,7 +133,7 @@ func (c *WechatMaterialController) PostTotal(cacher cache.AbstractCache) {
 	helper.Ajax(ret, 0, c.Ctx())
 }
 
-func (c *WechatMaterialController) PostClear(cacher cache.AbstractCache) {
+func (c *WechatMaterialController) PostClear(cacher contracts.Cache) {
 	var cacheKeys []string
 	cacher.GetWithUnmarshal(CacheKeyWechatMaterialListKeys, &cacheKeys)
 	for _, cacheKey := range cacheKeys {

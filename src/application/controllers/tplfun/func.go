@@ -36,7 +36,7 @@ func FormatTime(args jet.Arguments) reflect.Value {
 func MyDate(args jet.Arguments) reflect.Value {
 	t, err := time.Parse("2006-01-02T15:04:05Z", args.Get(1).String())
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error("解析时间错误", err)
 		return reflect.ValueOf("")
 	}
 	format := format(args.Get(0).String())

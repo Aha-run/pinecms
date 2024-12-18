@@ -3,14 +3,13 @@ package dede
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"github.com/xiusin/pine"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
 
@@ -39,25 +38,25 @@ var dedeTplCmd = &cobra.Command{
 
 		fs, err := os.Stat(pinepath)
 		if err != nil {
-			logger.Error(err)
+			pine.Logger().Error(err.Error())
 			return
 		}
 
 		if !fs.IsDir() {
-			logger.Error("您输入的pinepath参数非目录地址")
+			pine.Logger().Error("您输入的pinepath参数非目录地址")
 			return
 		}
 		themePath := filepath.Join(pinepath, theme)
 		if force { // 是否强制删除目录
 			err := os.RemoveAll(themePath)
 			if err != nil {
-				logger.Error(err)
+				pine.Logger().Error(err.Error())
 				return
 			}
 		}
 		err = os.Mkdir(themePath, os.ModePerm)
 		if err != nil {
-			logger.Error(err)
+			pine.Logger().Error(err.Error())
 			return
 		}
 
@@ -70,7 +69,7 @@ var dedeTplCmd = &cobra.Command{
 				return nil
 			}
 			// 读取文件内容
-			byts, err := ioutil.ReadFile(path)
+			byts, err := os.ReadFile(path)
 			if err != nil {
 				return err
 			}
@@ -85,7 +84,7 @@ var dedeTplCmd = &cobra.Command{
 			return nil
 		})
 		if err != nil {
-			logger.Error(err)
+			pine.Logger().Error(err.Error())
 			return
 		}
 		fmt.Printf("%s\n", `
@@ -316,7 +315,7 @@ func (p *Parser) parseDedeBlockTags() {
 		}
 
 		if block && tag != "" {
-			logger.Debugf("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, string(i), `{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`)
+			pine.Logger().Info("%s 替换标签内容 \n%s \n↓\n%s\n\n", p.src, string(i), `{{yield `+tag+`(`+strings.Join(pineTagAttrs, ", ")+`) content}}`)
 			return []byte(`{{yield ` + tag + `(` + strings.Join(pineTagAttrs, ", ") + `) content}}`)
 		}
 		return nil
@@ -370,6 +369,6 @@ func (p *Parser) Start() {
 	p.data = append([]byte(`{{import "tags.jet"}}
 `), p.data...)
 	// 生成文件
-	os.MkdirAll(filepath.Dir(p.dst), os.ModePerm)
+	_ = os.MkdirAll(filepath.Dir(p.dst), os.ModePerm)
 	helper.PanicErr(os.WriteFile(p.dst, p.data, os.ModePerm))
 }

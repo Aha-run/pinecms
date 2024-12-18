@@ -11,7 +11,7 @@ func getConfig(ctx *pine.Context) {
 }
 
 func getApiData(ctx *pine.Context) {
-	appKey, _ := ctx.GetString("appKey", "")
+	appKey, _ := ctx.Input().GetString("appKey", "")
 	if appKey == "" {
 		_ = ctx.WriteJSON(pine.H{"code": 1, "msg": "参数错误"})
 		return
@@ -22,7 +22,7 @@ func getApiData(ctx *pine.Context) {
 	var lists = []apiList{}
 	for _, entity := range entities {
 		if len(entity.SubGroup) == 0 {
-			ctx.Logger().Warning(entity.Title + "没有设置SubGroup")
+			ctx.Logger().Warn(entity.Title + "没有设置SubGroup")
 			continue
 		}
 		var flag = true
@@ -71,7 +71,7 @@ func getApiData(ctx *pine.Context) {
 }
 
 func saveApiData(ctx *pine.Context) {
-	typo, _ := ctx.GetString("type")
+	typo, _ := ctx.Input().GetString("type")
 	switch typo {
 	case "request":
 		saveRequestData(ctx)
@@ -85,7 +85,7 @@ func saveRequestData(ctx *pine.Context) {
 	var retData []apiReturn
 	var entity apiEntity
 
-	subType, _ := ctx.GetString("sub_type")
+	subType, _ := ctx.Input().GetString("sub_type")
 	var err error
 	if subType == "return" {
 		err = ctx.BindJSON(&retData)
@@ -96,7 +96,7 @@ func saveRequestData(ctx *pine.Context) {
 		helper.Ajax(err.Error(), 1, ctx)
 		return
 	}
-	entity.MenuKey, _ = ctx.GetString("menu_key")
+	entity.MenuKey, _ = ctx.Input().GetString("menu_key")
 	err = simdbDriver.Open(&entity).Where("menu_key", "=", entity.MenuKey).First().AsEntity(&entity)
 	if err != nil {
 		helper.Ajax(err.Error(), 1, ctx)

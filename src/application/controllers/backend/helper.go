@@ -17,7 +17,7 @@ func getStorageEngine(settingData map[string]string) storage.Uploader {
 	var uploadEngine storage.Uploader
 	uploader, err := di.Get(fmt.Sprintf(controllers.ServiceUploaderEngine, engine))
 	if err != nil {
-		pine.Logger().Warning("缺少存储驱动, 自动转换为本地存储", err)
+		pine.Logger().Warn("缺少存储驱动, 自动转换为本地存储", err)
 		uploadEngine = storage.NewFileUploader(settingData)
 	} else {
 		uploadEngine = uploader.(storage.Uploader)
@@ -45,7 +45,7 @@ func strFirstToUpper(str string) string {
 }
 
 func parseParam(ctx *pine.Context, param any) error {
-	if ctx.IsJson() && len(ctx.RequestCtx.PostBody()) > 0 {
+	if ctx.Input().IsJson() && len(ctx.RequestCtx.PostBody()) > 0 {
 		return ctx.BindJSON(param)
 	}
 	return nil

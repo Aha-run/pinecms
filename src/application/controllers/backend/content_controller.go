@@ -193,8 +193,8 @@ func (c *ContentController) PostEdit() {
 }
 
 func (c *ContentController) GetInfo() {
-	var mid, _ = c.Ctx().GetInt("mid")
-	var id, _ = c.Ctx().GetInt("id")
+	var mid, _ = c.Ctx().Input().GetInt("mid")
+	var id, _ = c.Ctx().Input().GetInt("id")
 	var document tables.DocumentModel
 	c.Orm.Where("id = ?", mid).Get(&document)
 	if document.Id == 0 {
@@ -259,7 +259,7 @@ func (c *ContentController) PostDelete() {
 }
 
 func (c *ContentController) GetPage() {
-	catid, _ := c.Ctx().GetInt64("id")
+	catid, _ := c.Ctx().Input().GetInt64("id")
 	if catid == 0 {
 		helper.Ajax("页面错误", 1, c.Ctx())
 		return

@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"github.com/xiusin/pine/contracts"
 	"io"
 	cnet "net"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/cmd/version"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"xorm.io/xorm"
@@ -215,7 +215,7 @@ func (_ StatController) GetOutIp() (*IPLocate, error) {
 	return outIp, nil
 }
 
-func (stat *StatController) GetData(orm *xorm.Engine, cacher cache.AbstractCache) {
+func (stat *StatController) GetData(orm *xorm.Engine, cacher contracts.Cache) {
 	var s Server
 
 	var wg sync.WaitGroup

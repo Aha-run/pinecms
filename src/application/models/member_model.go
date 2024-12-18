@@ -30,7 +30,7 @@ func (m *MemberModel) GetInfo(id int64) *tables.Member {
 func (m *MemberModel) Add(members *tables.Member) int64 {
 	res, err := m.orm.InsertOne(members)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		return 0
 	}
 	return res

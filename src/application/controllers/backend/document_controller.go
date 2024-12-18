@@ -3,13 +3,13 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/bytedance/sonic"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -141,7 +141,7 @@ func (c *DocumentController) after(act int, params any) error {
 			field.UpdatedAt = &t
 			_, err := c.Orm.InsertOne(field)
 			if err != nil {
-				c.Logger().Error(err)
+				c.Logger().Error(err.Error())
 			}
 		}
 	}
@@ -165,7 +165,7 @@ func (c *DocumentController) GetSelect() {
 }
 
 func (c *DocumentController) GetSql(orm *xorm.Engine) {
-	modelID, _ := c.Ctx().GetInt64("mid")
+	modelID, _ := c.Ctx().Input().GetInt64("mid")
 	model := models.NewDocumentModel()
 	dm := model.GetByID(modelID)
 	if dm == nil {
@@ -179,7 +179,7 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 		return
 	}
 	//由于执行与SQL显示在同一个控制器内, 所以通过exec区分一下
-	exec, _ := c.Ctx().GetBool("exec")
+	exec, _ := c.Ctx().Input().GetBool("exec")
 	// 模型字段
 	fields := models.NewDocumentFieldDslModel().GetList(modelID)
 	// 关联数据
@@ -261,7 +261,7 @@ func (c *DocumentController) GetSql(orm *xorm.Engine) {
 	}
 }
 
-func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
+func (c *DocumentController) GetTable(cacher contracts.Cache) {
 	mid, err := c.publicLogic()
 	if err != nil {
 		helper.Ajax(err, 1, c.Ctx())
@@ -278,7 +278,7 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 		var fieldDefines []*tables.DocumentModelField
 		var fieldDefineMap = map[int64]*tables.DocumentModelField{}
 		if err := c.Orm.Find(&fieldDefines); err != nil {
-			c.Ctx().Logger().Error(err)
+			c.Ctx().Logger().Error(err.Error())
 			return nil, err
 		}
 		for _, define := range fieldDefines {
@@ -359,7 +359,7 @@ func (c *DocumentController) GetTable(cacher cache.AbstractCache) {
 }
 
 func (c *DocumentController) publicLogic() (int, error) {
-	mid, _ := c.Ctx().GetInt("mid")
+	mid, _ := c.Ctx().Input().GetInt("mid")
 	if mid < 1 {
 		return 0, errors.New("模型ID错误")
 	}

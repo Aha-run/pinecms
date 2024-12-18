@@ -106,12 +106,12 @@ func (p *pluginManager) GetPluginInfo(name string) (*cmdPlugin.Config, error) {
 func (p *pluginManager) loadPlugin() {
 	orm := di.MustGet(&xorm.Engine{}).(*xorm.Engine)
 	var ps []tables.Plugin
-	orm.Where("enable = ?", 1).Find(&ps)
+	_ = orm.Where("enable = ?", 1).Find(&ps)
 	for _, plug := range ps {
 		if _, err := p.Install(plug.Path); err != nil {
-			pine.Logger().Printf("启用插件%s失败 %s", plug.Name, err.Error())
+			pine.Logger().Info(fmt.Sprintf("启用插件%s失败 %s", plug.Name, err.Error()))
 		} else {
-			pine.Logger().Print("启用插件成功", plug.Name)
+			pine.Logger().Info("启用插件成功", plug.Name)
 		}
 	}
 }
@@ -179,7 +179,7 @@ func (p *pluginManager) registerRouter(plug PluginIntf) {
 		}
 	})
 	group.Handle(plug.GetController(), plug.Prefix())
-	pine.Logger().Print("[plugin:task] 注册路由分组:" + plug.Prefix() + "成功")
+	pine.Logger().Info("[plugin:task] 注册路由分组:" + plug.Prefix() + "成功")
 }
 
 // Download 下载插件,系统,go版本,插件版本 TODO 怎么处理进度呢? 下载完成或下载失败
@@ -221,7 +221,7 @@ func (p *pluginManager) Download(name string) {
 			if err := cmd.Run(); err != nil {
 				pine.Logger().Error("解压" + pluginPath + "失败, 请手动解压")
 			} else {
-				pine.Logger().Print("解压" + pluginPath + "成功, 等待程序扫描加载")
+				pine.Logger().Info("解压" + pluginPath + "成功, 等待程序扫描加载")
 			}
 		}
 	}()
@@ -248,7 +248,7 @@ func Init() {
 	if pluginPath := config.App().PluginPath; len(pluginPath) > 0 {
 		pluginMgr.path = pluginPath
 	} else {
-		pine.Logger().Warning("没有配置PluginPath, 禁用plugin功能")
+		pine.Logger().Warn("没有配置PluginPath, 禁用plugin功能")
 		return
 	}
 	scanPluginDir()
@@ -264,12 +264,12 @@ func scanPluginDir() {
 			content, err := os.ReadFile(jsonPath)
 			if err == nil {
 				if err := sonic.Unmarshal(content, &conf); err != nil {
-					pine.Logger().Warning("解析文件"+jsonPath+"失败", err.Error())
+					pine.Logger().Warn("解析文件"+jsonPath+"失败", err.Error())
 				} else {
 					pluginMgr.scannedPlugins[f] = &conf
 				}
 			} else {
-				pine.Logger().Warning("获取文件"+jsonPath+"内容异常", err.Error())
+				pine.Logger().Warn("获取文件"+jsonPath+"内容异常", err.Error())
 			}
 		}
 	}

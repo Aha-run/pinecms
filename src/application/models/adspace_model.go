@@ -18,7 +18,7 @@ func NewAdSpaceModel() *AdSpaceModel {
 func (l *AdSpaceModel) All() []tables.AdvertSpace {
 	var list = []tables.AdvertSpace{}
 	if err := l.orm.Desc("id").Find(&list); err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return list
 }
@@ -29,7 +29,7 @@ func (l *AdSpaceModel) GetList(page, limit int64) ([]tables.AdvertSpace, int64) 
 	var total int64
 	var err error
 	if total, err = l.orm.Desc("id").Limit(int(limit), int(offset)).FindAndCount(&list); err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return list, total
 }
@@ -37,7 +37,7 @@ func (l *AdSpaceModel) GetList(page, limit int64) ([]tables.AdvertSpace, int64) 
 func (l *AdSpaceModel) Add(data *tables.AdvertSpace) int64 {
 	id, err := l.orm.Insert(data)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return id
 }
@@ -45,7 +45,7 @@ func (l *AdSpaceModel) Add(data *tables.AdvertSpace) int64 {
 func (l *AdSpaceModel) Delete(id int64) bool {
 	res, err := l.orm.ID(id).Delete(&tables.AdvertSpace{})
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return res > 0
 }
@@ -62,7 +62,7 @@ func (l *AdSpaceModel) Get(id int64) *tables.AdvertSpace {
 func (l *AdSpaceModel) Update(data *tables.AdvertSpace) bool {
 	id, err := l.orm.ID(data.Id).Update(data)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 
 	return id > 0

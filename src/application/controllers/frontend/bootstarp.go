@@ -36,7 +36,7 @@ func (c *IndexController) Bootstrap() {
 		absFilePath := filepath.Join(config.GetSiteConfigByKey("SITE_STATIC_PAGE_DIR"), pageName)
 		if byts, err := os.ReadFile(absFilePath); err == nil { // 如果已经存在缓存页面则直接并发执行
 			c.Ctx().Render().ContentType(pine.ContentTypeHTML)
-			pine.Logger().Print("render for file", absFilePath)
+			pine.Logger().Info("render for file", absFilePath)
 			_ = c.Ctx().Render().Bytes(byts)
 			return
 		}

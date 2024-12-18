@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/xiusin/pine"
 	"os"
 	"time"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/rivo/tview"
 	"github.com/spf13/cobra"
 
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
 )
@@ -24,12 +24,12 @@ var initCmd = &cobra.Command{
 		var db config.DbConf
 
 		if db.Initialized() {
-			logger.Warning("项目已初始化")
+			pine.Logger().Warn("项目已初始化")
 			return
 		}
 
 		if _, err := os.Stat(initFilePath); os.IsNotExist(err) {
-			logger.Warning("缺少初始数据库文件：", initFilePath)
+			pine.Logger().Warn("缺少初始数据库文件：", initFilePath)
 			return
 		}
 

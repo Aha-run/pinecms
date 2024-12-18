@@ -25,7 +25,7 @@ func (c *DatabaseBackupController) BackupList() {
 	uploader := getStorageEngine(settingData)
 	list, err := uploader.List(baseBackupDir)
 	if err != nil {
-		c.Logger().Error(err)
+		c.Logger().Error(err.Error())
 	}
 	helper.Ajax(list, 0, c.Ctx())
 }

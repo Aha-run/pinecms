@@ -3,7 +3,7 @@ package taglibs
 import (
 	"fmt"
 	"github.com/CloudyKit/jet"
-	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/contracts"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
@@ -32,7 +32,7 @@ func getCategoryPos(tid int64) string {
 		Pos string
 	}{}
 	key := fmt.Sprintf(controllers.CacheCategoryPosPrefix, tid)
-	icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
+	icache := di.MustGet(controllers.ServiceICache).(contracts.Cache)
 	err := icache.GetWithUnmarshal(key, &data)
 	if err != nil {
 		m := models.NewCategoryModel()
@@ -47,7 +47,7 @@ func getCategoryPos(tid int64) string {
 		if len(data.Arr) > 0 {
 			res = strings.Join(position, " > ")
 			data.Pos = res
-			icache.SetWithMarshal(key, res)
+			_ = icache.SetWithMarshal(key, res)
 		}
 	}
 	return data.Pos

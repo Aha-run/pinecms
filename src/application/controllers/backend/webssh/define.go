@@ -16,12 +16,12 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 		orm := helper.GetORM()
 		defer func() {
 			if err := recover(); err != nil {
-				pine.Logger().Warning("初始化安装失败", err)
+				pine.Logger().Warn("初始化安装失败", err)
 			}
 		}()
 
 		if err := orm.Sync2(&tables.SSHServer{}, &tables.SSHUser{}); err != nil {
-			pine.Logger().Warning(err)
+			pine.Logger().Warn(err.Error())
 		}
 	})
 }

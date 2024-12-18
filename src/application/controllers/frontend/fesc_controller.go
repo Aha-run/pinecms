@@ -15,8 +15,8 @@ func (c *FescController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *FescController) DownList() {
-	aid, _ := c.Ctx().GetInt("id", 0)
-	tid, _ := c.Ctx().GetInt64("tid", 0)
+	aid, _ := c.Ctx().Input().GetInt("id", 0)
+	tid, _ := c.Ctx().Input().GetInt64("tid", 0)
 	cat, _ := models.NewCategoryModel().GetCategoryFByIdForBE(tid)
 	if cat == nil {
 		c.Ctx().Abort(404)

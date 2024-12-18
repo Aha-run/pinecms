@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/xiusin/pine"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
 	"github.com/xiusin/pinecms/src/config"
@@ -63,7 +63,7 @@ func init() {
 func initORM(dsn string) {
 	_dedeOrm, err := xorm.NewEngine("mysql", dsn)
 	if err != nil {
-		logger.Error("连接DEDE数据库失败", err)
+		pine.Logger().Error("连接DEDE数据库失败", err)
 		return
 	}
 	preg, _ := regexp.Compile("/(.+?)\\?")
@@ -71,7 +71,7 @@ func initORM(dsn string) {
 	dedeOrm = _dedeOrm
 	_orm, err := xorm.NewEngine(dc.Db.DbDriver, dc.Db.Dsn)
 	if err != nil {
-		logger.Error("连接PINECMS数据库失败", err)
+		pine.Logger().Error("连接PINECMS数据库失败", err)
 		return
 	}
 	_orm.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, dc.Db.DbPrefix))
@@ -272,7 +272,7 @@ func importArcType() {
 	dedeQuerySql := `SELECT * FROM dede_arctype`
 	arctypes, err := dedeOrm.QueryString(dedeQuerySql)
 	if len(arctypes) == 0 {
-		logger.Error("读取织梦分类数据为空", err)
+		pine.Logger().Error("读取织梦分类数据为空", err)
 		return
 	}
 	placeholders := strings.TrimRight(strings.Repeat("?,", 15), ",")

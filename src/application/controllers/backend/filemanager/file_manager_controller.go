@@ -268,12 +268,12 @@ func (c *FileManagerController) PostDelete() {
 	for _, item := range items {
 		if item.Type == "dir" {
 			if err := c.engine.Rmdir(item.Path); err != nil {
-				c.Logger().Debug(err)
+				c.Logger().Debug(err.Error())
 				hasErr = true
 			}
 		} else {
 			if err := c.engine.Remove(item.Path); err != nil {
-				c.Logger().Debug(err)
+				c.Logger().Debug(err.Error())
 				hasErr = true
 			}
 		}

@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -9,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/render/engine/pjet"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models"
@@ -26,19 +26,19 @@ func (c *IndexController) Detail(pathname string) {
 		return
 	}
 	// 直接读缓存
-	cacher := pine.Make("cache.AbstractCache").(cache.AbstractCache)
+	cacher := pine.Make(controllers.ServiceICache).(contracts.Cache)
 	cacheKey := fmt.Sprintf(controllers.CacheCategoryContentPrefix, tid, aid)
 	var article = map[string]string{}
 	_ = cacher.GetWithUnmarshal(cacheKey, &article)
 	m := models.NewCategoryModel()
 	category, err := m.GetCategoryFByIdForBE(tid)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
 	if category.Model.Enabled == 0 {
-		pine.Logger().Warning("模型内容已被禁止查看")
+		pine.Logger().Warn("模型内容已被禁止查看")
 		c.Ctx().Abort(404)
 		return
 	}
@@ -46,7 +46,7 @@ func (c *IndexController) Detail(pathname string) {
 		sess := getOrmSess(category.Model).Where("id = ?", aid).Where("catid = ?", tid).Limit(1)
 		result, err := sess.QueryString()
 		if err != nil || len(result) == 0 {
-			pine.Logger().Errorf("读取模型数据表:%s 错误: %s", category.Model.Table, err)
+			pine.Logger().Error(fmt.Sprintf("读取模型数据表:%s 错误: %s", category.Model.Table, err))
 			c.Ctx().Abort(http.StatusNotFound)
 			return
 		}
@@ -54,7 +54,7 @@ func (c *IndexController) Detail(pathname string) {
 		article["typename"] = category.Catname
 		article["typelink"] = fmt.Sprintf("/%s/", m.GetUrlPrefixWithCategoryArr(m.GetPosArr(tid)))
 		article["click"] = article["visit_count"]
-		cacher.SetWithMarshal(cacheKey, &article)
+		_ = cacher.SetWithMarshal(cacheKey, &article)
 	}
 	detailUrlFunc := c.Ctx().Value("detail_url").(func(string, ...string) string)
 	tpl := "article_" + category.Model.Table + ".jet"
@@ -67,7 +67,7 @@ func (c *IndexController) Detail(pathname string) {
 	_ = os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
@@ -75,7 +75,7 @@ func (c *IndexController) Detail(pathname string) {
 	pineJet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	temp, err := pineJet.GetTemplate(template(tpl))
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusNotFound)
 		return
 	}
@@ -117,7 +117,7 @@ func (c *IndexController) Detail(pathname string) {
 			return str
 		}})
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusInternalServerError)
 		return
 	}

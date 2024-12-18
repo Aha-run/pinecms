@@ -3,11 +3,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine"
 
 	. "github.com/xiusin/pinecms/src/config"
 
 	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"xorm.io/xorm"
 )
@@ -18,8 +18,7 @@ var menuCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		InitDB() // 方法不可放到init里，否则缓存组件阻塞
 		if !IsDebug() {
-			logger.SetReportCaller(false)
-			logger.Print("非Debug模式，不支持 Menu 命令")
+			pine.Logger().Info("非Debug模式，不支持 Menu 命令")
 			return
 		}
 		table, _ := cmd.Flags().GetString("table")
@@ -66,7 +65,7 @@ var menuCmd = &cobra.Command{
 		if !force {
 			count, _ := Orm().Table(role).Where("c = ?", table).Count()
 			if count > 0 {
-				logger.Errorf("已经存在%s的相关菜单, 如需强制覆盖请追加参数--force true", table)
+				pine.Logger().Error(fmt.Sprintf("已经存在%s的相关菜单, 如需强制覆盖请追加参数--force true", table))
 				return
 			}
 		}
@@ -103,7 +102,7 @@ var menuCmd = &cobra.Command{
 		})
 
 		if err != nil {
-			logger.Error(err.Error())
+			pine.Logger().Error(err.Error())
 		}
 	},
 }

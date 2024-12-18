@@ -95,7 +95,7 @@ func Ajax(msg any, errcode int64, this *pine.Context) {
 	if errcode != 1000 {
 		switch err := msg.(type) {
 		case error:
-			pine.Logger().Error(err)
+			pine.Logger().Error("错误响应", err)
 			data["message"] = err.Error()
 		default:
 			data["message"] = msg

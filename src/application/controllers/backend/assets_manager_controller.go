@@ -1,15 +1,16 @@
 package backend
 
 import (
+	"github.com/silenceper/wechat/v2/cache"
 	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/bytedance/sonic"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 
@@ -131,7 +132,7 @@ func (c *AssetsManagerController) GetThemes() {
 	helper.Ajax(dirs, 0, c.Ctx())
 }
 
-func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
+func (c *AssetsManagerController) PostTheme(cache cache.Cache) {
 	var p = map[string]any{}
 	_ = c.Ctx().BindJSON(&p)
 	name := p["theme"].(string)
@@ -145,7 +146,7 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 		helper.Ajax("模板主题不存在", 1, c.Ctx())
 		return
 	}
-	if cache.Set(controllers.CacheTheme, []byte(name)) == nil {
+	if cache.Set(controllers.CacheTheme, []byte(name), time.Hour) == nil {
 		c.conf.View.Theme = name
 		helper.Ajax("设置主题成功", 0, c.Ctx())
 	} else {
@@ -154,7 +155,7 @@ func (c *AssetsManagerController) PostTheme(cache cache.AbstractCache) {
 }
 
 func (c *AssetsManagerController) GetInfo() {
-	fullPath, _ := c.Ctx().GetString("path")
+	fullPath, _ := c.Ctx().Input().GetString("path")
 	if fullPath == "" {
 		helper.Ajax("参数错误", 1, c.Ctx())
 		return
@@ -177,12 +178,12 @@ func (c *AssetsManagerController) GetInfo() {
 
 func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 	if c.Ctx().IsPost() {
-		name, _ := c.Ctx().GetString("name")
+		name, _ := c.Ctx().Input().GetString("name")
 		if !strings.HasSuffix(name, ".jet") {
 			helper.Ajax("模板文件请以'.jet'为后缀", 1, c.Ctx())
 			return
 		}
-		content, _ := c.Ctx().GetString("content")
+		content, _ := c.Ctx().Input().GetString("content")
 		f := filepath.Join(c.conf.View.FeDirname, c.conf.View.Theme, name)
 		_, err := os.Stat(f)
 		if err == nil {
@@ -200,7 +201,7 @@ func (c *AssetsManagerController) PostAdd(orm *xorm.Engine) {
 }
 
 func (c *AssetsManagerController) GetThumb() {
-	themeName, _ := c.Ctx().GetString("id")
+	themeName, _ := c.Ctx().Input().GetString("id")
 	dirName := filepath.Join(c.conf.View.FeDirname, themeName, "thumb.png")
 	c.Ctx().SetContentType("img/png")
 	c.Ctx().SendFile(dirName)

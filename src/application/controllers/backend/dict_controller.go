@@ -76,7 +76,7 @@ func (c *DictController) after(act int, param any) error {
 }
 
 func (c *DictController) GetSelect() {
-	cid, _ := c.Ctx().GetInt64("cid")
+	cid, _ := c.Ctx().Input().GetInt64("cid")
 	if cid == 0 {
 		helper.Ajax("请传入字典分类ID", 1, c.Ctx())
 		return

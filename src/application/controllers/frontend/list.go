@@ -15,7 +15,7 @@ import (
 func (c *IndexController) List(pageFilePath string) {
 	c.setTemplateData()
 	pageFilePath = GetStaticFile(pageFilePath)
-	queryTid, _ := c.Ctx().GetInt64("tid")
+	queryTid, _ := c.Ctx().Input().GetInt64("tid")
 	tid, _ := c.Ctx().Params().GetInt64("tid", queryTid)
 	if tid < 1 {
 		c.Ctx().Abort(404)
@@ -26,7 +26,7 @@ func (c *IndexController) List(pageFilePath string) {
 		if err == nil {
 			pine.Logger().Error("模型禁用,无可查看", c.Ctx().Path())
 		} else {
-			pine.Logger().Error(err)
+			pine.Logger().Error(err.Error())
 		}
 		c.Ctx().Abort(404)
 		return
@@ -70,7 +70,7 @@ func (c *IndexController) List(pageFilePath string) {
 		ArtCount:  total,
 		PageNum:   int64(page),
 		ModelName: category.Model.Table,
-		QP:        c.Ctx().All(),
+		QP:        c.Ctx().Input().All(),
 	})
 	if err != nil {
 		c.Ctx().Abort(http.StatusInternalServerError, err.Error())

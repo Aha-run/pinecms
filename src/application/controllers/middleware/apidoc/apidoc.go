@@ -90,7 +90,7 @@ func New(app *pine.Application, config *Config) pine.Handler {
 		entity.RawReturn = string(ctx.Response.Body())
 		_, entity.Return = parseInterface(defaultConfig.ResponseParam)
 		if err := simdbDriver.Upsert(entity); err != nil {
-			pine.Logger().Warning("保存接口数据失败", err)
+			pine.Logger().Warn("保存接口数据失败", err)
 		}
 	}
 }
