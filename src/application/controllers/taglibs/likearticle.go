@@ -15,7 +15,7 @@ import (
 func LikeArticle(args jet.Arguments) reflect.Value {
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Errorf("likearticle Failed %s", err)
+			pine.Logger().Error(fmt.Sprintf("likearticle Failed %s", err))
 		}
 	}()
 	if !checkArgType(&args) {

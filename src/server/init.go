@@ -1,7 +1,9 @@
 package server
 
 import (
+	"github.com/xiusin/pine/contracts"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime/debug"
@@ -10,9 +12,7 @@ import (
 	"github.com/CloudyKit/jet"
 	"github.com/allegro/bigcache/v3"
 
-	"github.com/xiusin/logger"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/cache/providers/pbigcache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pine/middlewares/cache304"
@@ -32,7 +32,7 @@ import (
 var (
 	app          = pine.New()
 	conf         = config.App()
-	cacheHandler cache.AbstractCache
+	cacheHandler contracts.Cache
 )
 
 func InitApp() {
@@ -57,7 +57,7 @@ func InitCache() {
 func InitDI() {
 	helper.Inject(controllers.ServiceApplication, app)
 	helper.Inject(controllers.ServiceConfig, conf)
-	helper.Inject(logger.GetDefault(), initLoggerService())
+	helper.Inject(slog.Default(), initLoggerService())
 	helper.Inject(controllers.ServiceJetEngine, initJetEngine())
 	helper.Inject(controllers.ServiceSearchName, search.NewZincSearch())
 
@@ -66,7 +66,6 @@ func InitDI() {
 
 func initLoggerService() di.BuildHandler {
 	return func(_ di.AbstractBuilder) (i any, e error) {
-		loggers := logger.New()
 		ormLogger := commonLogger.NewPineCmsLogger(config.Orm(), 100)
 		cmsLogger, err := os.OpenFile(filepath.Join(conf.LogPath, "pinecms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 		helper.PanicErr(err)
@@ -76,18 +75,14 @@ func initLoggerService() di.BuildHandler {
 			_ = cmsLogger.Close()
 		})
 
-		loggers.SetOutput(io.MultiWriter(os.Stdout, ormLogger, cmsLogger))
-		logger.SetDefault(loggers)
-
-		debug.SetCrashOutput(cmsLogger, debug.CrashOptions{})
-
-		loggers.SetReportCaller(true, 3)
+		var opt = slog.HandlerOptions{AddSource: true}
+		_ = debug.SetCrashOutput(cmsLogger, debug.CrashOptions{})
 		if config.IsDebug() {
-			loggers.SetLogLevel(logger.DebugLevel)
+			opt.Level = slog.LevelDebug
 		} else {
-			loggers.SetLogLevel(logger.WarnLevel)
+			opt.Level = slog.LevelWarn
 		}
-		return loggers, nil
+		return slog.New(slog.NewTextHandler(io.MultiWriter(os.Stdout, ormLogger, cmsLogger), &opt)), nil
 	}
 }
 

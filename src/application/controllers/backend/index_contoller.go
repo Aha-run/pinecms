@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/json"
+	"github.com/xiusin/pine/contracts"
 	"runtime"
 	"strconv"
 	"strings"
@@ -10,7 +11,6 @@ import (
 	"xorm.io/xorm"
 
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -24,7 +24,7 @@ func (c *IndexController) RegisterRoute(b pine.IRouterWrapper) {
 	b.ANY("/index/main", "Main")
 }
 
-func (c *IndexController) Main(orm *xorm.Engine, iCache cache.AbstractCache) {
+func (c *IndexController) Main(orm *xorm.Engine, iCache contracts.Cache) {
 	//var us, _ = disk.Usage(helper.GetRootPath())
 	//要转换的值，fmt方式，切割长度如果为-1则显示最大长度，64是float64
 	//c.ViewData("FullSize", us.Total/1024/1024/1024)
@@ -72,7 +72,7 @@ type visitStruct struct {
 	Total   int
 }
 
-func (c *IndexController) collationFormatVisits(iCache cache.AbstractCache) {
+func (c *IndexController) collationFormatVisits(iCache contracts.Cache) {
 	// 统计访问来源
 	referStruct := map[string]visitStruct{}
 	var defaultRefers = map[string]int{"baidu": 0, "google": 0, "so": 0, "bing": 0, "sougou": 0, "other": 0}

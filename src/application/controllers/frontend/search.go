@@ -18,14 +18,14 @@ import (
 )
 
 func (c *IndexController) Search(orm *xorm.Engine) {
-	q, _ := c.Ctx().GetString("q")
-	keywords, _ := c.Ctx().GetString("keywords", q)
-	keywords, _ = c.Ctx().GetString("keyword", keywords)
-	page, _ := c.Ctx().GetInt("page", 1)
-	channeltype, _ := c.Ctx().GetInt("channeltype", 0)
-	typeid, _ := c.Ctx().GetInt("typeid", 0)
-	kwType, _ := c.Ctx().GetInt("kwtype", 0)
-	orderby, _ := c.Ctx().GetString("orderby")
+	q, _ := c.Ctx().Input().GetString("q")
+	keywords, _ := c.Ctx().Input().GetString("keywords", q)
+	keywords, _ = c.Ctx().Input().GetString("keyword", keywords)
+	page, _ := c.Ctx().Input().GetInt("page", 1)
+	channeltype, _ := c.Ctx().Input().GetInt("channeltype", 0)
+	typeid, _ := c.Ctx().Input().GetInt("typeid", 0)
+	kwType, _ := c.Ctx().Input().GetInt("kwtype", 0)
+	orderby, _ := c.Ctx().Input().GetString("orderby")
 
 	if regexp.MustCompile("^[_A-Z0-9a-z]+$").MatchString(orderby) == false {
 		orderby = ""
@@ -34,14 +34,14 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		page = 1
 	}
 
-	searchType, _ := c.Ctx().GetString("searchtype")
+	searchType, _ := c.Ctx().Input().GetString("searchtype")
 
 	if len(keywords) < 2 {
 		pine.Logger().Error("关键字太短")
 		return
 	}
 
-	startTime, _ := c.Ctx().GetString("starttime")
+	startTime, _ := c.Ctx().Input().GetString("starttime")
 	// 如果是数字
 	if regexp.MustCompile("^/d+$").MatchString(startTime) {
 		// 换算为天数
@@ -55,7 +55,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 		// 查询对应的模型
 		cat, err := m.GetCategoryFByIdForBE(int64(typeid))
 		if err != nil {
-			pine.Logger().Error(err)
+			pine.Logger().Error(err.Error())
 			return
 		}
 		channelType = int(cat.Model.Id)
@@ -142,7 +142,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 	// 先统计数据量
 	totals, err := orm.QueryString(append([]any{strings.ReplaceAll(query, "$?", countField)}, whereArgs...)...)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		c.Ctx().Abort(http.StatusInternalServerError, err.Error())
 	}
 	var total = 0
@@ -179,7 +179,7 @@ func (c *IndexController) Search(orm *xorm.Engine) {
 			query = strings.ReplaceAll(query, "$1", controllers.GetTableName("category"))
 			list, err = orm.QueryString(append([]any{fmt.Sprintf("%s ", query)}, whereArgs...)...)
 			if err != nil {
-				pine.Logger().Error(err)
+				pine.Logger().Error(err.Error())
 			}
 			for k, art := range list {
 				catid, _ := strconv.Atoi(art["catid"])

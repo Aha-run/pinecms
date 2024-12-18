@@ -21,7 +21,7 @@ func (l *LogModel) GetList(page, limit int64) ([]tables.Log, int64) {
 	var total int64
 	total, _ = l.orm.Count(&tables.Log{})
 	if err := l.orm.Desc("logid").Limit(int(limit), int(offset)).Find(&list); err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return list, total
 }
@@ -29,7 +29,7 @@ func (l *LogModel) GetList(page, limit int64) ([]tables.Log, int64) {
 func (l *LogModel) DeleteAll() bool {
 	res, err := l.orm.Where("1=1").Delete(&tables.Log{})
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		return false
 	}
 	if res > 0 {
@@ -41,7 +41,7 @@ func (l *LogModel) DeleteAll() bool {
 func (l *LogModel) DeleteBeforeByDate(date string) bool {
 	res, err := l.orm.Where("`time` <= ? ", date).Delete(&tables.Log{})
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 		return false
 	}
 	if res > 0 {

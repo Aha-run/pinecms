@@ -30,7 +30,7 @@ func (a *AttachmentsModel) GetList(keywords string, page, limit int64) (list []t
 	}
 	total, err = sess.FindAndCount(&list)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	if list == nil {
 		list = []tables.Attachments{}

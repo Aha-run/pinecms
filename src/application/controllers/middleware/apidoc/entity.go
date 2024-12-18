@@ -18,7 +18,7 @@ type Entity struct {
 // SetApiEntity 设置接口实体信息
 func SetApiEntity(ctx *pine.Context, entity *Entity, configures ...Configure) {
 	if entity.ApiParam != nil && !structs.IsStruct(entity.ApiParam) {
-		ctx.Logger().Warning("不支持非struct类型的请求参数")
+		ctx.Logger().Warn("不支持非struct类型的请求参数")
 	} else if defaultConfig.Enable {
 		e, ok := ctx.Value(apiDocKey).(*apiEntity)
 		if ok {

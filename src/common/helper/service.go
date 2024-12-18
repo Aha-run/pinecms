@@ -2,7 +2,7 @@ package helper
 
 import (
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
+	"github.com/xiusin/pine/contracts"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 )
@@ -21,12 +21,17 @@ func Inject(key any, v any, single ...bool) {
 	}
 }
 
-// 获取缓存服务
-func AbstractCache() cache.AbstractCache {
-	return pine.Make(controllers.ServiceICache).(cache.AbstractCache)
+// AbstractCache 获取缓存服务
+func AbstractCache() contracts.Cache {
+	return pine.Make(controllers.ServiceICache).(contracts.Cache)
 }
 
-// 获取应用实例
+// Cache 获取缓存服务
+func Cache() contracts.Cache {
+	return AbstractCache()
+}
+
+// App 获取应用实例
 func App() *pine.Application {
 	return pine.Make(controllers.ServiceApplication).(*pine.Application)
 }

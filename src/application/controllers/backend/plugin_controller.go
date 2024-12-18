@@ -140,7 +140,7 @@ func (c *PluginController) PostEnable() {
 
 func (c *PluginController) GetConfig() {
 	plugin := &tables.Plugin{}
-	path, _ := c.Ctx().GetString("path")
+	path, _ := c.Ctx().Input().GetString("path")
 	c.Orm.Where("path = ?", path).Get(plugin)
 	helper.Ajax(plugin.Config, 0, c.Ctx())
 }

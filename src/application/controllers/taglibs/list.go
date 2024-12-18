@@ -24,7 +24,7 @@ func List(args jet.Arguments) reflect.Value {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Errorf("ArcList Failed %s", err)
+			pine.Logger().Error(fmt.Sprintf("ArcList Failed %s", err))
 		}
 	}()
 	catid := getNumber(args.Get(0))

@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 	"log"
 	"path/filepath"
 	"runtime"
@@ -11,7 +12,6 @@ import (
 	"github.com/xiusin/pinecms/src/common/helper"
 
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -21,7 +21,7 @@ import (
 
 type CategoryModel struct {
 	orm   *xorm.Engine
-	cache cache.AbstractCache
+	cache contracts.Cache
 }
 
 var ErrCategoryNotExists = errors.New("category not exists")
@@ -31,7 +31,7 @@ func init() {
 	di.Set(model, func(builder di.AbstractBuilder) (i any, err error) {
 		return &CategoryModel{
 			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
-			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
+			cache: builder.MustGet(controllers.ServiceICache).(contracts.Cache),
 		}, nil
 	}, true)
 

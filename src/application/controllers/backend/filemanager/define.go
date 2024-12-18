@@ -28,7 +28,7 @@ const serviceFtpStorage = "pinecms.service.fm.ftp"
 func InitInstall(app *pine.Application, urlPrefix, dir string) {
 	once.Do(func() {
 		app.Use(func(ctx *pine.Context) {
-			if str, _ := ctx.GetString("fmq"); str == DownloadFlag {
+			if str, _ := ctx.Input().GetString("fmq"); str == DownloadFlag {
 				ctx.Response.Header.Set("Content-Disposition", "attachment")
 			}
 			ctx.Next()
@@ -38,19 +38,19 @@ func InitInstall(app *pine.Application, urlPrefix, dir string) {
 
 		defer func() {
 			if err := recover(); err != nil {
-				pine.Logger().Warning("初始化安装失败", err)
+				pine.Logger().Warn("初始化安装失败", err)
 			}
 		}()
 
 		if err := orm.Sync2(&tables.FileManagerAccount{}); err != nil {
-			pine.Logger().Warning(err)
+			pine.Logger().Warn(err.Error())
 		}
 		if count, _ := orm.Count(&tables.FileManagerAccount{}); count == 0 {
 			user := &tables.FileManagerAccount{Username: "admin", Nickname: "Administer", Engine: "本地存储"}
 			user.Init()
 			user.Password = user.GetMd5Pwd("admin888")
 			if _, err := orm.InsertOne(user); err != nil {
-				pine.Logger().Warning("新增用户失败", err)
+				pine.Logger().Warn("新增用户失败", err)
 			}
 		}
 

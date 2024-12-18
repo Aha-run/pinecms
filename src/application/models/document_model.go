@@ -3,9 +3,9 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -14,14 +14,14 @@ import (
 
 type DocumentModel struct {
 	orm   *xorm.Engine
-	cache cache.AbstractCache
+	cache contracts.Cache
 }
 
 func init() {
 	di.Set(&DocumentModel{}, func(builder di.AbstractBuilder) (i any, err error) {
 		return &DocumentModel{
 			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
-			cache: builder.MustGet("cache.AbstractCache").(cache.AbstractCache),
+			cache: builder.MustGet(controllers.ServiceICache).(contracts.Cache),
 		}, nil
 	}, true)
 }
@@ -35,7 +35,7 @@ func (d *DocumentModel) GetList(page, limit int64) (list []tables.DocumentModel,
 	var err error
 	total, err = d.orm.Limit(int(limit), int(offset)).FindAndCount(&list)
 	if err != nil {
-		pine.Logger().Error(err)
+		pine.Logger().Error(err.Error())
 	}
 	return list, total
 }
@@ -86,17 +86,17 @@ func (d *DocumentModel) DeleteByID(id int64) (bool, error) {
 	if _, err := d.orm.Transaction(func(session *xorm.Session) (i any, err error) {
 		i, err = d.orm.ID(id).Delete(&tables.DocumentModel{})
 		if err != nil {
-			pine.Logger().Error(err)
+			pine.Logger().Error(err.Error())
 			return nil, err
 		}
 		if i == 0 {
 			return nil, errors.New("删除了0条模型记录,错误表现") // 删除了0条记录, 返回失败
 		}
 		if !NewDocumentFieldDslModel().DeleteByMID(id) {
-			pine.Logger().Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
+			pine.Logger().Error(fmt.Sprintf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id))
 			return nil, fmt.Errorf("删除数据模型ID: %d 成功, 删除关联字段失败, 回滚数据", id)
 		}
-		icache := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
+		icache := di.MustGet(controllers.ServiceICache).(contracts.Cache)
 		key := fmt.Sprintf(controllers.CacheDocumentModelPrefix, id)
 		icache.Delete(key)
 		return true, nil

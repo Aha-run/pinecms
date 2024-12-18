@@ -26,7 +26,7 @@ import (
 func msgHandler(ctx *pine.Context) {
 	defer func() {
 		if err := recover(); err != nil {
-			pine.Logger().Error(err)
+			pine.Logger().Error(fmt.Sprintf("%v", err))
 			_ = ctx.WriteJSON(pine.H{"code": 400500, "message": err})
 		}
 	}()
@@ -109,7 +109,7 @@ func msgHandler(ctx *pine.Context) {
 
 	//处理消息接收以及回复
 	if err := srv.Serve(); err != nil {
-		pine.Logger().Warning("处理消息异常", err)
+		pine.Logger().Warn("处理消息异常", err)
 		return
 	}
 

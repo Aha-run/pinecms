@@ -2,11 +2,11 @@ package wechat
 
 import (
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 
 	"github.com/silenceper/wechat/v2/officialaccount"
 	"github.com/silenceper/wechat/v2/officialaccount/user"
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/application/models/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -21,7 +21,7 @@ func (c *WechatUserTagsController) Construct() {
 	c.BaseController.Construct()
 }
 
-func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
+func (c *WechatUserTagsController) PostList(cacher contracts.Cache) {
 	appid, _ := c.Input().GetString("appid")
 	var tags = []*user.TagInfo{}
 	if appid == "" {
@@ -40,7 +40,7 @@ func (c *WechatUserTagsController) PostList(cacher cache.AbstractCache) {
 	helper.Ajax(tags, 0, c.Ctx())
 }
 
-func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
+func (c *WechatUserTagsController) PostDelete(cacher contracts.Cache) {
 	appid, _ := c.Input().GetString("appid")
 	id, _ := c.Input().GetInt64("id")
 	cacheKey := fmt.Sprintf(CacheKeyWechatUserTags, appid)
@@ -72,7 +72,7 @@ func (c *WechatUserTagsController) PostDelete(cacher cache.AbstractCache) {
 	}
 }
 
-func (c *WechatUserTagsController) PostAdd(cacher cache.AbstractCache) {
+func (c *WechatUserTagsController) PostAdd(cacher contracts.Cache) {
 	c.Ctx().BindJSON(&c.p)
 	if c.p.Appid == "" || c.p.Name == "" {
 		helper.Ajax("必要参数为空", 1, c.Ctx())
@@ -93,7 +93,7 @@ func (c *WechatUserTagsController) PostAdd(cacher cache.AbstractCache) {
 	}
 }
 
-func (c *WechatUserTagsController) PostEdit(cacher cache.AbstractCache) {
+func (c *WechatUserTagsController) PostEdit(cacher contracts.Cache) {
 	c.Ctx().BindJSON(&c.p)
 	if c.p.Appid == "" || c.p.Name == "" || c.p.Id == 0 {
 		helper.Ajax("必要参数为空", 1, c.Ctx())
@@ -150,10 +150,10 @@ func (c *WechatUserTagsController) refreshUserInfo(account *officialaccount.Offi
 		if err == nil {
 			_, err = c.Orm.Where("openid = ?", openid).Cols("tagid_list").Update(&tables.WechatMember{TagidList: u.TagIDList})
 			if err != nil {
-				pine.Logger().Warning("更新用户", openid, "失败: ", err.Error())
+				pine.Logger().Warn("更新用户", openid, "失败: ", err.Error())
 			}
 		} else {
-			pine.Logger().Warning("更新用户", openid, "失败: ", err.Error())
+			pine.Logger().Warn("更新用户", openid, "失败: ", err.Error())
 		}
 	}
 }

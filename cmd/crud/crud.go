@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -21,7 +21,6 @@ import (
 
 	"github.com/alecthomas/chroma/quick"
 	"github.com/spf13/cobra"
-	"github.com/xiusin/logger"
 )
 
 var cols = map[string]*schemas.Column{}
@@ -61,10 +60,9 @@ var Cmd = &cobra.Command{
 状态:-1=禁用,0=待审核,1=正常:el-checkbox
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.GetDefault().SetReportCaller(false)
 		InitDB()
 		if !IsDebug() {
-			logger.Print("非Debug模式，不支持 crud 命令")
+			pine.Logger().Warn("非Debug模式，不支持 crud 命令")
 			return
 		}
 		table, _ := cmd.Flags().GetString("table")
@@ -77,7 +75,7 @@ var Cmd = &cobra.Command{
 		}
 		metas, err := Orm().DBMetas()
 		if err != nil {
-			pine.Logger().Error(err)
+			pine.Logger().Error(err.Error())
 			return
 		}
 		var tableMata *schemas.Table
@@ -88,7 +86,7 @@ var Cmd = &cobra.Command{
 			}
 		}
 		if tableMata == nil {
-			logger.Errorf("无法获取数据表[%s]元信息", getTableName(table))
+			pine.Logger().Error(fmt.Sprintf("无法获取数据表[%s]元信息", getTableName(table)))
 			return
 		}
 		for _, v := range tableMata.Columns() {
@@ -99,7 +97,7 @@ var Cmd = &cobra.Command{
 		if !force { // 非强制创建则检测文件是否存在
 			for _, s := range []string{frontendPath + "/" + feModuleDir + table, controllerPath, tablePath} {
 				if _, err := os.Stat(s); !os.IsNotExist(err) {
-					logger.Print("已有存在: " + s)
+					pine.Logger().Info("已有存在: " + s)
 					return
 				}
 			}
@@ -118,7 +116,7 @@ var Cmd = &cobra.Command{
 		}
 		byts = bytes.Replace(byts, []byte(holder), []byte(holder+"\r\n\t"+`backendRouter.Handle(new(backend.`+controllerName+`), "/`+util.SnakeString(table)+`")`), 1)
 		os.WriteFile(routerFile, byts, os.ModePerm)
-		logger.Print("创建模块文件成功, 已注册路由信息至: " + routerFile)
+		pine.Logger().Info("创建模块文件成功, 已注册路由信息至: " + routerFile)
 	},
 }
 
@@ -155,10 +153,10 @@ func genControllerFile(print bool, controllerName, tableName, controllerPath str
 		searchFieldDsl,
 	)
 	if !print {
-		err = ioutil.WriteFile(controllerPath, []byte(content), os.ModePerm)
+		err = os.WriteFile(controllerPath, []byte(content), os.ModePerm)
 	}
 	if err == nil {
-		logger.Print("创建文件： " + controllerPath)
+		pine.Logger().Info("创建文件： " + controllerPath)
 	}
 	if print {
 		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
@@ -188,7 +186,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
 		if stmt.TableSpec == nil {
-			logger.Error("Can't get table spec")
+			pine.Logger().Error("Can't get table spec")
 			break
 		}
 		var table SQLTable
@@ -202,7 +200,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 			case "unique key":
 				uniqueKeys = append(uniqueKeys, ind.Columns[0].Column.String())
 			default:
-				logger.Warning("未知类型 ", ind.Info.Type)
+				pine.Logger().Warn("未知类型 ", ind.Info.Type)
 			}
 		}
 
@@ -244,7 +242,7 @@ func genTableFileAndFrontendFile(print bool, tableName, tablePath, frontendPath 
 		err = os.WriteFile(tablePath, []byte(content), os.ModePerm)
 	}
 	if err == nil {
-		logger.Print("创建文件： " + tablePath)
+		pine.Logger().Warn("创建文件： " + tablePath)
 	}
 	if print {
 		_ = quick.Highlight(os.Stdout, content, "go", "terminal256", theme)
@@ -267,7 +265,7 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 		filepath.Join(moduleBaseDir, "index.ts"):             serviceIndexTsTpl,
 	}
 	for filename, content := range files {
-		os.MkdirAll(filepath.Dir(filename), os.ModePerm)
+		_ = os.MkdirAll(filepath.Dir(filename), os.ModePerm)
 		if strings.Contains(filename, ".vue") {
 			data, _ := json.MarshalIndent(formDsl, "\t\t\t", "\t")
 			content = string(bytes.ReplaceAll([]byte(content), []byte("[formDSL]"), data))
@@ -276,9 +274,9 @@ func genFrontendFile(table, frontendPath string, tableDsl, formDsl, filterDsl []
 			content = string(bytes.ReplaceAll([]byte(content), []byte("[tableDSL]"), data))
 		}
 		if err := os.WriteFile(filename, bytes.ReplaceAll([]byte(content), []byte("[table]"), []byte(util.SnakeString(table))), os.ModePerm); err == nil {
-			logger.Print("创建文件： " + filename)
+			pine.Logger().Info("创建文件： " + filename)
 		} else {
-			logger.Print("创建文件" + filename + "失败")
+			pine.Logger().Warn("创建文件" + filename + "失败")
 		}
 	}
 }

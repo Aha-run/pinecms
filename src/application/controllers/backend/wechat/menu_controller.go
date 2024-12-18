@@ -3,7 +3,6 @@ package wechat
 import (
 	"fmt"
 	"github.com/silenceper/wechat/v2/officialaccount/menu"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pinecms/src/application/controllers/backend"
 	"github.com/xiusin/pinecms/src/common/helper"
 )
@@ -33,8 +32,8 @@ func (c *WechatMenuController) PostEdit() {
 	}
 }
 
-func (c *WechatMenuController) GetInfo(cacher cache.AbstractCache) {
-	appid, _ := c.Ctx().GetString("appid")
+func (c *WechatMenuController) GetInfo() {
+	appid, _ := c.Ctx().Input().GetString("appid")
 	if len(appid) == 0 {
 		helper.Ajax("请选择公众号", 1, c.Ctx())
 		return

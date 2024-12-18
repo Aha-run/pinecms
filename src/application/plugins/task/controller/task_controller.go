@@ -70,10 +70,10 @@ func (c *TaskController) PostOnce() {
 }
 
 func (c *TaskController) GetLog() {
-	id, _ := c.Ctx().GetInt("id", 0)
-	page, _ := c.Ctx().GetInt("page", 0)
-	pageSize, _ := c.Ctx().GetInt("size", 0)
-	status, _ := c.Ctx().GetInt("status", -1)
+	id, _ := c.Ctx().Input().GetInt("id", 0)
+	page, _ := c.Ctx().Input().GetInt("page", 0)
+	pageSize, _ := c.Ctx().Input().GetInt("size", 0)
+	status, _ := c.Ctx().Input().GetInt("status", -1)
 	sess := c.Orm.Desc("id")
 	if id > 0 {
 		sess.Where("task_id = ?", id)

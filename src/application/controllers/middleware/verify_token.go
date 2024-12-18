@@ -22,7 +22,7 @@ func VerifyJwtToken() pine.Handler {
 			!strings.Contains(uri, "thumb") {
 			token := ctx.Header("Authorization")
 			if token == "" {
-				token, _ = ctx.GetString("token")
+				token, _ = ctx.Input().GetString("token")
 			}
 			var hs = jwt.NewHS256([]byte(config.App().JwtKey))
 			// 验证token

@@ -16,19 +16,19 @@ func (c *IndexController) Index() {
 	_ = os.MkdirAll(filepath.Dir(pageFilePath), os.ModePerm)
 	f, err := os.OpenFile(pageFilePath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
-		c.Logger().Error(err)
+		c.Logger().Error(err.Error())
 		return
 	}
 	defer f.Close()
 	jet := pine.Make(controllers.ServiceJetEngine).(*pjet.PineJet)
 	temp, err := jet.GetTemplate(template("index.jet"))
 	if err != nil {
-		c.Logger().Error(err)
+		c.Logger().Error(err.Error())
 		return
 	}
 	err = temp.Execute(f, viewDataToJetMap(c.Render().GetViewData()), nil)
 	if err != nil {
-		c.Logger().Error(err)
+		c.Logger().Error(err.Error())
 		return
 	}
 	data, _ := os.ReadFile(pageFilePath)

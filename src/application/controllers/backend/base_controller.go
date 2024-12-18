@@ -149,7 +149,7 @@ func (c *BaseController) PostList() {
 			count, err = query.Limit(p.Size, (p.Page-1)*p.Size).FindAndCount(c.Entries)
 		}
 		if err != nil {
-			pine.Logger().Error(err)
+			pine.Logger().Error(err.Error())
 			helper.Ajax(err.Error(), 1, c.Ctx())
 			return
 		}
@@ -176,7 +176,7 @@ func (c *BaseController) PostList() {
 
 func (c *BaseController) buildParamsForQuery(query *xorm.Session) (*listParam, error) {
 	if err := parseParam(c.Ctx(), &c.P); err != nil {
-		pine.Logger().Warning("解析参数错误", err)
+		pine.Logger().Warn("解析参数错误", err)
 	}
 	if len(c.KeywordsSearch) > 0 && c.P.Keywords != "" { // 关键字搜索
 		var whereBuilder []string
@@ -308,12 +308,12 @@ func (c *BaseController) buildQueryCols(sess *xorm.Session) {
 		if err := helper.AbstractCache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (any, error) {
 			concat, err := c.Orm.QueryString(`select group_concat(COLUMN_NAME SEPARATOR ',') as fields from information_schema.COLUMNS where table_name = '` + tableName + `'`)
 			if err != nil {
-				c.Ctx().Logger().Warning("读取数据表"+tableName+"表字段失败", err)
+				c.Ctx().Logger().Warn("读取数据表"+tableName+"表字段失败", err)
 			}
 			fields := strings.Split(concat[0]["fields"], ",")
 			return &fields, nil
 		}, 3600); err != nil {
-			c.Ctx().Logger().Warning("缓存表"+tableName+"字段失败", err)
+			c.Ctx().Logger().Warn("缓存表"+tableName+"字段失败", err)
 		}
 
 		cols := []string{}
@@ -391,7 +391,7 @@ func (c *BaseController) edit() bool {
 	_, err := c.Orm.AllCols().Where(c.TableKey+"=?", val.Interface()).Update(c.Table)
 	if err != nil {
 		c.LastErr = err
-		c.Logger().Warning("更新错误", err.Error())
+		c.Logger().Warn("更新错误", err.Error())
 	}
 	return true
 }
@@ -430,7 +430,7 @@ func (c *BaseController) PostDelete() {
 }
 
 func (c *BaseController) GetInfo() {
-	id, _ := c.Ctx().GetInt("id", 0)
+	id, _ := c.Ctx().Input().GetInt("id", 0)
 	if id < 1 {
 		helper.Ajax("id参数范围错误", 1, c.Ctx())
 		return

@@ -3,9 +3,9 @@ package backend
 import (
 	"errors"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 
 	"github.com/xiusin/pine"
-	"github.com/xiusin/pine/cache"
 	"github.com/xiusin/pine/di"
 	"github.com/xiusin/pinecms/src/application/controllers"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -36,7 +36,7 @@ func (c TableController) GetFields() {
 	var fields []tables.DocumentModelField
 	err := c.Orm.Table(&tables.DocumentModelField{}).Find(&fields)
 	if err != nil {
-		c.Logger().Error(err)
+		c.Logger().Error(err.Error())
 	}
 	helper.Ajax(fields, 0, c.Ctx())
 }
@@ -56,7 +56,7 @@ func (c *TableController) before(act int, params any) error {
 		}
 		exist, err := sess.Exist(&tables.DocumentModelDsl{})
 		if err != nil {
-			c.Logger().Error(err)
+			c.Logger().Error(err.Error())
 		}
 		if exist {
 			return errors.New("字段已经存在，请换个字段名称")
@@ -73,8 +73,8 @@ func (c *TableController) before(act int, params any) error {
 
 func (c *TableController) after(act int, params any) {
 	if act == OpDel || act == OpAdd || act == OpEdit {
-		pine.Logger().Print("操作模型字段, 清除缓存")
-		cacher := di.MustGet(controllers.ServiceICache).(cache.AbstractCache)
+		pine.Logger().Info("操作模型字段, 清除缓存")
+		cacher := di.MustGet(controllers.ServiceICache).(contracts.Cache)
 		if act == OpDel {
 			cacher.Delete(fmt.Sprintf(controllers.CacheModelTablePrefix, params.(*idParams).Id))
 		} else {

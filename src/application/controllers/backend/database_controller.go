@@ -3,12 +3,11 @@ package backend
 import (
 	"bytes"
 	"fmt"
+	"github.com/xiusin/pine/contracts"
 	"io"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/xiusin/pine/cache"
 
 	"xorm.io/xorm/schemas"
 
@@ -32,7 +31,7 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 	b.POST("/database/backup", "Backup")
 }
 
-func (c *DatabaseController) Manager(orm *xorm.Engine, cache cache.AbstractCache) {
+func (c *DatabaseController) Manager(orm *xorm.Engine, cache contracts.Cache) {
 	var mataDatas []*schemas.Table
 	var data []map[string]any
 
