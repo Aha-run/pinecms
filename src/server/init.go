@@ -70,10 +70,8 @@ func initLoggerService() di.BuildHandler {
 		cmsLogger, err := os.OpenFile(filepath.Join(conf.LogPath, "pinecms.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
 		helper.PanicErr(err)
 
-		pine.RegisterOnInterrupt(func() {
-			ormLogger.Close()
-			_ = cmsLogger.Close()
-		})
+		pine.RegisterOnInterrupt(func() { ormLogger.Close() })
+		pine.RegisterOnInterrupt(func() { _ = cmsLogger.Close() })
 
 		var opt = slog.HandlerOptions{AddSource: true}
 		_ = debug.SetCrashOutput(cmsLogger, debug.CrashOptions{})
