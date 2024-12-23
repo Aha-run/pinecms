@@ -6,8 +6,6 @@ import (
 	"sync"
 )
 
-// 通用注册Once
-
 var mu sync.Mutex
 var caller = map[string]*sync.Once{}
 

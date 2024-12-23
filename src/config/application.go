@@ -135,12 +135,10 @@ func GetSiteConfigByKey(key string, def ...string) string {
 }
 
 func SiteConfig() (Site, error) {
-	orm, cache := helper.GetORM(), helper.AbstractCache()
 	var settingData = map[string]string{}
-
-	err := cache.Remember(controllers.CacheSetting, &settingData, func() (any, error) {
+	err := helper.Cache().Remember(controllers.CacheSetting, &settingData, func() (any, error) {
 		var settings []tables.Setting
-		if err := orm.Find(&settings); err != nil {
+		if err := helper.GetORM().Find(&settings); err != nil {
 			return nil, err
 		}
 		if len(settings) != 0 {

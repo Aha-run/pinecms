@@ -15,20 +15,15 @@ func Inject(key any, v any, single ...bool) {
 	if vi, ok := v.(di.BuildHandler); ok {
 		di.Set(key, vi, single[0])
 	} else {
-		di.Set(key, func(builder di.AbstractBuilder) (i any, e error) {
+		di.Set(key, func(_ di.AbstractBuilder) (i any, e error) {
 			return v, nil
 		}, single[0])
 	}
 }
 
-// AbstractCache 获取缓存服务
-func AbstractCache() contracts.Cache {
-	return pine.Make(controllers.ServiceICache).(contracts.Cache)
-}
-
 // Cache 获取缓存服务
 func Cache() contracts.Cache {
-	return AbstractCache()
+	return pine.Make(controllers.ServiceICache).(contracts.Cache)
 }
 
 // App 获取应用实例

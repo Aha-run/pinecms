@@ -3,11 +3,12 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/xiusin/pine/contracts"
 	"log"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/xiusin/pine/contracts"
 
 	"github.com/xiusin/pinecms/src/common/helper"
 
@@ -28,14 +29,14 @@ var ErrCategoryNotExists = errors.New("category not exists")
 
 func init() {
 	model := &CategoryModel{}
-	di.Set(model, func(builder di.AbstractBuilder) (i any, err error) {
+	di.Set(model, func(_ di.AbstractBuilder) (i any, err error) {
 		return &CategoryModel{
-			orm:   builder.MustGet(controllers.ServiceXorm).(*xorm.Engine),
-			cache: builder.MustGet(controllers.ServiceICache).(contracts.Cache),
+			orm:   helper.GetORM(),
+			cache: helper.Cache(),
 		}, nil
 	}, true)
 
-	di.Bind(controllers.ServiceCatUrlPrefixFunc, func(builder di.AbstractBuilder) (any, error) { // (id int64) string
+	di.Bind(controllers.ServiceCatUrlPrefixFunc, func(_ di.AbstractBuilder) (any, error) { // (id int64) string
 		return model.GetUrlPrefix, nil
 	})
 }
@@ -66,9 +67,9 @@ func (c *CategoryModel) GetPosArr(id int64) []tables.Category {
 	}
 	return reverse(links)
 }
-func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []map[string]any {
+func (c *CategoryModel) GetTree(categories []tables.Category, parentid int64) []map[string]any {
 	var res = []map[string]any{}
-	if len(categorys) != 0 {
+	if len(categories) != 0 {
 		models, _ := NewDocumentModel().GetList(1, 1000)
 		var m = map[int64]string{}
 		var modelMap = map[int64]string{}
@@ -77,7 +78,7 @@ func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []m
 			m[model.Id] = model.Name
 			modelMap[model.Id] = model.Table
 		}
-		for _, category := range categorys {
+		for _, category := range categories {
 			if category.Parentid == parentid {
 				modelName := m[category.ModelId]
 				var total int64 = 0
@@ -106,7 +107,7 @@ func (c *CategoryModel) GetTree(categorys []tables.Category, parentid int64) []m
 					"operateid":   category.Catid,
 					"total":       total,
 				}
-				son["children"] = c.GetTree(categorys, category.Catid)
+				son["children"] = c.GetTree(categories, category.Catid)
 				res = append(res, son)
 			}
 		}
@@ -127,9 +128,9 @@ func (c *CategoryModel) GetWithDirForBE(dir string) *tables.Category {
 func (c *CategoryModel) GetAll(cache bool) []tables.Category {
 	var categories []tables.Category
 	if !cache {
-		_ = helper.AbstractCache().Delete(controllers.CacheCategories)
+		_ = helper.Cache().Delete(controllers.CacheCategories)
 	}
-	err := helper.AbstractCache().Remember(controllers.CacheCategories, &categories, func() (any, error) {
+	err := helper.Cache().Remember(controllers.CacheCategories, &categories, func() (any, error) {
 		_ = c.orm.Asc("listorder").Desc("id").Find(&categories)
 		return &categories, nil
 	})
@@ -173,14 +174,14 @@ func (c *CategoryModel) GetNextCategoryOnlyCatids(parentid int64, withSelf bool)
 }
 
 func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]any {
-	categorys := new([]tables.Category)
-	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categorys)
+	categories := new([]tables.Category)
+	err := c.orm.Where("parentid = ?", parentid).OrderBy("`listorder` ASC,`id` DESC").Find(categories)
 	if err != nil {
 		log.Println(err.Error())
 	}
 	maps := []map[string]any{}
-	if len(*categorys) > 0 {
-		for _, v := range *categorys {
+	if len(*categories) > 0 {
+		for _, v := range *categories {
 			maps = append(maps, map[string]any{
 				"value":    v.Catid,
 				"label":    v.Catname,
@@ -192,15 +193,15 @@ func (c *CategoryModel) GetSelectTree(parentid int64) []map[string]any {
 }
 
 // 取得内容管理右部分类tree结构
-func (c *CategoryModel) GetContentRightCategoryTree(categorys []tables.Category, parentid int64) []map[string]any {
+func (c *CategoryModel) GetContentRightCategoryTree(categories []tables.Category, parentid int64) []map[string]any {
 	maps := []map[string]any{}
-	if len(categorys) > 0 {
-		for _, v := range categorys {
+	if len(categories) > 0 {
+		for _, v := range categories {
 			if v.Parentid == parentid {
 				maps = append(maps, map[string]any{
 					"label":    v.Catname,
 					"value":    v.Catid,
-					"children": c.GetContentRightCategoryTree(categorys, v.Catid),
+					"children": c.GetContentRightCategoryTree(categories, v.Catid),
 				})
 			}
 		}
@@ -233,10 +234,10 @@ func (c *CategoryModel) GetCategoryByModelID(id int64) ([]tables.Category, error
 
 // 读取单个分类的信息
 func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Category, err error) {
-	caheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id)
+	cacheKey := fmt.Sprintf(controllers.CacheCategoryInfoPrefix, id)
 	category = &tables.Category{}
 	var exists bool
-	err = c.cache.GetWithUnmarshal(caheKey, category)
+	err = c.cache.GetWithUnmarshal(cacheKey, category)
 	if err != nil {
 		exists, err = c.orm.ID(id).Get(category)
 		if err != nil || !exists {
@@ -248,7 +249,7 @@ func (c *CategoryModel) GetCategoryFByIdForBE(id int64) (category *tables.Catego
 		}
 		category.Page = NewPageModel().GetPage(id)
 		category.UrlPrefix = c.GetUrlPrefix(id)
-		c.cache.SetWithMarshal(caheKey, category)
+		c.cache.SetWithMarshal(cacheKey, category)
 	}
 	if category.Type == 0 {
 		category.Model = NewDocumentModel().GetByIDForBE(category.ModelId)

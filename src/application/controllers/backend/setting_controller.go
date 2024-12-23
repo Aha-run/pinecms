@@ -52,7 +52,7 @@ func (c *SettingController) before(act int, params any) error {
 
 func (c *SettingController) after(act int, _ any) error {
 	if act == OpEdit {
-		helper.AbstractCache().Delete(controllers.CacheSetting)
+		helper.Cache().Delete(controllers.CacheSetting)
 		config.SiteConfig()
 	}
 	return nil

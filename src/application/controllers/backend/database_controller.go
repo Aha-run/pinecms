@@ -3,11 +3,12 @@ package backend
 import (
 	"bytes"
 	"fmt"
-	"github.com/xiusin/pine/contracts"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/xiusin/pine/contracts"
 
 	"xorm.io/xorm/schemas"
 
@@ -32,10 +33,10 @@ func (c *DatabaseController) RegisterRoute(b pine.IRouterWrapper) {
 }
 
 func (c *DatabaseController) Manager(orm *xorm.Engine, cache contracts.Cache) {
-	var mataDatas []*schemas.Table
+	var metaDataset []*schemas.Table
 	var data []map[string]any
 
-	if err := cache.Remember(controllers.CacheTableNames, &mataDatas, func() (any, error) {
+	if err := cache.Remember(controllers.CacheTableNames, &metaDataset, func() (any, error) {
 		v, err := orm.DBMetas()
 		return &v, err
 	}, 600); err != nil {
@@ -44,19 +45,19 @@ func (c *DatabaseController) Manager(orm *xorm.Engine, cache contracts.Cache) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(len(mataDatas))
-	for _, mataData := range mataDatas {
-		go func(mataData *schemas.Table) {
+	wg.Add(len(metaDataset))
+	for _, meta := range metaDataset {
+		go func(meta *schemas.Table) {
 			defer wg.Done()
-			total, _ := orm.Table(mataData.Name).Count()
+			total, _ := orm.Table(meta.Name).Count()
 			data = append(data, map[string]any{
-				"id":      mataData.Name,
+				"id":      meta.Name,
 				"total":   total,
-				"engine":  mataData.StoreEngine,
-				"comment": mataData.Comment,
-				"charset": mataData.Charset,
+				"engine":  meta.StoreEngine,
+				"comment": meta.Comment,
+				"charset": meta.Charset,
 			})
-		}(mataData)
+		}(meta)
 	}
 	wg.Wait()
 	helper.Ajax(data, 0, c.Ctx())
@@ -117,10 +118,10 @@ func (c *DatabaseController) backup(settingData map[string]string) (msg string, 
 		return "备份表数据失败", 1
 	}
 
-	zipsc := bytes.NewBuffer([]byte{})
-	zipw := zip.NewWriter(zipsc)
-	defer zipw.Close()
-	w, err := zipw.Encrypt(fNameBaseName+".sql", settingData["UPLOAD_DATABASE_PASS"])
+	zipSource := bytes.NewBuffer([]byte{})
+	zipWriter := zip.NewWriter(zipSource)
+	defer zipWriter.Close()
+	w, err := zipWriter.Encrypt(fNameBaseName+".sql", settingData["UPLOAD_DATABASE_PASS"])
 	if err != nil {
 		return "打包zip失败: " + err.Error(), 1
 	}
@@ -128,8 +129,8 @@ func (c *DatabaseController) backup(settingData map[string]string) (msg string, 
 	if err != nil {
 		return "打包zip失败: " + err.Error(), 1
 	}
-	zipw.Flush()
-	f, err := uploader.Upload(uploadFile, zipsc)
+	zipWriter.Flush()
+	f, err := uploader.Upload(uploadFile, zipSource)
 	if err != nil {
 		return "备份表数据失败: " + err.Error(), 1
 	}

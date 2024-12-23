@@ -121,7 +121,7 @@ func (c *ApiController) GetTerm() {
 				_ = wsConn.Close()
 				return
 			}
-			sInfo, err := helper.AbstractCache().Get(auth.Sid)
+			sInfo, err := helper.Cache().Get(auth.Sid)
 			if err != nil || len(sInfo) == 0 {
 				fmt.Println("连接超时，请重试！")
 				_ = wsConn.WriteMessage(websocket.BinaryMessage, []byte("连接超时，请重试！\r\n"))

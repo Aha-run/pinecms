@@ -45,7 +45,7 @@ artlist(typeid, offset, row, orderby, modelid, page, keyword, flag, noflag, titl
 
 func ArcList(args jet.Arguments) reflect.Value {
 	var list = []map[string]string{}
-	helper.AbstractCache().Remember("pinecms:tag:arclist:"+getTagHash(args), &list, func() (any, error) {
+	helper.Cache().Remember("pinecms:tag:arclist:"+getTagHash(args), &list, func() (any, error) {
 		if !checkArgType(&args) {
 			return &list, nil
 		}

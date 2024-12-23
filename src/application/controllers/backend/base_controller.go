@@ -305,7 +305,7 @@ func (c *BaseController) buildQueryCols(sess *xorm.Session) {
 	} else if len(c.ExceptCols) > 0 {
 		tableName := c.Orm.TableName(c.Table)
 		var fields = []string{}
-		if err := helper.AbstractCache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (any, error) {
+		if err := helper.Cache().Remember(fmt.Sprintf(controllers.CacheTableNameFields, tableName), &fields, func() (any, error) {
 			concat, err := c.Orm.QueryString(`select group_concat(COLUMN_NAME SEPARATOR ',') as fields from information_schema.COLUMNS where table_name = '` + tableName + `'`)
 			if err != nil {
 				c.Ctx().Logger().Warn("读取数据表"+tableName+"表字段失败", err)

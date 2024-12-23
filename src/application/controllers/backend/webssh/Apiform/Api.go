@@ -3,7 +3,8 @@ package Apiform
 import (
 	"encoding/json"
 	"errors"
-	"github.com/satori/go.uuid"
+
+	uuid "github.com/satori/go.uuid"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/common"
 	"github.com/xiusin/pinecms/src/application/controllers/backend/webssh/tables"
 	"github.com/xiusin/pinecms/src/common/helper"
@@ -80,7 +81,7 @@ func (t *GetTerm) Decode(server tables.SSHServer) (sid string, err error) {
 	} else {
 		var serinfo = SerInfo{server.Id, server.Ip, server.Port, server.Username, sPass, server.BindUser}
 		sInfo, _ := json.Marshal(serinfo)
-		helper.AbstractCache().Set(sid, sInfo, 10)
+		helper.Cache().Set(sid, sInfo, 10)
 	}
 
 	return sid, nil

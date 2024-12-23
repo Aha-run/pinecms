@@ -24,7 +24,7 @@ channel(typeid, reid, type, row)
 */
 func Channel(args jet.Arguments) reflect.Value {
 	var arr = []tables.Category{}
-	helper.AbstractCache().Remember("pine:tag:channel:"+getTagHash(args), &arr, func() (any, error) {
+	helper.Cache().Remember("pine:tag:channel:"+getTagHash(args), &arr, func() (any, error) {
 		if !checkArgType(&args) {
 			return &arr, nil
 		}
