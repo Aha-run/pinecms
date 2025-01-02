@@ -1,6 +1,8 @@
 package router
 
 import (
+	"strings"
+
 	"github.com/xiusin/pine"
 	requestLog "github.com/xiusin/pine/middlewares/request-log"
 	"github.com/xiusin/pinecms/src/application/controllers"
@@ -23,9 +25,20 @@ type Interceptor struct {
 
 func InitApiRouter(app *pine.Application) {
 	if config.IsDebug() {
-		app.Use(middleware.Cors(), requestLog.RequestRecorder())
+		app.Use(
+			middleware.Cors(),
+			requestLog.RequestRecorder(),
+		)
 	}
-	app.Use(middleware.Pprof(), middleware.SetGlobalConfigData(), apidoc.New(app, nil), middleware.StatesViz(app))
+	app.Use(
+		middleware.Pprof(func(ctx *pine.Context) bool {
+			p := ctx.Path()
+			return !strings.Contains(p, "statsviz") && strings.HasPrefix(p, "/debug")
+		}),
+		middleware.SetGlobalConfigData(),
+		apidoc.New(app, nil),
+		middleware.StatesViz(app),
+	)
 
 	casbin := middleware.Casbin(config.InitDB())
 

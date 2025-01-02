@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/xiusin/pine"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xiusin/pine"
 
 	"github.com/spf13/cobra"
 	"github.com/xiusin/pinecms/src/application/models/tables"
@@ -42,7 +43,7 @@ var dedeCmd = &cobra.Command{
 2. 导入织梦文档表, 只匹配已知可对应字段
 `,
 	// todo 尽最大可能保留非默认字段数据
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		dsn, _ := cmd.Flags().GetString("dsn")
 		if len(dsn) == 0 {
 			_ = cmd.Usage()
@@ -235,13 +236,13 @@ func transDocument(modelTableName string, data *tables.DocumentModel, modelField
 			case "pubdate":
 				pubdate, _ := strconv.ParseInt(archive["pubdate"], 10, 64)
 				if pubdate != 0 {
-					val = time.Unix(pubdate, 0).Format("2006-01-02 15:04:05")
+					val = time.Unix(pubdate, 0).Format(time.DateTime)
 				}
 				field = "pubtime"
 			case "senddate":
 				senddate, _ := strconv.ParseInt(archive["senddate"], 10, 64)
 				if senddate != 0 {
-					val = time.Unix(senddate, 0).Format("2006-01-02 15:04:05")
+					val = time.Unix(senddate, 0).Format(time.DateTime)
 				}
 				field = "created_time"
 			default:

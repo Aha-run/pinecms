@@ -1,16 +1,13 @@
 package middleware
 
 import (
-	"strings"
-
 	"github.com/valyala/fasthttp/pprofhandler"
 	"github.com/xiusin/pine"
 )
 
-func Pprof() pine.Handler {
+func Pprof(shouldUsePprofHandlerFn func(ctx *pine.Context) bool) pine.Handler {
 	return func(ctx *pine.Context) {
-		p := ctx.Path()
-		if !strings.Contains(ctx.Path(), "statsviz") && strings.HasPrefix(p, "/debug") {
+		if shouldUsePprofHandlerFn != nil && shouldUsePprofHandlerFn(ctx) {
 			pprofhandler.PprofHandler(ctx.RequestCtx)
 			ctx.Stop()
 			return

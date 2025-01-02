@@ -98,7 +98,7 @@ func (s *CosUploader) List(dir string) ([]File, error) {
 		if scanPath == object.Key {
 			continue
 		}
-		t, _ := time.Parse("2006-01-02 15:04:05", object.LastModified)
+		t, _ := time.Parse(time.DateTime, object.LastModified)
 
 		files = append(files, File{
 			Id:       object.Key,

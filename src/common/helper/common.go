@@ -32,7 +32,7 @@ type DirInfo struct {
 	Children any    `json:"children"`
 }
 
-const TimeFormat = "2006-01-02 15:04:05"
+const TimeFormat = time.DateTime
 
 func init() {
 	time.Local = time.FixedZone("CST", 8*3600)

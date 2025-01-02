@@ -1,12 +1,13 @@
 package tplfun
 
 import (
-	"github.com/CloudyKit/jet"
-	"github.com/xiusin/pine"
 	"reflect"
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/CloudyKit/jet"
+	"github.com/xiusin/pine"
 )
 
 func format(str string) string {
@@ -22,11 +23,11 @@ func format(str string) string {
 func FormatTime(args jet.Arguments) reflect.Value {
 	arg := strings.ReplaceAll("T", " ", args.Get(0).String())
 	arg = strings.ReplaceAll("Z", "", arg)
-	t, err := time.Parse("2006-01-02 15:04:05", arg)
+	t, err := time.Parse(time.DateTime, arg)
 	if err != nil {
 		return reflect.ValueOf("")
 	}
-	format := "2006-01-02 15:04:05"
+	format := time.DateTime
 	if args.NumOfArguments() > 1 {
 		format = args.Get(1).String()
 	}
