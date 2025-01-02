@@ -42,7 +42,6 @@ require (
 	github.com/traefik/yaegi v0.11.2
 	github.com/valyala/fasthttp v1.58.0
 	github.com/xiusin/go-annotation v0.0.2
-	github.com/xiusin/logger v0.0.10-0.20220129022857-69c2a6f6a736
 	github.com/xiusin/pine v0.0.9
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	github.com/zinclabs/sdk-go-zincsearch v0.3.3
