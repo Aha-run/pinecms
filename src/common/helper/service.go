@@ -1,9 +1,13 @@
 package helper
 
 import (
+	"context"
+	"log/slog"
+
 	"github.com/xiusin/pine"
 	"github.com/xiusin/pine/contracts"
 	"github.com/xiusin/pine/di"
+	"github.com/xiusin/pine/middlewares/traceid"
 	"github.com/xiusin/pinecms/src/application/controllers"
 )
 
@@ -29,4 +33,17 @@ func Cache() contracts.Cache {
 // App 获取应用实例
 func App() *pine.Application {
 	return pine.Make(controllers.ServiceApplication).(*pine.Application)
+}
+
+// Slog 获取slog对象
+func Slog(ctxs ...context.Context) *slog.Logger {
+	logger := pine.Logger().(*slog.Logger)
+
+	if len(ctxs) > 0 {
+		requestID := ctxs[0].Value(traceid.Key)
+		if requestID != nil {
+			logger = logger.With(traceid.Key, requestID)
+		}
+	}
+	return logger
 }
